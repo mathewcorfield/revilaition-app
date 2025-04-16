@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpenCheck, CheckCircle, LightbulbIcon } from 'lucide-react';
+import { ArrowRight, GraduationCap, CheckCircle, LightbulbIcon } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
@@ -11,10 +11,10 @@ const HeroSection: React.FC = () => {
           <div className="md:order-1 order-2">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
               <span>Your Personal</span>
-              <span className="gradient-heading block"> AI Study Assistant</span>
+              <span className="gradient-heading block"> AI Tutor Assistant</span>
             </h1>
             <p className="text-lg text-gray-700 mb-8 max-w-lg">
-              Transform your revision process with personalized AI-powered learning tools that adapt to your unique study needs and help you achieve better results.
+              Transform your revision process with Revilaition's AI-powered learning tools that adapt to your unique study needs and help you achieve better results.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
@@ -90,3 +90,4 @@ const HeroSection: React.FC = () => {
 };
 
 export default HeroSection;
+

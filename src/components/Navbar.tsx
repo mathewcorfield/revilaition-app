@@ -1,15 +1,15 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Brain } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Brain className="h-8 w-8 text-brand-purple" />
-          <span className="font-bold text-xl text-gray-900">StudySpark</span>
+          <GraduationCap className="h-8 w-8 text-brand-purple" />
+          <span className="font-bold text-xl text-gray-900">Revilaition</span>
         </div>
         
         <div className="hidden md:flex items-center gap-8">
@@ -33,3 +33,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

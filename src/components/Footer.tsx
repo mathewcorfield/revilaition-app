@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Brain, Mail, Github, Linkedin, Twitter } from 'lucide-react';
+import { GraduationCap, Mail, Github, Linkedin, Twitter } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -10,8 +9,8 @@ const Footer: React.FC = () => {
           {/* Logo and Description */}
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <Brain className="h-6 w-6 text-brand-purple" />
-              <span className="font-bold text-lg text-gray-900">StudySpark</span>
+              <GraduationCap className="h-6 w-6 text-brand-purple" />
+              <span className="font-bold text-lg text-gray-900">Revilaition</span>
             </div>
             <p className="text-gray-600 text-sm mb-4">
               AI-powered study assistant to help you learn smarter, not harder.
@@ -68,7 +67,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-gray-200 mt-10 pt-6 text-center text-sm text-gray-600">
-          <p>© {new Date().getFullYear()} StudySpark. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Revilaition. All rights reserved.</p>
         </div>
       </div>
     </footer>
