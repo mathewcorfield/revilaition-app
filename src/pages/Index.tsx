@@ -75,20 +75,20 @@ const Index = () => {
     {
         planName: "Free",
         price: "Free",
-        features: {['Basic Features', 'Up to 3 projects', 'Community Support']},
+        features: ['Basic Features', 'Up to 3 projects', 'Community Support'],
         buttonText: "Sign Up"
     },
     {
         planName: "Standard",
         price: "£9.99/month",
-        features: {['Everything in Free', 'Up to 10 projects', 'Priority Support', 'Access to Analytics']},
+        features: ['Everything in Free', 'Up to 10 projects', 'Priority Support', 'Access to Analytics'],
         buttonText: "Get Started",
         IsPopular: {true}
     },
     {
         planName: "Premium",
         price: "£25/month",
-        features: {['Everything in Standard', 'Unlimited Projects', 'Dedicated Support', 'Advanced Analytics']},
+        features: ['Everything in Standard', 'Unlimited Projects', 'Dedicated Support', 'Advanced Analytics'],
         buttonText: "Subscribe Now"
     }
   ];
