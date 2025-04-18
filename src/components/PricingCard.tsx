@@ -1,4 +1,5 @@
 import React from 'react';
+import { Star } from 'lucide-react';
 
 interface PricingCardProps {
   planName: string;
@@ -39,35 +40,4 @@ const PricingCard: React.FC<PricingCardProps> = ({
   );
 };
 
-const Pricing: React.FC = () => {
-  return (
-    <div className="grid md:grid-cols-3 gap-6">
-      {/* Free Plan */}
-      <PricingCard
-        planName="Free"
-        price="Free"
-        features={['Basic Features', 'Up to 3 projects', 'Community Support']}
-        buttonText="Sign Up"
-      />
-
-      {/* Standard Plan */}
-      <PricingCard
-        planName="Standard"
-        price="$9.99/month"
-        features={['Everything in Free', 'Up to 10 projects', 'Priority Support', 'Access to Analytics']}
-        buttonText="Get Started"
-      />
-
-      {/* Premium Plan */}
-      <PricingCard
-        planName="Premium"
-        price="$25/month"
-        features={['Everything in Standard', 'Unlimited Projects', 'Dedicated Support', 'Advanced Analytics']}
-        buttonText="Subscribe Now"
-        isPopular={true}
-      />
-    </div>
-  );
-};
-
-export default Pricing;
+export default PricingCard;
