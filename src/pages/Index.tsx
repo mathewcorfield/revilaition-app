@@ -83,7 +83,7 @@ const Index = () => {
         price: "£9.99/month",
         features: ['Everything in Free', 'Up to 10 projects', 'Priority Support', 'Access to Analytics'],
         buttonText: "Get Started",
-        IsPopular: {true}
+        IsPopular: true
     },
     {
         planName: "Premium",
