@@ -185,7 +185,7 @@ const Index = () => {
                   price={pricing.price}
                   features={pricing.features}
                   buttonText={pricing.buttonText}
-                  isPopular={testimonial.isPopular}
+                  isPopular={pricing.isPopular}
                 />
               ))}
             </div>
