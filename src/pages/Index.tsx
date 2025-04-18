@@ -71,6 +71,28 @@ const Index = () => {
     }
   ];
 
+  const pricing = [
+    {
+        planName: "Free",
+        price: "Free",
+        features: {['Basic Features', 'Up to 3 projects', 'Community Support']},
+        buttonText: "Sign Up"
+    },
+    {
+        planName: "Standard",
+        price: "£9.99/month",
+        features: {['Everything in Free', 'Up to 10 projects', 'Priority Support', 'Access to Analytics']},
+        buttonText: "Get Started",
+        IsPopular: {true}
+    },
+    {
+        planName: "Premium",
+        price: "£25/month",
+        features: {['Everything in Standard', 'Unlimited Projects', 'Dedicated Support', 'Advanced Analytics']},
+        buttonText: "Subscribe Now"
+    }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -139,6 +161,31 @@ const Index = () => {
                   author={testimonial.author}
                   role={testimonial.role}
                   rating={testimonial.rating}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Users Say</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Pricing Options - Further discounts available for early subscribers.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {pricing.map((pricing, index) => (
+                <PricingCard 
+                  key={index}
+                  planName={pricing.planName}
+                  price={pricing.price}
+                  features={pricing.features}
+                  buttonText={pricing.buttonText}
+                  isPopular={testimonial.isPopular}
                 />
               ))}
             </div>
