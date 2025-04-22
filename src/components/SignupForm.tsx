@@ -21,12 +21,17 @@ const SignupForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-        {import.meta.env.MODE !== 'development' && (
-    if (password !== confirmPassword) {
-      toast({ title: 'Error', description: 'Passwords do not match.', variant: 'destructive' });
-      return;
-    }
-)}
+    
+// ✅ Only check password confirmation in dev mode
+  if (import.meta.env.MODE === 'development' && password !== confirmPassword) {
+    toast({
+      title: 'Error',
+      description: 'Passwords do not match.',
+      variant: 'destructive',
+    });
+    setIsLoading(false);
+    return;
+  }
     setIsLoading(true);
 
     try {
