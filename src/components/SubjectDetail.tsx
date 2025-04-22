@@ -1,0 +1,193 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Check, Edit3, HelpCircle, Shuffle } from "lucide-react";
+import { Subject, Subtopic } from "@/types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface SubjectDetailProps {
+  subject: Subject;
+  onBack: () => void;
+  onGenerateQuestion: (subtopicId: string) => void;
+}
+
+const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenerateQuestion }) => {
+  const [subtopics, setSubtopics] = useState<Subtopic[]>(subject.subtopics);
+  const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
+  const { toast } = useToast();
+  
+  const handleLearntToggle = (subtopicId: string) => {
+    setSubtopics(subtopics.map(st => 
+      st.id === subtopicId 
+        ? { ...st, learnt: st.learnt === 1 ? 0 : 1 }
+        : st
+    ));
+  };
+  
+  const handleRevisedToggle = (subtopicId: string) => {
+    setSubtopics(subtopics.map(st => 
+      st.id === subtopicId 
+        ? { ...st, revised: st.revised === 1 ? 0 : 1 }
+        : st
+    ));
+  };
+
+  const handleGenerateRandomQuestion = () => {
+    // Get all subtopics
+    if (subtopics.length === 0) {
+      toast({
+        title: "No Subtopics Available",
+        description: "This subject has no subtopics to generate questions from."
+      });
+      return;
+    }
+    
+    // Select random subtopic
+    const randomIndex = Math.floor(Math.random() * subtopics.length);
+    const randomSubtopic = subtopics[randomIndex];
+    
+    setSelectedSubtopic(randomSubtopic);
+    onGenerateQuestion(randomSubtopic.id);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft size={18} />
+          </Button>
+          <div>
+            <h3 className="text-lg font-medium">{subject.name}</h3>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="uppercase">
+                {subject.examBoard}
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                {subtopics.length} subtopics
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button onClick={handleGenerateRandomQuestion} className="gap-2">
+              <Shuffle size={16} />
+              Random Question
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Practice Question</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              {selectedSubtopic && (
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium">Topic:</h4>
+                    <p>{selectedSubtopic.name}</p>
+                  </div>
+                  <div className="bg-accent p-4 rounded-md">
+                    <p className="italic text-sm">
+                      This would connect to the OpenAI API to generate a question about {selectedSubtopic.name}.
+                    </p>
+                  </div>
+                  <Button className="w-full">
+                    <HelpCircle size={16} className="mr-2" />
+                    Answer Question
+                  </Button>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+      
+      <div className="space-y-3">
+        {subtopics.map((subtopic) => (
+          <Card 
+            key={subtopic.id} 
+            className="p-4 flex items-center justify-between gap-4 hover:bg-accent/10 transition-colors"
+          >
+            <div className="flex-grow">
+              <h4 className="font-medium">{subtopic.name}</h4>
+              {subtopic.description && (
+                <p className="text-sm text-muted-foreground mt-1">{subtopic.description}</p>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button 
+                variant={subtopic.learnt ? "default" : "outline"} 
+                size="sm" 
+                className="gap-1 min-w-[90px]"
+                onClick={() => handleLearntToggle(subtopic.id)}
+              >
+                <Check size={16} /> 
+                {subtopic.learnt ? "Learnt" : "Mark Learnt"}
+              </Button>
+              
+              <Button 
+                variant={subtopic.revised ? "secondary" : "outline"} 
+                size="sm" 
+                className="gap-1 min-w-[90px]"
+                onClick={() => handleRevisedToggle(subtopic.id)}
+              >
+                <Edit3 size={16} /> 
+                {subtopic.revised ? "Revised" : "Mark Revised"}
+              </Button>
+              
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => {
+                      setSelectedSubtopic(subtopic);
+                      onGenerateQuestion(subtopic.id);
+                    }}
+                  >
+                    <HelpCircle size={18} />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Practice Question</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium">Topic:</h4>
+                        <p>{subtopic.name}</p>
+                      </div>
+                      <div className="bg-accent p-4 rounded-md">
+                        <p className="italic text-sm">
+                          This would connect to the OpenAI API to generate a question about {subtopic.name}.
+                        </p>
+                      </div>
+                      <Button className="w-full">
+                        <HelpCircle size={16} className="mr-2" />
+                        Answer Question
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </Card>
+        ))}
+        
+        {subtopics.length === 0 && (
+          <div className="text-center py-6 bg-muted/50 rounded-lg">
+            <p className="text-muted-foreground">No subtopics available for this subject</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SubjectDetail;
