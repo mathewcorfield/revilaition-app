@@ -28,10 +28,6 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events }) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold flex items-center">
-        <Calendar className="mr-2" size={20} />
-        Calendar Timeline
-      </h2>
       <div className="flex flex-nowrap overflow-x-auto gap-4 pb-4">
         {Object.entries(groupedEvents).map(([monthYear, monthEvents]) => (
           <Card key={monthYear} className="min-w-[300px] border-primary/20 shadow-sm">
