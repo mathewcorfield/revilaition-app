@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+_import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +50,7 @@ const SignupForm: React.FC = () => {
       // 2. Insert user into public "users" table
       const { error: insertError } = await supabase.from('users').insert([
         {
-          id: user.id,
+          id: user.user_id,
           full_name: fullName,
           role: role,
         },
