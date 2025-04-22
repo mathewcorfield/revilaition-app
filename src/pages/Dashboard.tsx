@@ -7,7 +7,7 @@ import SubjectTab from "@/components/SubjectTab";
 import PersonalityTab from "@/components/PersonalityTab";
 import MotivationTab from "@/components/MotivationTab";
 import Footer from '@/components/Footer';
-import { Book, User, Lightbulb } from "lucide-react";
+import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mockUser } from "@/data/mockData";
 
