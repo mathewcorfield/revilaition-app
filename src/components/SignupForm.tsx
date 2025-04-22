@@ -53,7 +53,6 @@ const SignupForm: React.FC = () => {
           id: user.id,
           full_name: fullName,
           role: role,
-          interested: isInterested,
         },
       ]);
 
