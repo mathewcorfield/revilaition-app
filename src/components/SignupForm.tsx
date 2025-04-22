@@ -50,7 +50,7 @@ const SignupForm: React.FC = () => {
       // 2. Insert user into public "users" table
       const { error: insertError } = await supabase.from('users').insert([
         {
-          id: user.user_id,
+          id: user.id,
           full_name: fullName,
           role: role,
         },
