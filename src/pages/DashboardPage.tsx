@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient'; // Your supabase client
-import ProtectedRoute from '@/components/ProtectedRoute';
-return (
-    <ProtectedRoute>
-      <div>
-        <h1>Dashboard Page</h1>
-        <p>Only accessible to authenticated users.</p>
-      </div>
-    </ProtectedRoute>
-  );
-
-// Assuming OpenAI integration is set up for revision questions
-import { getRevisionQuestion } from '../services/openaiService'; // A utility function to call OpenAI API
+import ProtectedRoute from '@/components/ProtectedRoute'; // Your ProtectedRoute component
+import { getRevisionQuestion } from '../services/openaiService'; // Service to fetch OpenAI revision questions
 
 const DashboardPage: React.FC = () => {
   const [subjects, setSubjects] = useState<string[]>([]); // List of subjects
@@ -39,7 +29,6 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     if (selectedSubject) {
       // Fetch the subtopics for the selected subject (this can be customized to your needs)
-      // Example of fetching subtopics
       const fetchSubtopics = async () => {
         const { data, error } = await supabase
           .from('subtopics')
@@ -67,73 +56,77 @@ const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <div className="milestones-bar">
-        <h3>Life Milestones</h3>
-        <div className="milestones">
-          {lifeMilestones.map((milestone, index) => (
-            <div key={index} className="milestone-item">
-              <p>{milestone}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="learning-hub">
-        <div className="left-sidebar">
-          {/* Subject, Personality, Motivation tabs */}
-          <h3>Learning Hub</h3>
-          <div className="tab-group">
-            <div className="tab" onClick={() => setSelectedSubject('biology')}>Subjects</div>
-            <div className="tab">Personality</div>
-            <div className="tab">Motivation</div>
-          </div>
-
-          {/* Render subjects (e.g., A-levels, GCSEs) */}
-          <div className="subject-list">
-            {subjects.map((subject, index) => (
-              <div
-                key={index}
-                className="subject-item"
-                onClick={() => setSelectedSubject(subject)}
-              >
-                {subject}
+    <ProtectedRoute>
+      <div className="dashboard-container">
+        {/* Life Milestones Bar */}
+        <div className="milestones-bar">
+          <h3>Life Milestones</h3>
+          <div className="milestones">
+            {lifeMilestones.map((milestone, index) => (
+              <div key={index} className="milestone-item">
+                <p>{milestone}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="right-content">
-          {/* Timeline */}
-          <div className="timeline">
-            <h3>Timeline</h3>
-            {/* This could be a calendar/timeline component */}
-            <p>Placeholder for a chronological timeline</p>
+        {/* Learning Hub */}
+        <div className="learning-hub">
+          <div className="left-sidebar">
+            <h3>Learning Hub</h3>
+            <div className="tab-group">
+              <div className="tab" onClick={() => setSelectedSubject('biology')}>Subjects</div>
+              <div className="tab">Personality</div>
+              <div className="tab">Motivation</div>
+            </div>
+
+            {/* Subject List */}
+            <div className="subject-list">
+              {subjects.map((subject, index) => (
+                <div
+                  key={index}
+                  className="subject-item"
+                  onClick={() => setSelectedSubject(subject)}
+                >
+                  {subject}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Show the subtopics of the selected subject */}
-          {selectedSubject && (
-            <div className="subtopics-section">
-              <h3>Subtopics for {selectedSubject}</h3>
-              <div className="subtopics-list">
-                {subtopics.map((subtopic, index) => (
-                  <div key={index} className="subtopic-item">
-                    <div className="subtopic-info">
-                      <p>{subtopic}</p>
-                      <p>Learnt: 0%</p> {/* Placeholder for "learnt" metric */}
-                      <p>Revised: 0%</p> {/* Placeholder for "revised" metric */}
-                    </div>
-                    <button onClick={() => handleGenerateRevisionQuestion(subtopic)}>
-                      Generate Revision Question
-                    </button>
-                  </div>
-                ))}
-              </div>
+          {/* Right Content (Timeline & Subtopics) */}
+          <div className="right-content">
+            {/* Timeline */}
+            <div className="timeline">
+              <h3>Timeline</h3>
+              {/* This could be a calendar/timeline component */}
+              <p>Placeholder for a chronological timeline</p>
             </div>
-          )}
+
+            {/* Show Subtopics for the Selected Subject */}
+            {selectedSubject && (
+              <div className="subtopics-section">
+                <h3>Subtopics for {selectedSubject}</h3>
+                <div className="subtopics-list">
+                  {subtopics.map((subtopic, index) => (
+                    <div key={index} className="subtopic-item">
+                      <div className="subtopic-info">
+                        <p>{subtopic}</p>
+                        <p>Learnt: 0%</p> {/* Placeholder for "learnt" metric */}
+                        <p>Revised: 0%</p> {/* Placeholder for "revised" metric */}
+                      </div>
+                      <button onClick={() => handleGenerateRevisionQuestion(subtopic)}>
+                        Generate Revision Question
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 };
 
