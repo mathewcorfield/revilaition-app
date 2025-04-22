@@ -1,108 +1,110 @@
-
 import React, { useState } from 'react';
-import { supabase } from '../lib/supabaseClient'
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { supabase } from '../lib/supabaseClient';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+
+type Role = 'student' | 'teacher' | 'parent';
 
 const SignupForm: React.FC = () => {
   const { toast } = useToast();
+
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [role, setRole] = useState<'student' | 'teacher' | 'parent'>('student');
+  const [fullName, setFullName] = useState('');
+  const [role, setRole] = useState<Role>('student');
   const [isInterested, setIsInterested] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-     if (password !== confirmPassword) {
-      setMessage("❌ Passwords don't match.")
-      return
+
+    if (password !== confirmPassword) {
+      toast({ title: 'Error', description: 'Passwords do not match.', variant: 'destructive' });
+      return;
     }
-     try {
-      // Sign up via Supabase Auth with password
+
+    setIsLoading(true);
+
+    try {
+      // 1. Sign up user via Supabase Auth
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-      })
+      });
 
       if (signUpError) {
-        setMessage(`❌ Signup failed: ${signUpError.message}`)
-        return
+        toast({ title: 'Signup Failed', description: signUpError.message, variant: 'destructive' });
+        return;
       }
 
-      const user = authData.user
+      const user = authData.user;
       if (!user) {
-        setMessage('❌ No user returned from signup.')
-        return
+        toast({ title: 'Error', description: 'No user returned from Supabase.' });
+        return;
       }
 
-      // Add user profile to 'users' table
+      // 2. Insert user into public "users" table
       const { error: insertError } = await supabase.from('users').insert([
         {
           id: user.id,
           full_name: fullName,
           role: role,
+          interested: isInterested,
         },
-      ])
+      ]);
 
       if (insertError) {
-        setMessage(`❌ Error saving profile: ${insertError.message}`)
-      } else {
-        setMessage('✅ Signup successful! Check your email to confirm your account.')
+        toast({ title: 'Database Error', description: insertError.message, variant: 'destructive' });
+        return;
       }
-    } catch (err) {
-      console.error(err)
-      setMessage('❌ Unexpected error occurred.')
-    }
-  }
-  
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+
       toast({
-        title: "Success!",
-        description: "You've been added to our waitlist. We'll be in touch soon!",
+        title: 'Success!',
+        description: 'Account created. Check your email to confirm.',
       });
-      
+
       // Reset form
       setEmail('');
-      setName('');
-      setRole('');
-      setIsInterested(false);
-    }, 1500);
+      setPassword('');
+      setConfirmPassword('');
+      setFullName('');
+      setRole('student');
+      setIsInterested(true);
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Unexpected Error', description: 'Please try again later.', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 md:p-8">
       <h3 className="text-2xl font-bold mb-6">Join our waitlist</h3>
       <p className="text-gray-600 mb-6">Be among the first to experience our AI-powered study assistant.</p>
-      
-      <form onSubmit={handleSubmit} className="space-y-5">
+
+      <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
-          <Input 
-            id="name" 
-            placeholder="John Doe" 
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+          <Input
+            id="name"
+            placeholder="John Doe"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             required
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="email">Email Address</Label>
-          <Input 
-            id="email" 
-            type="email" 
-            placeholder="you@example.com" 
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -111,48 +113,47 @@ const SignupForm: React.FC = () => {
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input 
-            id="password" 
-            type="password" 
-            placeholder="Password" 
+          <Input
+            id="password"
+            type="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={8}
             required
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input 
-            id="password" 
-            type="password" 
-            placeholder="Confirm Password" 
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="role">I am a</Label>
-          <select 
+          <select
             id="role"
             className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background rounded-md"
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => setRole(e.target.value as Role)}
             required
           >
-            <option value="" disabled>Select your role</option>
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
             <option value="parent">Parent</option>
-            <option value="other">Other</option>
           </select>
         </div>
-        
+
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="interest" 
+          <Checkbox
+            id="interest"
             checked={isInterested}
             onCheckedChange={(checked) => {
               if (typeof checked === 'boolean') {
@@ -164,16 +165,15 @@ const SignupForm: React.FC = () => {
             I'm interested in beta testing the platform
           </Label>
         </div>
-        
-        <Button 
-          type="submit" 
+
+        <Button
+          type="submit"
           className="w-full bg-brand-purple hover:bg-brand-darkPurple"
           disabled={isLoading}
         >
-          {isLoading ? "Submitting..." : "Join Waitlist"}
-          {message && <p>{message}</p>}
+          {isLoading ? 'Submitting...' : 'Join Waitlist'}
         </Button>
-        
+
         <p className="text-xs text-gray-500 text-center">
           By signing up, you agree to our Terms of Service and Privacy Policy.
         </p>
