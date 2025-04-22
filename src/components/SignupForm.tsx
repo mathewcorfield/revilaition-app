@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { supabase } from '../lib/supabaseClient'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,14 +11,59 @@ const SignupForm: React.FC = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState('');
-  const [isInterested, setIsInterested] = useState(false);
+  const [role, setRole] = useState<'student' | 'teacher' | 'parent'>('student');
+  const [isInterested, setIsInterested] = useState(true);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
+     if (password !== confirmPassword) {
+      setMessage("❌ Passwords don't match.")
+      return
+    }
+     try {
+      // Sign up via Supabase Auth with password
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (signUpError) {
+        setMessage(`❌ Signup failed: ${signUpError.message}`)
+        return
+      }
+
+      const user = authData.user
+      if (!user) {
+        setMessage('❌ No user returned from signup.')
+        return
+      }
+
+      // Add user profile to 'users' table
+      const { error: insertError } = await supabase.from('users').insert([
+        {
+          id: user.id,
+          full_name: fullName,
+          role: role,
+        },
+      ])
+
+      if (insertError) {
+        setMessage(`❌ Error saving profile: ${insertError.message}`)
+      } else {
+        setMessage('✅ Signup successful! Check your email to confirm your account.')
+      }
+    } catch (err) {
+      console.error(err)
+      setMessage('❌ Unexpected error occurred.')
+    }
+  }
+  
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
@@ -62,6 +108,30 @@ const SignupForm: React.FC = () => {
             required
           />
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input 
+            id="password" 
+            type="password" 
+            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input 
+            id="password" 
+            type="password" 
+            placeholder="Confirm Password" 
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
         
         <div className="space-y-2">
           <Label htmlFor="role">I am a</Label>
@@ -101,6 +171,7 @@ const SignupForm: React.FC = () => {
           disabled={isLoading}
         >
           {isLoading ? "Submitting..." : "Join Waitlist"}
+          {message && <p>{message}</p>}
         </Button>
         
         <p className="text-xs text-gray-500 text-center">
