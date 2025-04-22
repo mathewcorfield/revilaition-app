@@ -12,49 +12,38 @@ const DashboardPage: React.FC = () => {
   // Life milestones data (can be dynamic or static)
   const lifeMilestones = ['Start A-levels', 'Complete GCSEs', 'Graduate University'];
   
-const getCurrentUser = async () => {
-  const user = supabase.auth.user();
-  if (user) {
-    console.log('Current user:', user);
-  } else {
-    console.log('No user is signed in');
-  }
-};
-  
+  const getCurrentUser = async () => {
+    const user = supabase.auth.user();
+    if (user) {
+      console.log('Current user:', user);
+    } else {
+      console.log('No user is signed in');
+    }
+  };
+
   useEffect(() => {
-    // Fetch the user profile data from Supabase (subject list, etc.)
-    const fetchUserData = async () => {
-      const { data, error } = await supabase.from('users').select('*').eq('user_id', Id).single();
-      if (error) {
-        console.error('Error fetching user data:', error.message);
-        return;
-      }
-      if (!data) {
-  console.log('No user found');
-  return;
-}
-      setUserData(data);
-      setSubjects(data?.subjects || []); // Assuming `subjects` is an array in user data
+    // Placeholder data instead of Supabase queries
+    const mockUserData = {
+      id: 'user-123',
+      name: 'John Doe',
+      subjects: ['Mathematics', 'Biology', 'Chemistry'],
     };
-    fetchUserData();
+    setUserData(mockUserData);
+
+    const mockSubjects = ['Mathematics', 'Biology', 'Chemistry']; // Mock subjects
+    setSubjects(mockSubjects);
   }, []);
 
   useEffect(() => {
     if (selectedSubject) {
-      // Fetch the subtopics for the selected subject (this can be customized to your needs)
-      const fetchSubtopics = async () => {
-        const { data, error } = await supabase
-          .from('subtopics')
-          .select('*')
-          .eq('subject', selectedSubject);
-
-        if (error) {
-          console.error('Error fetching subtopics:', error.message);
-          return;
-        }
-        setSubtopics(data || []);
+      // Placeholder subtopics based on selected subject
+      const mockSubtopics: { [key: string]: string[] } = {
+        Mathematics: ['Algebra', 'Geometry', 'Calculus'],
+        Biology: ['Cell Biology', 'Genetics', 'Ecology'],
+        Chemistry: ['Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry'],
       };
-      fetchSubtopics();
+
+      setSubtopics(mockSubtopics[selectedSubject] || []);
     }
   }, [selectedSubject]);
 
@@ -88,7 +77,7 @@ const getCurrentUser = async () => {
           <div className="left-sidebar">
             <h3>Learning Hub</h3>
             <div className="tab-group">
-              <div className="tab" onClick={() => setSelectedSubject('biology')}>Subjects</div>
+              <div className="tab" onClick={() => setSelectedSubject('Mathematics')}>Subjects</div>
               <div className="tab">Personality</div>
               <div className="tab">Motivation</div>
             </div>
