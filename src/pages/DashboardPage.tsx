@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient'; // Your supabase client
+import ProtectedRoute from '@/components/ProtectedRoute';
+return (
+    <ProtectedRoute>
+      <div>
+        <h1>Dashboard Page</h1>
+        <p>Only accessible to authenticated users.</p>
+      </div>
+    </ProtectedRoute>
+  );
 
 // Assuming OpenAI integration is set up for revision questions
 import { getRevisionQuestion } from '../services/openaiService'; // A utility function to call OpenAI API
