@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import { Button, Input } from '@/components/ui'; // Assuming you're using these UI components
+import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/button";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
