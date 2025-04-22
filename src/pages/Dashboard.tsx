@@ -38,7 +38,8 @@ const Dashboard = () => {
       <header className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold text-primary">Learning Hub</h1>
+          <GraduationCap className="h-8 w-8 text-brand-purple" />
+          <span className="font-bold text-xl text-gray-900">Revilaition</span>
             <span className="text-muted-foreground">|</span>
             <span>{user.name}'s Dashboard</span>
           </div>
