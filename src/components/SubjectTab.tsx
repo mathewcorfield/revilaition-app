@@ -51,7 +51,12 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
       });
     }
   };
-
+  
+// Filter available subjects to exclude the ones that are already selected
+  const filteredSubjects = availableSubjects.filter(
+    subject => !selectedSubjects.includes(subject.id)
+  );
+  
   const handleGenerateQuestion = (subtopicId: string) => {
     // In a real app, this would connect to OpenAI API
     toast({
@@ -107,7 +112,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
                         <SelectValue placeholder="Choose a subject" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableSubjects.map(subject => (
+                        {filteredSubjects.map(subject => (
                           <SelectItem key={subject.id} value={subject.id}>
                             {subject.name}
                           </SelectItem>
