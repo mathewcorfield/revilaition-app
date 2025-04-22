@@ -115,151 +115,126 @@ export const mockUser: User = {
           description: "Rates of reaction and factors affecting rates",
           learnt: 0,
           revised: 0
+        },
+        {
+          id: "st5",
+          name: "Organic Chemistry",
+          description: "Hydrocarbons, alcohols, carboxylic acids",
+          learnt: 0,
+          revised: 0
         }
       ]
     }
   ],
   availableSubjects: [
     {
-      id: "as1",
+      id: "s2",
       name: "Biology",
       iconColor: "#2ecc71",
       subtopics: [
         {
-          id: "ast1",
+          id: "st6",
           name: "Cell Biology",
           description: "Cell structure, organelles and their functions"
         },
         {
-          id: "ast2",
+          id: "st7",
           name: "Photosynthesis",
           description: "Light-dependent and light-independent reactions"
         },
         {
-          id: "ast3",
+          id: "st8",
           name: "Cellular Respiration",
           description: "Aerobic and anaerobic respiration"
         },
         {
-          id: "ast4",
+          id: "st9",
           name: "Genetics",
           description: "DNA structure, replication and protein synthesis"
         },
         {
-          id: "ast5",
+          id: "st10",
           name: "Evolution",
           description: "Natural selection and speciation"
         }
       ]
     },
     {
-      id: "as2",
-      name: "Chemistry",
-      iconColor: "#e74c3c",
-      subtopics: [
-        {
-          id: "ast6",
-          name: "Atomic Structure",
-          description: "Electron configurations and orbital diagrams"
-        },
-        {
-          id: "ast7",
-          name: "Bonding",
-          description: "Ionic, covalent and metallic bonding"
-        },
-        {
-          id: "ast8",
-          name: "Periodicity",
-          description: "Trends in the periodic table"
-        },
-        {
-          id: "ast9",
-          name: "Reaction Kinetics",
-          description: "Rates of reaction and factors affecting rates"
-        },
-        {
-          id: "ast10",
-          name: "Organic Chemistry",
-          description: "Hydrocarbons, alcohols, carboxylic acids"
-        }
-      ]
-    },
-    {
-      id: "as3",
+      id: "s3",
       name: "Physics",
       iconColor: "#3498db",
       subtopics: [
         {
-          id: "ast11",
+          id: "st11",
           name: "Mechanics",
           description: "Forces, motion and energy"
         },
         {
-          id: "ast12",
+          id: "st12",
           name: "Electricity",
           description: "Circuits and electrical fields"
         },
         {
-          id: "ast13",
+          id: "st13",
           name: "Waves",
           description: "Properties of waves, sound and light"
         },
         {
-          id: "ast14",
+          id: "st14",
           name: "Nuclear Physics",
           description: "Radioactivity and nuclear energy"
         },
         {
-          id: "ast15",
+          id: "st15",
           name: "Quantum Physics",
           description: "Wave-particle duality and quantum phenomena"
         }
       ]
     },
     {
-      id: "as4",
+      id: "s4",
       name: "Mathematics",
       iconColor: "#9b59b6",
       subtopics: [
         {
-          id: "ast16",
+          id: "st16",
           name: "Pure Mathematics",
           description: "Algebra, functions and calculus"
         },
         {
-          id: "ast17",
+          id: "st17",
           name: "Statistics",
           description: "Probability distributions and hypothesis testing"
         },
         {
-          id: "ast18",
+          id: "st18",
           name: "Mechanics",
           description: "Mathematical modeling of physical systems"
         }
       ]
     },
     {
-      id: "as5",
+      id: "s5",
       name: "English Literature",
       iconColor: "#f39c12",
       subtopics: [
         {
-          id: "ast19",
+          id: "st19",
           name: "Poetry Analysis",
           description: "Techniques for analyzing and comparing poems"
         },
         {
-          id: "ast20",
+          id: "st20",
           name: "Shakespeare",
           description: "Analysis of Shakespeare's plays and sonnets"
         },
         {
-          id: "ast21",
+          id: "st21",
           name: "Modern Drama",
           description: "Analysis of 20th and 21st century plays"
         },
         {
-          id: "ast22",
+          id: "st22",
           name: "Prose Fiction",
           description: "Analysis of novels and short stories"
         }
