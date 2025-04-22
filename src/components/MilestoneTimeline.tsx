@@ -13,7 +13,6 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Life Milestones</h2>
       <div className="w-full relative">
         <div className="absolute top-[50%] left-0 right-0 h-0.5 bg-primary/20 -translate-y-1/2" />
         <div className="flex justify-between relative">
