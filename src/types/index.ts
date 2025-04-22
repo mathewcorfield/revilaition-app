@@ -43,4 +43,5 @@ export interface User {
   events: Event[];
   subjects: Subject[];
   availableSubjects: AvailableSubject[];
+  level: Level[];
 }
