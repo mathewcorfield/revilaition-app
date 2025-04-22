@@ -54,7 +54,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   
 // Filter available subjects to exclude the ones that are already selected
   const filteredSubjects = availableSubjects.filter(
-    subject => !selectedSubjects.includes(subject.id)
+    subject => !subjects.includes(subject.id)
   );
   
   const handleGenerateQuestion = (subtopicId: string) => {
