@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient'; // Your supabase client
-import ProtectedRoute from '@/components/ProtectedRoute'; // Your ProtectedRoute component
+import { supabase } from '../lib/supabaseClient'; 
+import ProtectedRoute from '@/components/ProtectedRoute'; 
 import { getRevisionQuestion } from '../services/openaiService'; // Service to fetch OpenAI revision questions
 
 const DashboardPage: React.FC = () => {
@@ -11,15 +11,28 @@ const DashboardPage: React.FC = () => {
 
   // Life milestones data (can be dynamic or static)
   const lifeMilestones = ['Start A-levels', 'Complete GCSEs', 'Graduate University'];
-
+  
+const getCurrentUser = async () => {
+  const user = supabase.auth.user();
+  if (user) {
+    console.log('Current user:', user);
+  } else {
+    console.log('No user is signed in');
+  }
+};
+  
   useEffect(() => {
     // Fetch the user profile data from Supabase (subject list, etc.)
     const fetchUserData = async () => {
-      const { data, error } = await supabase.from('users').select('*').single();
+      const { data, error } = await supabase.from('users').select('*').eq('user_id', Id).single();
       if (error) {
         console.error('Error fetching user data:', error.message);
         return;
       }
+      if (!data) {
+  console.log('No user found');
+  return;
+}
       setUserData(data);
       setSubjects(data?.subjects || []); // Assuming `subjects` is an array in user data
     };
