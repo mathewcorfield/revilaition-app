@@ -6,6 +6,7 @@ import CalendarTimeline from "@/components/CalendarTimeline";
 import SubjectTab from "@/components/SubjectTab";
 import PersonalityTab from "@/components/PersonalityTab";
 import MotivationTab from "@/components/MotivationTab";
+import Footer from '@/components/Footer';
 import { Book, User, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mockUser } from "@/data/mockData";
@@ -79,9 +80,7 @@ const Dashboard = () => {
           </Tabs>
         </div>
       </main>
-      <footer className="bg-accent py-4 text-center text-sm text-muted-foreground">
-        Learning Hub - Your personal education journey companion
-      </footer>
+      <Footer />
     </div>
   );
 };
