@@ -92,6 +92,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
       ) : (
         <>
           <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">My Subjects</h3>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="flex items-center gap-1">
