@@ -21,12 +21,12 @@ const SignupForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+        {import.meta.env.MODE !== 'development' && (
     if (password !== confirmPassword) {
       toast({ title: 'Error', description: 'Passwords do not match.', variant: 'destructive' });
       return;
     }
-
+)}
     setIsLoading(true);
 
     try {
@@ -46,7 +46,9 @@ const SignupForm: React.FC = () => {
         toast({ title: 'Error', description: 'No user returned from Supabase.' });
         return;
       }
-
+      
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session?.user) {
       // 2. Insert user into public "users" table
       const { error: insertError } = await supabase.from('users').insert([
         {
@@ -60,7 +62,8 @@ const SignupForm: React.FC = () => {
         toast({ title: 'Database Error', description: insertError.message, variant: 'destructive' });
         return;
       }
-
+  }
+});
       toast({
         title: 'Success!',
         description: 'Account created. Check your email to confirm.',
@@ -87,6 +90,7 @@ const SignupForm: React.FC = () => {
       <p className="text-gray-600 mb-6">Be among the first to experience our AI-powered study assistant.</p>
 
       <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
+        {import.meta.env.MODE !== 'development' && (
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
           <Input
@@ -97,7 +101,7 @@ const SignupForm: React.FC = () => {
             required
           />
         </div>
-
+)}
         <div className="space-y-2">
           <Label htmlFor="email">Email Address</Label>
           <Input
@@ -122,7 +126,7 @@ const SignupForm: React.FC = () => {
             required
           />
         </div>
-
+        {import.meta.env.MODE !== 'development' && (
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <Input
@@ -134,7 +138,7 @@ const SignupForm: React.FC = () => {
             required
           />
         </div>
-
+)}
         <div className="space-y-2">
           <Label htmlFor="role">I am a</Label>
           <select
