@@ -41,7 +41,7 @@ const Dashboard = () => {
           <GraduationCap className="h-8 w-8 text-brand-purple" />
           <span className="font-bold text-xl text-gray-900">Revilaition</span>
             <span className="text-muted-foreground">|</span>
-            <span>{user.name}'s Dashboard</span>
+            <span>{mockUser.name}'s Dashboard</span>
           </div>
           <Button variant="outline" onClick={handleLogout}>Log Out</Button>
         </div>
