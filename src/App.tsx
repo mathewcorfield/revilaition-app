@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from './pages/LoginPage'; 
 import DashboardPage from './pages/DashboardPage'; 
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const queryClient = new QueryClient();
@@ -23,9 +25,11 @@ const App = () => (
       <BrowserRouter basename={basePath}>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/loginv1" element={<LoginPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route
-          path="/dashboard"
+          path="/dashboardv1"
           element={
             <ProtectedRoute>
               <DashboardPage />
