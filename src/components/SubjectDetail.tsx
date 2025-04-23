@@ -11,7 +11,6 @@ import { getRevisionQuestion } from "../services/openaiService"; // Import the A
 interface SubjectDetailProps {
   subject: Subject;
   onBack: () => void;
-  onGenerateQuestion: (subtopicId: string) => void;
 }
 
 const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenerateQuestion }) => {
