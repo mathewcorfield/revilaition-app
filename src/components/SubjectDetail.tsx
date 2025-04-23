@@ -13,7 +13,7 @@ interface SubjectDetailProps {
   onBack: () => void;
 }
 
-const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenerateQuestion }) => {
+const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack }) => {
   const [subtopics, setSubtopics] = useState<Subtopic[]>(subject.subtopics);
   const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
   const [question, setQuestion] = useState<string | null>(null); // State to store the generated question
@@ -73,7 +73,7 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
     const randomSubtopic = subtopics[randomIndex];
     
     setSelectedSubtopic(randomSubtopic);
-    onGenerateQuestion(randomSubtopic.name);
+    handleGenerateQuestion(randomSubtopic.name);
   };
 
   return (
@@ -171,7 +171,7 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
                     size="icon"
                     onClick={() => {
                       setSelectedSubtopic(subtopic);
-                      onGenerateQuestion(subtopic.name);
+                      handleGenerateQuestion(subtopic.name);
                     }}
                   >
                     <HelpCircle size={18} />
