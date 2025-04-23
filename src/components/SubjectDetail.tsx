@@ -6,7 +6,7 @@ import { ArrowLeft, Check, Edit3, HelpCircle, Shuffle } from "lucide-react";
 import { Subject, Subtopic } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { getRevisionQuestion } from "../services/openaiService"; // Import the API call
+import { getRevisionQuestion, evaluateAnswer } from "../services/openaiService"; // Import the API call
 
 interface SubjectDetailProps {
   subject: Subject;
