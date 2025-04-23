@@ -9,7 +9,7 @@ import { defineConfig } from "vite";
      host: "::",
      port: 8080,
    },
-   base: '/study-spark-gather/',  // Set this to the name of your repository or subdirectory
+   base: '/',  
    build: {
     outDir: 'dist',  // Ensure the build output is placed in the 'dist' directory
   },
