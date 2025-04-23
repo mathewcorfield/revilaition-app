@@ -24,6 +24,7 @@ export interface Subject {
   id: string;
   name: string;
   examBoard: string;
+  level: string;
   iconColor: string;
   subtopics: Subtopic[];
 }
@@ -39,9 +40,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  level: string;
   milestones: Milestone[];
   events: Event[];
   subjects: Subject[];
   availableSubjects: AvailableSubject[];
-  level: string;
 }

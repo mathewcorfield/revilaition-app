@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Edit3, HelpCircle, Shuffle } from "lucide-react";
 import { Subject, Subtopic } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { getRevisionQuestion } from "../services/openaiService"; // Import the API call
 
 interface SubjectDetailProps {
   subject: Subject;
@@ -16,6 +17,8 @@ interface SubjectDetailProps {
 const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenerateQuestion }) => {
   const [subtopics, setSubtopics] = useState<Subtopic[]>(subject.subtopics);
   const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
+  const [question, setQuestion] = useState<string | null>(null); // State to store the generated question
+  const [loading, setLoading] = useState(false); // Loading state
   const { toast } = useToast();
   
   const handleLearntToggle = (subtopicId: string) => {
@@ -33,7 +36,29 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
         : st
     ));
   };
+  
+  // Function to handle question generation
+  const handleGenerateQuestion = async (subtopicName: string) => {
+    setLoading(true);
+    try {
+      // Make API call to get revision question based on subtopic
+      const response = await getRevisionQuestion(subtopicName, subject.examBoard, subject.level); // Call OpenAI API
 
+      setQuestion(response); // Set the question in the state
+      toast({
+        title: "Question Generated",
+        description: "Here is your question!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate question.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const handleGenerateRandomQuestion = () => {
     // Get all subtopics
     if (subtopics.length === 0) {
@@ -49,7 +74,7 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
     const randomSubtopic = subtopics[randomIndex];
     
     setSelectedSubtopic(randomSubtopic);
-    onGenerateQuestion(randomSubtopic.id);
+    onGenerateQuestion(randomSubtopic.name);
   };
 
   return (
@@ -90,11 +115,11 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
                     <h4 className="font-medium">Topic:</h4>
                     <p>{selectedSubtopic.name}</p>
                   </div>
-                  <div className="bg-accent p-4 rounded-md">
-                    <p className="italic text-sm">
-                      This would connect to the OpenAI API to generate a question about {selectedSubtopic.name}.
-                    </p>
-                  </div>
+                  {question && (
+                    <div className="bg-accent p-4 rounded-md">
+                      <p className="text-sm">{question}</p> {/* Display the generated question */}
+                    </div>
+                  )}
                   <Button className="w-full">
                     <HelpCircle size={16} className="mr-2" />
                     Answer Question
@@ -147,7 +172,7 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
                     size="icon"
                     onClick={() => {
                       setSelectedSubtopic(subtopic);
-                      onGenerateQuestion(subtopic.id);
+                      onGenerateQuestion(subtopic.name);
                     }}
                   >
                     <HelpCircle size={18} />
@@ -163,11 +188,11 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
                         <h4 className="font-medium">Topic:</h4>
                         <p>{subtopic.name}</p>
                       </div>
-                      <div className="bg-accent p-4 rounded-md">
-                        <p className="italic text-sm">
-                          This would connect to the OpenAI API to generate a question about {subtopic.name}.
-                        </p>
-                      </div>
+                      {question && (
+                    <div className="bg-accent p-4 rounded-md">
+                      <p className="text-sm">{question}</p> {/* Display the generated question */}
+                    </div>
+                  )}
                       <Button className="w-full">
                         <HelpCircle size={16} className="mr-2" />
                         Answer Question

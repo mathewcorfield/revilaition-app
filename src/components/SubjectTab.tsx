@@ -57,14 +57,6 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
     subject => !subjects.includes(subject.id)
   );
   
-  const handleGenerateQuestion = (subtopicId: string) => {
-    // In a real app, this would connect to OpenAI API
-    toast({
-      title: "Question Generated",
-      description: "This would connect to OpenAI API to generate a question about this subtopic.",
-    });
-  };
-
   const getLearntProgress = (subject: Subject) => {
     const totalSubtopics = subject.subtopics.length;
     if (totalSubtopics === 0) return 0;
