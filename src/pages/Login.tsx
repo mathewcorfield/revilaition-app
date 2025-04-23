@@ -1,8 +1,9 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,31 +12,76 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // This is a mockup - in a real app, you'd connect to Supabase/backend
-    if (isLogin) {
-      if (email && password) {
-        // Mock login
-        localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
-        toast({
-          title: "Login Successful",
-          description: "Welcome back to your Learning Hub!",
-        });
+  // Check if the user is already authenticated on component mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = supabase.auth.session();
+      if (session) {
+        // User is already authenticated, navigate to the dashboard
         navigate("/dashboard");
       }
+    };
+
+    checkSession();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (isLogin) {
+      // Check if user exists in Supabase and authenticate
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      setLoading(false);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+        });
+        return;
+      }
+
+      // Mock login with Supabase
+      localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to RevilAItion!",
+      });
+      navigate("/dashboard");
     } else {
+      // Sign up the user if not already registered
       if (email && password && name) {
-        // Mock signup
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+        setLoading(false);
+
+        if (error) {
+          toast({
+            title: "Error",
+            description: error.message,
+          });
+          return;
+        }
+
+        // Store user data and notify about successful signup
         localStorage.setItem("user", JSON.stringify({ email, name }));
         toast({
           title: "Account Created",
-          description: "Welcome to your Learning Hub!",
+          description: "Welcome to RevilAItion! Please log in.",
         });
-        navigate("/dashboard");
+        navigate("/login"); // Redirect to login page after signup
       }
     }
   };
@@ -45,7 +91,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <Card className="border-primary/20 shadow-lg animate-fade-in">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold text-primary">Learning Hub</CardTitle>
+            <CardTitle className="text-3xl font-bold text-primary">RevilAItion</CardTitle>
             <CardDescription>
               {isLogin ? "Sign in to access your learning journey" : "Create an account to start your learning journey"}
             </CardDescription>
@@ -55,39 +101,39 @@ const Login = () => {
               {!isLogin && (
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input 
-                    id="name" 
-                    type="text" 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    placeholder="John Doe" 
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
                     required={!isLogin}
                   />
                 </div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                  placeholder="john@example.com" 
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="john@example.com"
                   required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                {isLogin ? "Sign In" : "Sign Up"}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Sign In" : "Sign Up"}
               </Button>
             </form>
           </CardContent>
