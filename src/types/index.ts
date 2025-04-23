@@ -40,6 +40,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  level: string;
   milestones: Milestone[];
   events: Event[];
   subjects: Subject[];
