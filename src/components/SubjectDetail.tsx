@@ -17,6 +17,7 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack }) => {
   const [subtopics, setSubtopics] = useState<Subtopic[]>(subject.subtopics);
   const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
   const [question, setQuestion] = useState<string | null>(null); // State to store the generated question
+  const [answer, setAnswer] = useState<string>(''); // State to store the user's answer
   const [loading, setLoading] = useState(false); // Loading state
   const { toast } = useToast();
   
