@@ -79,7 +79,6 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
         <SubjectDetail 
           subject={selectedSubject} 
           onBack={() => setSelectedSubject(null)}
-          onGenerateQuestion={handleGenerateQuestion}
         />
       ) : (
         <>
