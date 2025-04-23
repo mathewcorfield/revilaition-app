@@ -40,15 +40,7 @@ const Login = () => {
   e.preventDefault();
   setLoading(true);
 
-  // Check session before proceeding with login
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  
-  if (session) {
-    console.log('User is already logged in:', session);
-    navigate("/dashboard"); // Redirect if already logged in
-    setLoading(false);
-    return;
-  }
+  // Remove redundant session check
 
   if (isLogin) {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -100,6 +92,7 @@ const Login = () => {
     }
   }
 };
+
 
 
   return (
