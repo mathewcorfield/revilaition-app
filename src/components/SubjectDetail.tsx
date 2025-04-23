@@ -57,6 +57,26 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack }) => {
       setLoading(false);
     }
   };
+
+  // Function to handle answer submission and evaluation
+  const handleAnswerSubmit = async () => {
+    if (!answer) {
+      toast({ title: "Error", description: "Please provide an answer to the question." });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Send the answer to OpenAI for evaluation based on a mark scheme
+      const evaluation = await evaluateAnswer(answer, question || "", subject.examBoard, subject.level);
+      toast({ title: "Answer Evaluated", description: `Feedback: ${evaluation}` });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to evaluate answer." });
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const handleGenerateRandomQuestion = () => {
     // Get all subtopics
@@ -119,9 +139,18 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack }) => {
                       <p className="text-sm">{question}</p> {/* Display the generated question */}
                     </div>
                   )}
-                  <Button className="w-full">
-                    <HelpCircle size={16} className="mr-2" />
-                    Answer Question
+                  <div>
+                    <h4 className="font-medium">Your Answer:</h4>
+                    <textarea
+                      className="w-full p-2 border rounded-md"
+                      rows={4}
+                      value={answer}
+                      onChange={(e) => setAnswer(e.target.value)}
+                      placeholder="Type your answer here..."
+                    />
+                  </div>
+                  <Button onClick={handleAnswerSubmit} className="w-full mt-4" disabled={loading}>
+                    {loading ? "Evaluating..." : "Submit Answer"}
                   </Button>
                 </div>
               )}
