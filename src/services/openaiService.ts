@@ -6,14 +6,16 @@ interface OpenAIResponse {
 }
 
 // The function to get a revision question
-export const getRevisionQuestion = async (subject: string): Promise<string> => {
+export const getRevisionQuestion = async (subject: string,
+                                         examboard: string,
+  level: string): Promise<string> => {
   const apiUrl = "https://gptchat-c49x.onrender.com/api/chat";
 
   try {
     const res = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: `Ask a revision question about ${subject}` }),
+      body: JSON.stringify({ prompt: `help me revise in a Q&A style for ${subject} at ${level} standard for ${examboard} exam board. Ask me an example exam question` }),
     });
 
     if (!res.ok) {
