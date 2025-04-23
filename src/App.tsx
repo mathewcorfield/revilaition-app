@@ -14,8 +14,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
-// Get base path from the import.meta.env or default to the one in vite.config.ts
-const basePath = '/study-spark-gather';
+// FUTURE STATE Get base path from the import.meta.env or default to the one in vite.config.ts
+const basePath = '/';
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
