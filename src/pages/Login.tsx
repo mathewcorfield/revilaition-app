@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -15,40 +15,67 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Create a ref to track if session check has been completed
-  const sessionChecked = useRef(false);
 
+  // Check if the user is already authenticated on component mount
   useEffect(() => {
-    const checkSession = async () => {
-      // Avoid re-triggering the session check if it's already been done
-      if (sessionChecked.current) return;
-      sessionChecked.current = true;
+  const checkSession = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
 
-      const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('Error fetching session:', error.message);
+    } else {
+      console.log('Session:', session);
+    }
 
-      if (error) {
-        console.error("Error fetching session:", error.message);
-      } else {
-        console.log("Session:", session);
-      }
+    if (session) {
+      // User is already authenticated, navigate to the dashboard
+      navigate("/dashboard");
+    }
+  };
 
-      if (session) {
-        // User is already authenticated, navigate to the dashboard
-        navigate("/dashboard");
-      }
-    };
-
-    checkSession();
-  }, [navigate]); // Only run the effect once, when the component mounts
+  checkSession();
+}, []); // Empty dependency array ensures this runs only once when the component mounts
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    // You can now remove the redundant session check here
-    if (isLogin) {
-      const { data, error } = await supabase.auth.signInWithPassword({
+  // Check session before proceeding with login
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  
+  if (session) {
+    console.log('User is already logged in:', session);
+    navigate("/dashboard"); // Redirect if already logged in
+    setLoading(false);
+    return;
+  }
+
+  if (isLogin) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+      });
+      return;
+    }
+
+    // Mock login with Supabase
+    localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
+    toast({
+      title: "Login Successful",
+      description: "Welcome back to RevilAItion!",
+    });
+    navigate("/dashboard");
+  } else {
+    if (email && password && name) {
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
@@ -63,40 +90,17 @@ const Login = () => {
         return;
       }
 
-      // Mock login with Supabase
-      localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
+      // Store user data and notify about successful signup
+      localStorage.setItem("user", JSON.stringify({ email, name }));
       toast({
-        title: "Login Successful",
-        description: "Welcome back to RevilAItion!",
+        title: "Account Created",
+        description: "Welcome to RevilAItion! Please log in.",
       });
-      navigate("/dashboard");
-    } else {
-      if (email && password && name) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-
-        setLoading(false);
-
-        if (error) {
-          toast({
-            title: "Error",
-            description: error.message,
-          });
-          return;
-        }
-
-        // Store user data and notify about successful signup
-        localStorage.setItem("user", JSON.stringify({ email, name }));
-        toast({
-          title: "Account Created",
-          description: "Welcome to RevilAItion! Please log in.",
-        });
-        navigate("/login"); // Redirect to login page after signup
-      }
+      navigate("/login"); // Redirect to login page after signup
     }
-  };
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
