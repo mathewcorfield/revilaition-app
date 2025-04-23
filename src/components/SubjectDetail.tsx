@@ -6,16 +6,12 @@ import { ArrowLeft, Check, Edit3, HelpCircle, Shuffle } from "lucide-react";
 import { Subject, Subtopic } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios"; // For making API requests
 
 interface SubjectDetailProps {
   subject: Subject;
   onBack: () => void;
   onGenerateQuestion: (subtopicId: string) => void;
 }
-
-const API_URL = "https://api.openai.com/v1/completions"; // OpenAI API endpoint
-const API_KEY = "YOUR_OPENAI_API_KEY"; // Replace with your actual OpenAI API key
 
 const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenerateQuestion }) => {
   const [subtopics, setSubtopics] = useState<Subtopic[]>(subject.subtopics);
