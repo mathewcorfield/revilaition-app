@@ -18,64 +18,24 @@ const Login = () => {
 
   // Check if the user is already authenticated on component mount
   useEffect(() => {
-  const checkSession = async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const checkSession = async () => {
+      const session = supabase.auth.session();
+      if (session) {
+        // User is already authenticated, navigate to the dashboard
+        navigate("/dashboard");
+      }
+    };
 
-    if (error) {
-      console.error('Error fetching session:', error.message);
-    } else {
-      console.log('Session:', session);
-    }
-
-    if (session) {
-      // User is already authenticated, navigate to the dashboard
-      navigate("/dashboard");
-    }
-  };
-
-  checkSession();
-}, []); // Empty dependency array ensures this runs only once when the component mounts
+    checkSession();
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  // Check session before proceeding with login
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  
-  if (session) {
-    console.log('User is already logged in:', session);
-    navigate("/dashboard"); // Redirect if already logged in
-    setLoading(false);
-    return;
-  }
-
-  if (isLogin) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    setLoading(false);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-      });
-      return;
-    }
-
-    // Mock login with Supabase
-    localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
-    toast({
-      title: "Login Successful",
-      description: "Welcome back to RevilAItion!",
-    });
-    navigate("/dashboard");
-  } else {
-    if (email && password && name) {
-      const { data, error } = await supabase.auth.signUp({
+    if (isLogin) {
+      // Check if user exists in Supabase and authenticate
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -90,17 +50,41 @@ const Login = () => {
         return;
       }
 
-      // Store user data and notify about successful signup
-      localStorage.setItem("user", JSON.stringify({ email, name }));
+      // Mock login with Supabase
+      localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
       toast({
-        title: "Account Created",
-        description: "Welcome to RevilAItion! Please log in.",
+        title: "Login Successful",
+        description: "Welcome back to RevilAItion!",
       });
-      navigate("/login"); // Redirect to login page after signup
-    }
-  }
-};
+      navigate("/dashboard");
+    } else {
+      // Sign up the user if not already registered
+      if (email && password && name) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
 
+        setLoading(false);
+
+        if (error) {
+          toast({
+            title: "Error",
+            description: error.message,
+          });
+          return;
+        }
+
+        // Store user data and notify about successful signup
+        localStorage.setItem("user", JSON.stringify({ email, name }));
+        toast({
+          title: "Account Created",
+          description: "Welcome to RevilAItion! Please log in.",
+        });
+        navigate("/login"); // Redirect to login page after signup
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
