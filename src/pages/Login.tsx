@@ -19,7 +19,14 @@ const Login = () => {
   // Check if the user is already authenticated on component mount
   useEffect(() => {
     const checkSession = async () => {
-      const session = supabase.auth.session();
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+if (error) {
+  console.error('Error fetching session:', error.message);
+} else {
+  console.log('Session:', session);
+}
+
       if (session) {
         // User is already authenticated, navigate to the dashboard
         navigate("/dashboard");
