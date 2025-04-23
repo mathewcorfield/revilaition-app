@@ -188,11 +188,11 @@ const SubjectDetail: React.FC<SubjectDetailProps> = ({ subject, onBack, onGenera
                         <h4 className="font-medium">Topic:</h4>
                         <p>{subtopic.name}</p>
                       </div>
-                      <div className="bg-accent p-4 rounded-md">
-                        <p className="italic text-sm">
-                          This would connect to the OpenAI API to generate a question about {subtopic.name}.
-                        </p>
-                      </div>
+                      {question && (
+                    <div className="bg-accent p-4 rounded-md">
+                      <p className="text-sm">{question}</p> {/* Display the generated question */}
+                    </div>
+                  )}
                       <Button className="w-full">
                         <HelpCircle size={16} className="mr-2" />
                         Answer Question
