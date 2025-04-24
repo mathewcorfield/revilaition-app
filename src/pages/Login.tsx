@@ -25,9 +25,9 @@ const Login = () => {
         if (session) {
           console.log('Session found');
           // Only navigate if on login page
-          if (window.location.pathname === "/login") {
+          if (window.location.pathname === "#/login") {
             console.log('Redirecting to dashboard');
-            navigate("/dashboard");
+            navigate("#/dashboard");
           }
         }
       } catch (error) {
