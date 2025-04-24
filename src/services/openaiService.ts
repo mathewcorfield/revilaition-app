@@ -15,7 +15,7 @@ export const getRevisionQuestion = async (subject: string,
     const res = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: `help me revise in a Q&A style for ${subject} at ${level} standard for ${examboard} exam board. Ask me an example exam question allow me to respond and then grade my answer against the mark scheme including showing me where i answered poorly. factor in that i need to use good exam techniques` }),
+      body: JSON.stringify({ prompt: Ask me an example exam question for ${subject} at ${level} standard for ${examboard} exam board to help me revise with good exam technique for an upcoming exam` }),
     });
 
     if (!res.ok) {
@@ -41,7 +41,7 @@ export const evaluateAnswer = async (answer:string,
     const res = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: `evaluate the ${answer} at ${level} standard for ${examboard} exam board against the mark scheme. this was the exam question ${question}  allow me to respond and then grade my answer against the mark scheme including showing me where i answered poorly. factor in that i need to use good exam techniques` }),
+      body: JSON.stringify({ prompt: `evaluate the ${answer} at ${level} standard for ${examboard} exam board against the mark scheme. this was the exam question ${question} including showing me where i answered poorly. factor in that i need to use good exam techniques` }),
     });
 
     if (!res.ok) {
