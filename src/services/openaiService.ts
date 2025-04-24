@@ -1,5 +1,3 @@
-// src/services/openaiService.ts
-
 // Define the structure of the OpenAI response
 interface OpenAIResponse {
   response: string;
@@ -72,3 +70,9 @@ export const sendPrompt = async (prompt: string): Promise<string> => {
     }
 
     const data: OpenAIResponse = await res.json();
+    return data.response;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Error sending prompt.");
+  }
+};
