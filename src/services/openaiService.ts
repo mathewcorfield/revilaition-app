@@ -12,7 +12,7 @@ export const getRevisionQuestion = async (subject: string, examboard: string, le
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        prompt: `Ask me an example exam question for ${subject} at ${level} standard for ${examboard} exam board to help me revise with good exam technique for an upcoming exam`,
+        prompt: `Ask me an example exam style question for ${subject} at ${level} standard based on past examples from the ${examboard} exam board to help me revise with good exam technique for an upcoming exam. include the expected marks in brackets after the question`,
       }),
     });
 
