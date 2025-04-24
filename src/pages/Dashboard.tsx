@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mockUser } from "@/data/mockData";
+import { supabase } from "@/lib/supabaseClient";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
