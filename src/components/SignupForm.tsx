@@ -39,6 +39,9 @@ const SignupForm: React.FC = () => {
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+    emailRedirectTo: 'https://revilaition.com/dashboard'
+  }
       });
 
       if (signUpError) {
