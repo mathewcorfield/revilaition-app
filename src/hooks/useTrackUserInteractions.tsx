@@ -14,7 +14,7 @@ const useTrackUserInteractions = () => {
     const handleClick = async (event: MouseEvent) => {
       const targetElement = event.target as HTMLElement;
       const action = "click";
-      const element = targetElement.tagName;
+      const element = targetElement.innerText;
       const userID = await getUserID(); // Retrieve user ID asynchronously
       console.log("User clicked on:", targetElement);
       await insertInteraction(action, element, new Date().toISOString(), userID);
@@ -24,7 +24,7 @@ const useTrackUserInteractions = () => {
     const handleSubmit = async (event: Event) => {
       const targetForm = event.target as HTMLFormElement;
       const action = "submit";
-      const element = targetForm.tagName;
+      const element = targetForm.innerText;
       const userID = await getUserID(); // Retrieve user ID asynchronously
       console.log("User submitted form:", targetForm);
       await insertInteraction(action, element, new Date().toISOString(), userID);
