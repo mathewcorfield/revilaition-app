@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,37 +14,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loadingSession, setLoadingSession] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const checkSession = async () => {
-      console.log('Checking session...');
-      try {
-        const { data: session } = await supabase.auth.getSession();
-        if (session) {
-          console.log('Session found');
-          // Only navigate if on login page
-          if (window.location.pathname === "#/login") {
-            console.log('Redirecting to dashboard');
-            navigate("#/dashboard");
-          }
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-      } finally {
-        setLoadingSession(false); // Ensure this is always called after session check
-      }
-    };
-
-    checkSession();
-  }, [navigate]);
-
-  if (loadingSession) {
-    return <div>Loading...</div>; // Loading state
-  }
-
+ // Call the hook to check if the user is logged in
+  useRedirectIfLoggedIn();
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -138,6 +114,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="john@example.com"
                   required
+                  autoComplete="email" // Adding autocomplete for email
                 />
               </div>
               <div className="space-y-2">
@@ -148,6 +125,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="current-password" // Adding autocomplete for password
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
