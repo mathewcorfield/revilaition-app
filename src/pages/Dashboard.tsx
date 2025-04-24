@@ -26,11 +26,18 @@ const Dashboard = () => {
   }, [navigate]);
 
 const handleLogout = async () => {
-  await supabase.auth.signOut();
-  localStorage.removeItem("user"); // Clear the user data stored in localStorage
-  navigate("/login"); // Redirect to the login page after logging out
+  try {
+    await supabase.auth.signOut();
+    localStorage.removeItem("user");
+    navigate("/login");
+  } catch (error) {
+    console.error("Logout error:", error);
+    toast({
+      title: "Logout Error",
+      description: "There was an issue logging out. Please try again.",
+    });
+  }
 };
-
 
   if (!user) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
