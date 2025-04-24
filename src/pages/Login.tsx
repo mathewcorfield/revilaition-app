@@ -16,12 +16,10 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if the user is already authenticated on component mount
   useEffect(() => {
     const checkSession = async () => {
-      const session = supabase.auth.session();
+      const { data: session } = await supabase.auth.getSession();
       if (session) {
-        // User is already authenticated, navigate to the dashboard
         navigate("/dashboard");
       }
     };
@@ -34,11 +32,7 @@ const Login = () => {
     setLoading(true);
 
     if (isLogin) {
-      // Check if user exists in Supabase and authenticate
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       setLoading(false);
 
@@ -50,7 +44,6 @@ const Login = () => {
         return;
       }
 
-      // Mock login with Supabase
       localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
       toast({
         title: "Login Successful",
@@ -58,14 +51,13 @@ const Login = () => {
       });
       navigate("/dashboard");
     } else {
-      // Sign up the user if not already registered
       if (email && password && name) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-    emailRedirectTo: 'https://revilaition.com/dashboard'
-  }
+            emailRedirectTo: 'https://revilaition.com/dashboard'
+          }
         });
 
         setLoading(false);
@@ -78,13 +70,12 @@ const Login = () => {
           return;
         }
 
-        // Store user data and notify about successful signup
         localStorage.setItem("user", JSON.stringify({ email, name }));
         toast({
           title: "Account Created",
           description: "Welcome to RevilAItion! Please log in.",
         });
-        navigate("/login"); // Redirect to login page after signup
+        navigate("/login");
       }
     }
   };
