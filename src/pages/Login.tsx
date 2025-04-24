@@ -13,6 +13,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingSession, setLoadingSession] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -20,46 +21,27 @@ const Login = () => {
     const checkSession = async () => {
       const { data: session } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        if (window.location.pathname !== "/dashboard") {
+          navigate("/dashboard");
+        }
       }
+      setLoadingSession(false);
     };
 
     checkSession();
   }, [navigate]);
 
+  if (loadingSession) {
+    return <div>Loading...</div>; // Loading state
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    if (isLogin) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-      setLoading(false);
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-        });
-        return;
-      }
-
-      localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to RevilAItion!",
-      });
-      navigate("/dashboard");
-    } else {
-      if (email && password && name) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: 'https://revilaition.com/dashboard'
-          }
-        });
-
+    try {
+      if (isLogin) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         setLoading(false);
 
         if (error) {
@@ -70,13 +52,46 @@ const Login = () => {
           return;
         }
 
-        localStorage.setItem("user", JSON.stringify({ email, name }));
+        localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
         toast({
-          title: "Account Created",
-          description: "Welcome to RevilAItion! Please log in.",
+          title: "Login Successful",
+          description: "Welcome back to RevilAItion!",
         });
-        navigate("/login");
+        navigate("/dashboard");
+      } else {
+        if (email && password && name) {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: "https://revilaition.com/dashboard",
+            },
+          });
+
+          setLoading(false);
+
+          if (error) {
+            toast({
+              title: "Error",
+              description: error.message,
+            });
+            return;
+          }
+
+          localStorage.setItem("user", JSON.stringify({ email, name }));
+          toast({
+            title: "Account Created",
+            description: "Welcome to RevilAItion! Please log in.",
+          });
+          navigate("/login");
+        }
       }
+    } catch (error) {
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
     }
   };
 
