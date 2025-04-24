@@ -24,10 +24,12 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+  localStorage.removeItem("user"); // Clear the user data stored in localStorage
+  navigate("/login"); // Redirect to the login page after logging out
+};
+
 
   if (!user) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
