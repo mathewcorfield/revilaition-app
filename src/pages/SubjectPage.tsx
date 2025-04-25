@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import {
   getRevisionQuestion,
   evaluateAnswer
@@ -34,7 +33,6 @@ const SubjectPage: React.FC = () => {
   const [question, setQuestion] = useState<string | null>(null);
   const [answer, setAnswer] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleLearntToggle = (subtopicId: string) => {
     setSubtopics(subtopics.map(st => 
