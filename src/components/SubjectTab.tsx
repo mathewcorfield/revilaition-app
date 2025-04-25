@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Book, Check, Edit3 } from "lucide-react";
@@ -15,6 +16,8 @@ interface SubjectTabProps {
   subjects: Subject[];
   availableSubjects: AvailableSubject[];
 }
+
+const navigate = useNavigate();
 
 const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects }) => {
   const [subjects, setSubjects] = useState<Subject[]>(initialSubjects);
@@ -147,7 +150,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
                 key={subject.id} 
                 className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
                 style={{ borderLeftColor: subject.iconColor }}
-                onClick={() => setSelectedSubject(subject)}
+                onClick={() => navigate(`/subject/${subject.id}`)}
               >
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
