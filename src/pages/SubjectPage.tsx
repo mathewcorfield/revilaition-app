@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,11 +17,17 @@ import {
   getRevisionQuestion,
   evaluateAnswer
 } from "@/services/openaiService";
+import { mockUser } from "@/data/mockData";
 
 const SubjectPage: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { subject } = location.state as { subject: Subject };
+  const { id } = useParams(); // Get subject id from URL
+  const subject = mockUser.subjects.find((subject) => subject.id === id); // Find the subject by ID from mock data
+
+  // If subject not found, show error message
+  if (!subject) {
+    return <div className="text-center mt-8">Subject not found</div>;
+  }
 
   const [subtopics, setSubtopics] = useState<Subtopic[]>(subject.subtopics);
   const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
