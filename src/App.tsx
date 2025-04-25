@@ -27,7 +27,7 @@ const App = () => {
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/subject" element={<SubjectPage />} />
+          <Route path="/subject/:id" element={<SubjectPage />} />
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
