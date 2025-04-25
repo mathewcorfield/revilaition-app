@@ -7,7 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import DashboardPage from "./pages/DashboardPage";
+import SubjectPage from "@/pages/SubjectPage";
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
 
@@ -27,17 +27,7 @@ const App = () => {
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          
-          {/* Protected route for dashboardv1 */}
-          <Route
-            path="/dashboardv1"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          
+          <Route path="/subject/:id" element={<SubjectPage />} />
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
