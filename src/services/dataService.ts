@@ -34,15 +34,16 @@ export const insertInteraction = async (
 };
 
 export const getUserInfo = async (userId: string) => {
-  const { data, error } = await supabase
-    .from("users")
-    .select(`
-      id,
-      full_name,
-      email
-    `)
-    .eq("id", userId)
-    .maybeSingle();
+const { data, error } = await supabase
+  .from("users")
+  .select(`
+    id, 
+    full_name, 
+    email, 
+    level:current_level(name)  // Join on the 'current_level' column to get the 'name' of the level
+  `)
+  .eq("id", userId)
+  .maybeSingle();
 
   if (error) {
     console.error("Failed to fetch user info:", error);
@@ -51,7 +52,24 @@ export const getUserInfo = async (userId: string) => {
 
   if (!data) {
     console.warn("No user found with ID:", userId);
-    return null;
+
+    // Fallback to localStorage for name and email if present
+    const name = localStorage.getItem("name");
+    const email = localStorage.getItem("email");
+
+    // If no name or email are stored in localStorage, return default user info
+    if (!name || !email) {
+      console.warn("No name or email found in localStorage.");
+      return { id: userId, name: "", email: "", level: "" };
+    }
+
+    // Return the fallback data from localStorage
+    return {
+      id: userId,
+      name: name,
+      email: email,
+      level: "", // Level is not available from localStorage, so set it as empty
+    };
   }
 
   return {
