@@ -1,30 +1,48 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getUserData } from "@/hooks/useUserData";
 import { User } from "@/types";
 
-const UserContext = createContext<{
+type UserContextType = {
   user: User | null;
   loading: boolean;
-}>({ user: null, loading: true });
+};
 
-export const UserProvider = ({ children }) => {
+const UserContext = createContext<UserContextType | undefined>(undefined);
+
+UserContext.displayName = "UserContext";
+
+export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch the user data after the component mounts
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+      console.log("[UserContext] Fetching user...");
 
-      const fullData = await useUserData(data.user.id);  // Changed this line
-      setUser(fullData);
-      setLoading(false);
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) {
+          console.warn("[UserContext] No user found or error occurred:", error);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        const fullData = await getUserData(data.user.id);
+        console.log("[UserContext] Full user data loaded:", fullData);
+        setUser(fullData);
+      } catch (err) {
+        console.error("[UserContext] Unexpected error:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
@@ -37,4 +55,10 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error("useUser must be used within a <UserProvider>");
+  }
+  return context;
+};
