@@ -151,7 +151,10 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
                 key={subject.id} 
                 className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
                 style={{ borderLeftColor: subject.iconColor }}
-                onClick={() => navigate(`/subject/${subject.id}`)}
+                  onClick={() => {
+                      console.log(`Navigating to /subject/${subject.id}`);
+                      navigate(`/subject/${subject.id}`);
+                    }}
               >
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
