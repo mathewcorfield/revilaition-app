@@ -9,6 +9,7 @@ export const getUserData = async (userId: string): Promise<User | null> => {
     getUserEvents(userId),
     getUserSubjects(userId),
   ]);
+  console.log(info, events, subjects);
 
   if (!info) return null;
 
