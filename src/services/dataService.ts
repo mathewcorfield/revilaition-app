@@ -38,10 +38,15 @@ export const getUserInfo = async (userId: string) => {
     .from("users")
     .select("id, full_name, email, level(name)")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("Failed to fetch user info:", error);
+    return null;
+  }
+
+  if (!data) {
+    console.warn("No user found with ID:", userId);
     return null;
   }
 
