@@ -9,14 +9,13 @@ export const getUserData = async (userId: string): Promise<User | null> => {
     getUserEvents(userId),
     getUserSubjects(userId),
   ]);
-  console.log(info, events, subjects);
 
   if (!info) return null;
 
   return {
     ...info,
-    milestones: events.filter(e => e.type === "milestone"),
-    events: events.filter(e => e.type === "event"),
+    milestones: events.filter(e => e.type === "Milestone"),
+    events: events.filter(e => e.type === "Event"),
     subjects,
   };
 };
