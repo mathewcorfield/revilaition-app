@@ -9,21 +9,28 @@ import MotivationTab from "@/components/MotivationTab";
 import Footer from '@/components/Footer';
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { mockUser } from "@/data/mockData";
 import { supabase } from "@/lib/supabaseClient";
+import { useUser } from "@/context/UserContext";
 
 const Dashboard = () => {
-  const [user, setUser] = useState<any>(null);
+  const { user, loading } = useUser();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
+useEffect(() => {
+    if (!loading && !user) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [loading, user, navigate]);
+
+if (loading) {
+  return (
+    <div className="flex items-center justify-center h-screen text-xl font-medium">
+      Loading...
+    </div>
+  );
+}
+
+  if (!user) return null;
 
 const handleLogout = async () => {
   try {
@@ -39,10 +46,6 @@ const handleLogout = async () => {
   }
 };
 
-  if (!user) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b bg-white shadow-sm">
@@ -51,17 +54,17 @@ const handleLogout = async () => {
           <GraduationCap className="h-8 w-8 text-brand-purple" />
           <span className="font-bold text-xl text-gray-900">Revilaition</span>
             <span className="text-muted-foreground">|</span>
-            <span>{mockUser.name}'s Dashboard</span>
+            <span>{user?.name ?? "Your"}'s Dashboard</span>
           </div>
           <Button variant="outline" onClick={handleLogout}>Log Out</Button>
         </div>
       </header>
       <main className="container mx-auto p-4 flex-grow">
         <div className="mb-8">
-          <MilestoneTimeline milestones={mockUser.milestones} />
+          <MilestoneTimeline milestones={user.milestones} />
         </div>
         <div className="mb-8">
-          <CalendarTimeline events={mockUser.events} />
+          <CalendarTimeline events={user.events} />
         </div>
         <div className="border rounded-lg shadow-sm bg-white p-4">
           <Tabs defaultValue="subjects" className="w-full">
@@ -78,8 +81,8 @@ const handleLogout = async () => {
             </TabsList>
             <TabsContent value="subjects">
               <SubjectTab 
-                subjects={mockUser.subjects} 
-                availableSubjects={mockUser.availableSubjects} 
+                subjects={user.subjects} 
+                availableSubjects={user.availableSubjects} 
               />
             </TabsContent>
             <TabsContent value="personality">
