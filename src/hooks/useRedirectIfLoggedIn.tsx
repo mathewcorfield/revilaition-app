@@ -1,27 +1,40 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient"; // Adjust the import path based on your project structure
+import { supabase } from "@/lib/supabaseClient";
 
 const useRedirectIfLoggedIn = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkSession = async () => {
-      console.log('Checking session...');
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          // If session is found, navigate to the dashboard
-           console.log('Session found');
-          console.log('Redirecting to dashboard');
-          navigate("/dashboard");
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
+    const checkAuth = async () => {
+      console.log("Checking user and session...");
+
+      // First, get the session to check for expiration
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
+        console.warn("Session expired, signing out.");
+        await supabase.auth.signOut();
+        return;
+      }
+
+      // Now, get the actual user
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("Error checking user:", error);
+        return;
+      }
+
+      if (user) {
+        console.log("Valid user found. Redirecting to dashboard...");
+        navigate("/dashboard");
+      } else {
+        console.log("No valid user found. Stay on login page.");
       }
     };
 
-    checkSession();
+    checkAuth();
   }, [navigate]);
 };
 
