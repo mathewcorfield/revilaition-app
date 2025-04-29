@@ -13,14 +13,13 @@ import SubjectDetail from "./SubjectDetail";
 import { useToast } from "@/hooks/use-toast";
 
 interface SubjectTabProps {
-  subjects: Subject[];
-  availableSubjects: AvailableSubject[];
+  subjects: Subject[] | null;
+  availableSubjects: AvailableSubject[] | null;
 }
 
-const navigate = useNavigate();
-
 const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects }) => {
-  const [subjects, setSubjects] = useState<Subject[]>(initialSubjects);
+  // Default to empty arrays if null
+  const [subjects, setSubjects] = useState<Subject[]>(initialSubjects || []);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedSubjectToAdd, setSelectedSubjectToAdd] = useState<string>("");
@@ -28,6 +27,8 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   const { toast } = useToast();
 
   const handleAddSubject = () => {
+    if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
+
     const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
     
     if (subjectToAdd && selectedExamBoard) {
@@ -54,9 +55,9 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
       });
     }
   };
-  
-// Filter available subjects to exclude the ones that are already selected
-  const filteredSubjects = availableSubjects.filter(
+
+  // Filter available subjects to exclude the ones that are already selected
+  const filteredSubjects = (availableSubjects || []).filter(
     subject => !subjects.includes(subject.id)
   );
   
