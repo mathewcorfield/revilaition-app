@@ -36,20 +36,6 @@ export const insertInteraction = async (
 export const getUserInfo = async (userId: string) => {
 const { data, error } = await supabase
   .from("users")
-  .select()
-if (error) {
-    console.error("Failed to fetch user info:", error);
-    return null;
-  }
-
-  console.log("Fetched user info:", data); // Debugging log
-
-  return data;
-};
-
-export const getUserInfo2 = async (userId: string) => {
-const { data, error } = await supabase
-  .from("users")
   .select(`
     id, 
     full_name, 
