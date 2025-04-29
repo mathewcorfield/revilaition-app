@@ -13,16 +13,24 @@ import useTrackUserInteractions from "@/hooks/useTrackUserInteractions";
 import { UserProvider } from "@/context/UserContext";
 
 const App = () => {
-  console.log("App Component Loaded");
+  console.log("App Component Loaded2");
 
   useTrackUserInteractions(); // Tracking user interactions
 
   return (
-    <UserProvider>
-      <div>
-        <h1>App is loading</h1>
-      </div>
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster /> {/* Make sure you only need this one */}
+        <Sonner />  {/* Use this only if it's necessary */}
+          <UserProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </UserProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 
