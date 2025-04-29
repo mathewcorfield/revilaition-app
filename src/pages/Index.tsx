@@ -4,7 +4,6 @@ import HeroSection from '@/components/HeroSection';
 import FeatureCard from '@/components/FeatureCard';
 import PricingCard from '@/components/PricingCard';
 import TestimonialCard from '@/components/TestimonialCard';
-import SignupForm from '@/components/SignupForm';
 import Footer from '@/components/Footer';
 import { 
   Brain, 
@@ -52,21 +51,21 @@ const Index = () => {
 
   const testimonials = [
     {
-      quote: "StudySpark transformed my study routine. I'm learning so much more efficiently now and seeing better results in my exams.",
+      quote: "Revilaition transformed my study routine. I'm learning so much more efficiently now and seeing better results in my exams.",
       author: "Sarah J.",
-      role: "University Student",
+      role: "GCSE Student",
       rating: 5
     },
     {
-      quote: "As a teacher, I recommend StudySpark to all my students. It's like having a personal tutor available 24/7.",
+      quote: "As a teacher, I recommend Revilaition to all my students. It's like having a personal tutor available 24/7.",
       author: "Michael T.",
-      role: "High School Teacher",
+      role: "Secondary School Teacher",
       rating: 5
     },
     {
-      quote: "The personalized study plans are amazing! StudySpark helped me organize my revision and focus on areas I was struggling with.",
+      quote: "The personalized study plans are amazing! Revilaition helped me organize my revision and focus on areas I was struggling with.",
       author: "Amy L.",
-      role: "High School Student",
+      role: "Sixth Form Student",
       rating: 4
     }
   ];
@@ -75,20 +74,20 @@ const Index = () => {
     {
         planName: "Free",
         price: "Free",
-        features: ['Basic Features', 'Up to 3 projects', 'Community Support'],
+        features: ['Revision Planner', 'Up to 5 AI prompts a month', 'Community Support'],
         buttonText: "Sign Up"
     },
     {
         planName: "Standard",
         price: "£9.99/month",
-        features: ['Everything in Free', 'Up to 10 projects', 'Priority Support', 'Access to Analytics'],
+        features: ['Everything in Free', 'Up to 50 AI prompts a month', 'Priority Support', 'Personality tailored AI'],
         buttonText: "Get Started",
         isPopular: true
     },
     {
         planName: "Premium",
         price: "£25/month",
-        features: ['Everything in Standard', 'Unlimited Projects', 'Dedicated Support', 'Advanced Analytics'],
+        features: ['Everything in Standard', 'Unlimited AI prompts', 'Dedicated Support', 'AI tuned to your desired outcomes'],
         buttonText: "Subscribe Now"
     }
   ];
@@ -124,7 +123,7 @@ const Index = () => {
         </section>
         
         {/* Stats Section */}
-        <section className="py-16 bg-gradient-to-r from-brand-purple/90 to-brand-lightPurple/90 text-white">
+        <section id="stats" className="py-16 bg-gradient-to-r from-brand-purple/90 to-brand-lightPurple/90 text-white">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
@@ -171,7 +170,7 @@ const Index = () => {
         <section id="pricing" className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Users Say</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Pricing</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Pricing Options - Further discounts available for early subscribers.
               </p>
@@ -193,10 +192,10 @@ const Index = () => {
         </section>
         
         {/* How It Works Section */}
-        <section className="py-20 bg-gray-50">
+        <section id="howitworks" className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">How StudySpark Works</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">How RevilAItion Works</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Our simple process helps you transform your study habits and achieve better results.
               </p>
@@ -220,22 +219,6 @@ const Index = () => {
                 <h3 className="text-xl font-semibold mb-3">Study Smarter</h3>
                 <p className="text-gray-600">Use our AI tools to learn more effectively and track your progress.</p>
               </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Call to Action / Sign Up Form */}
-        <section id="signup" className="py-20 bg-hero-pattern">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Studies?</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Join our waitlist today and be among the first to experience the future of learning.
-              </p>
-            </div>
-            
-            <div className="max-w-lg mx-auto">
-              <SignupForm />
             </div>
           </div>
         </section>
