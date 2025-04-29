@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch the user data after the component mounts
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -21,7 +22,7 @@ export const UserProvider = ({ children }) => {
         return;
       }
 
-      const fullData = await useUserData(data.user.id);
+      const fullData = await useUserData(data.user.id);  // Changed this line
       setUser(fullData);
       setLoading(false);
     };
