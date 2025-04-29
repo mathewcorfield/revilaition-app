@@ -6,7 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { getUserData } from "@/hooks/useUserData";
+import { getUserData } from "@/hooks/getUserData";
 import { User } from "@/types";
 
 type UserContextType = {
