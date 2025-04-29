@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const Navbar: React.FC = () => {
   return (
@@ -16,13 +16,15 @@ const Navbar: React.FC = () => {
           </Link>
         
         <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-gray-700 hover:text-brand-purple transition-colors">Features</a>
-          <a href="#testimonials" className="text-gray-700 hover:text-brand-purple transition-colors">Testimonials</a>
-          <a href="#pricing" className="text-gray-700 hover:text-brand-purple transition-colors">Pricing</a>
+          <HashLink smooth to="/#features" className="text-gray-700 hover:text-brand-purple transition-colors">Features</HashLink>
+          <HashLink smooth to="/#stats" className="text-gray-700 hover:text-brand-purple transition-colors">Statistics</HashLink>
+          <HashLink smooth to="/#testimonials" className="text-gray-700 hover:text-brand-purple transition-colors">Testimonials</HashLink>
+          <HashLink smooth to="/#howitworks" className="text-gray-700 hover:text-brand-purple transition-colors">How It Works</HashLink>
+          <HashLink smooth to="/#pricing" className="text-gray-700 hover:text-brand-purple transition-colors">Pricing</HashLink>
         </div>
         
         <Button variant="outline" className="hidden md:flex border-brand-purple text-brand-purple hover:bg-brand-purple hover:text-white">
-          <a href="#signup">Join waitlist</a>
+          <a href="/login">Join waitlist</a>
         </Button>
         
         <Button className="md:hidden" variant="ghost" size="icon">
