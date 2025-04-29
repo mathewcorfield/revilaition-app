@@ -44,7 +44,9 @@ const { data, error } = await supabase
   `)
   .eq("id", userId)
   .maybeSingle();
-
+  
+  console.log("User Data:", data, userId);
+  
   if (error) {
     console.error("Failed to fetch user info:", error);
     return null;
@@ -85,7 +87,7 @@ export const getUserEvents = async (userId: string) => {
     .from("user_events")
     .select("event_id, event_date, events(title, description, type)")
     .eq("user_id", userId);
-
+  console.log("Event Data:", data, userId);
   if (error) {
     console.error("Failed to fetch events:", error);
     return [];
@@ -128,7 +130,7 @@ export const getUserSubjects = async (userId: string) => {
       )
     `)
     .eq("user_id", userId);
-
+  console.log("Subject Data:", data, userId);
   if (error) {
     console.error("Failed to fetch subjects:", error);
     return [];
