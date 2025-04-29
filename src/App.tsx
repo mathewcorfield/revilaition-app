@@ -1,8 +1,12 @@
+import { UserProvider } from "@/context/UserContext";
+
 const App = () => {
   return (
-    <div>
-      <h1>App is loading</h1>
-    </div>
+    <UserProvider>
+      <div>
+        <h1>App is loading</h1>
+      </div>
+    </UserProvider>
   );
 };
 
