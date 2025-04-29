@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import SubjectPage from "@/pages/SubjectPage";
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
+import { UserProvider } from "@/context/UserContext";
 
 const queryClient = new QueryClient();
 
@@ -22,15 +23,16 @@ const App = () => {
       <TooltipProvider>
         <Toaster /> {/* Make sure you only need this one */}
         <Sonner />  {/* Use this only if it's necessary; otherwise, remove it */}
-        
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/subject/:id" element={<SubjectPage />} />
-          {/* Catch-all route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <UserProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/subject/:id" element={<SubjectPage />} />
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </UserProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
