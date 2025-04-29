@@ -12,6 +12,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
 import { UserProvider } from "@/context/UserContext";
 
+const queryClient = new QueryClient();
+
 const App = () => {
   console.log("App Component Loaded2");
 
