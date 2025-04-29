@@ -28,8 +28,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/subject/:id" element={<SubjectPage />} />
+            //<Route path="/dashboard" element={<Dashboard />} />
+            //<Route path="/subject/:id" element={<SubjectPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </UserProvider>
