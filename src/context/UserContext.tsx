@@ -25,8 +25,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
   const fetchUser = async () => {
-    console.log("[UserContext] Fetching user...");
-
     try {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user) {
@@ -35,9 +33,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
         return;
       }
-
       const fullData = await getUserData(data.user.id);
-      console.log("[UserContext] Full user data loaded:", fullData);
 
       // If required fields are empty, fall back to mock user
       if (!fullData.name || fullData.milestones.length === 0 || fullData.subjects.length === 0) {
