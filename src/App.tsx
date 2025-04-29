@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import SubjectPage from "@/pages/SubjectPage";
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
-import { UserProvider } from "@/context/UserContext";
+//import { UserProvider } from "@/context/UserContext";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +24,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster /> {/* Make sure you only need this one */}
         <Sonner />  {/* Use this only if it's necessary */}
-        <UserProvider>
+        //<UserProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -32,7 +32,7 @@ const App = () => {
             //<Route path="/subject/:id" element={<SubjectPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </UserProvider>
+        //</UserProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
