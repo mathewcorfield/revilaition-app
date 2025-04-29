@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
         </div>
         
         <Button variant="outline" className="hidden md:flex border-brand-purple text-brand-purple hover:bg-brand-purple hover:text-white">
-          <a href="/login">Join waitlist</a>
+          <Link to="/login">Join waitlist</Link>
         </Button>
         
         <Button className="md:hidden" variant="ghost" size="icon">
