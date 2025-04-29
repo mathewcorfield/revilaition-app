@@ -35,13 +35,13 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 if (rootElement) {
   console.log("Before rendering App");
   createRoot(rootElement).render(
-    <StrictMode>
+    //<StrictMode>
       <HashRouter>
         <ErrorBoundary>
           <App />
         </ErrorBoundary>
       </HashRouter>
-    </StrictMode>
+   // </StrictMode>
   );
   console.log("App rendered successfully");
 } else {
