@@ -10,10 +10,11 @@ import Footer from '@/components/Footer';
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
-import { useUser } from "@/context/UserContext";
+import { mockUser } from "@/data/mockData"; 
 
 const Dashboard = () => {
-  const { user, loading } = useUser();
+  const [user, setUser] = useState(mockUser); // Replace useUser with mock data
+  const [loading, setLoading] = useState(false); // Set loading to false for testing
   const navigate = useNavigate();
 
 useEffect(() => {
