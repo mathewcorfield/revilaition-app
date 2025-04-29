@@ -36,7 +36,8 @@ export const insertInteraction = async (
 export const getUserInfo = async (userId: string) => {
   const { data, error } = await supabase
     .from("users")
-    .select("id, full_name, email, level:current_level(name)")
+    .select("users.id, users.full_name, users.email, level.name AS level") // Explicitly specify the table names
+    .leftJoin("level", "users.current_level", "level.id") // Use leftJoin to specify the join condition
     .eq("id", userId)
     .maybeSingle();
 
@@ -54,7 +55,7 @@ export const getUserInfo = async (userId: string) => {
     id: data.id,
     name: data.full_name,
     email: data.email,
-    level: data.level?.name || "",
+    level: data.level || "",
   };
 };
 
