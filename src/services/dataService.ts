@@ -39,10 +39,7 @@ export const getUserInfo = async (userId: string) => {
     .select(`
       id,
       full_name,
-      email,
-      level:current_level (
-        name
-      )
+      email
     `)
     .eq("id", userId)
     .maybeSingle();
@@ -74,6 +71,11 @@ export const getUserEvents = async (userId: string) => {
   if (error) {
     console.error("Failed to fetch events:", error);
     return [];
+  }
+
+    if (!data) {
+    console.warn("No events found with ID:", userId);
+    return null;
   }
 
   return data.map((item) => ({
@@ -112,6 +114,11 @@ export const getUserSubjects = async (userId: string) => {
   if (error) {
     console.error("Failed to fetch subjects:", error);
     return [];
+  }
+
+  if (!data) {
+    console.warn("No subjects found with ID:", userId);
+    return null;
   }
 
   return data.map((record: any) => {
