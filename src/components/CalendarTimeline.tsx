@@ -7,14 +7,12 @@ interface CalendarTimelineProps {
 }
 
 const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events }) => {
-  // Sort events by date
   const sortedEvents = [...events].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
-  // Group events by month and year
   const groupedEvents: Record<string, Event[]> = {};
-  
+
   sortedEvents.forEach(event => {
     const date = new Date(event.date);
     const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
@@ -25,6 +23,14 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events }) => {
     
     groupedEvents[monthYear].push(event);
   });
+
+  if (sortedEvents.length === 0) {
+    return (
+      <div className="text-center text-gray-500">
+        No events to display.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
