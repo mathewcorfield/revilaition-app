@@ -19,12 +19,9 @@ const HeroSection: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <Button size="lg" className="bg-brand-purple hover:bg-brand-darkPurple text-white">
-                <a href="#signup" className="flex items-center gap-2">
+                <a href="/login" className="flex items-center gap-2">
                   Join the waitlist <ArrowRight className="h-4 w-4" />
                 </a>
-              </Button>
-              <Button size="lg" variant="outline" className="border-brand-purple text-brand-purple hover:bg-brand-purple/10">
-                Learn more
               </Button>
             </div>
             
@@ -51,7 +48,7 @@ const HeroSection: React.FC = () => {
                   <LightbulbIcon className="h-6 w-6 text-brand-purple" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Study Smart</h3>
+                  <h3 className="font-semibold text-lg">RevilAItion</h3>
                   <p className="text-sm text-gray-500">Personalized AI assistance</p>
                 </div>
               </div>
@@ -68,7 +65,7 @@ const HeroSection: React.FC = () => {
                     <li>Imperialism</li>
                     <li>Nationalism</li>
                   </ul>
-                  <p className="mt-2 text-gray-700">Would you like me to explain any of these in more detail?</p>
+                  <p className="mt-2 text-gray-700">Would you like me to suggest methods to help remember these?</p>
                 </div>
               </div>
               
