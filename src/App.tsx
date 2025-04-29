@@ -11,7 +11,7 @@ import SubjectPage from "@/pages/SubjectPage";
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
 import { UserProvider } from "@/context/UserContext";
-
+console.log("UserProvider loaded:", UserProvider);
 const queryClient = new QueryClient();
 
 const App = () => {
