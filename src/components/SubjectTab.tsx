@@ -17,8 +17,6 @@ interface SubjectTabProps {
   availableSubjects: AvailableSubject[] | null;
 }
 
-const navigate = useNavigate();
-
 const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects }) => {
   // Default to empty arrays if null
   const [subjects, setSubjects] = useState<Subject[]>(initialSubjects || []);
@@ -27,7 +25,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   const [selectedSubjectToAdd, setSelectedSubjectToAdd] = useState<string>("");
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
   const { toast } = useToast();
-
+  const navigate = useNavigate();
   const handleAddSubject = () => {
     if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
 
