@@ -19,9 +19,9 @@ const HeroSection: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <Button size="lg" className="bg-brand-purple hover:bg-brand-darkPurple text-white">
-                <a href="/login" className="flex items-center gap-2">
+                <Link to="/login" className="flex items-center gap-2">
                   Join the waitlist <ArrowRight className="h-4 w-4" />
-                </a>
+                </Link>
               </Button>
             </div>
             
