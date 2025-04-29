@@ -1,6 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MilestoneTimeline from "@/components/MilestoneTimeline";
+import CalendarTimeline from "@/components/CalendarTimeline";
+import SubjectTab from "@/components/SubjectTab";
+import PersonalityTab from "@/components/PersonalityTab";
+import MotivationTab from "@/components/MotivationTab";
+import Footer from '@/components/Footer';
+import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabaseClient";
+import { useUser } from "@/context/UserContext";
 import { mockUser } from "@/data/mockData";
 
 const Dashboard = () => {
