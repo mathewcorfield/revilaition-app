@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getUserInfo, getUserEvents, getUserSubjects } from "@/services/dataService.ts";
 import { User } from "@/types";
 
-export const useUserData = (userId: string) => {
+export const getUserData = (userId: string) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
