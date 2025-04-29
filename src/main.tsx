@@ -4,10 +4,10 @@ import { HashRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 import React from 'react';
-
+console.log("Before RootElement");
 const rootElement = document.getElementById('root');
-
 console.log("App initialization started");
+console.log("Root element:", rootElement);
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
   constructor(props: { children: React.ReactNode }) {
@@ -33,6 +33,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 }
 
 if (rootElement) {
+  console.log("Before rendering App");
   createRoot(rootElement).render(
     <StrictMode>
       <HashRouter>
