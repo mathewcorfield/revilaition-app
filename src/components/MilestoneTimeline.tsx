@@ -6,10 +6,17 @@ interface MilestoneTimelineProps {
 }
 
 const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => {
-  // Sort milestones by date
   const sortedMilestones = [...milestones].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
+
+  if (sortedMilestones.length === 0) {
+    return (
+      <div className="text-center text-gray-500">
+        No milestones to display.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -46,5 +53,6 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
     </div>
   );
 };
+
 
 export default MilestoneTimeline;
