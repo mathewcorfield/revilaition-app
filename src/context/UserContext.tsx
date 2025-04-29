@@ -21,7 +21,7 @@ export const UserProvider = ({ children }) => {
         return;
       }
 
-      const fullData = await getUserData(data.user.id);
+      const fullData = await useUserData(data.user.id);
       setUser(fullData);
       setLoading(false);
     };
