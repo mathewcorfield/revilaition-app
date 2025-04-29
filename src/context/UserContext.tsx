@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { getUserData } from "@/hooks/getUserData";
+import { getUserData } from "@/hooks/useUserData";
 import { User } from "@/types";
 
 const UserContext = createContext<{
