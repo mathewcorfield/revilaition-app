@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/lib/supabaseClient";
 import { getUserData } from "@/hooks/getUserData";
 import { User } from "@/types";
+import { mockUser } from "@/data/mockData"; 
 
 type UserContextType = {
   user: User | null;
@@ -30,14 +31,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
           console.warn("[UserContext] No user found or error occurred:", error);
-          setUser(null);
+          setUser(mockUser);
           setLoading(false);
           return;
         }
 
         const fullData = await getUserData(data.user.id);
         console.log("[UserContext] Full user data loaded:", fullData);
+        if (!fullData.name) {
+          setUser(mockUser);
+          setLoading(false);
+          return;
+        }
         setUser(fullData);
+        
       } catch (err) {
         console.error("[UserContext] Unexpected error:", err);
       } finally {
