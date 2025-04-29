@@ -36,7 +36,7 @@ export const insertInteraction = async (
 export const getUserInfo = async (userId: string) => {
   const { data, error } = await supabase
     .from("users")
-    .select("id, full_name, email, level(name)")
+    .select("id, full_name, email, level:current_level(name)")
     .eq("id", userId)
     .maybeSingle();
 
