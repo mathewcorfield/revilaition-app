@@ -24,36 +24,41 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      console.log("[UserContext] Fetching user...");
+  const fetchUser = async () => {
+    console.log("[UserContext] Fetching user...");
 
-      try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user) {
-          console.warn("[UserContext] No user found or error occurred:", error);
-          setUser(mockUser);
-          setLoading(false);
-          return;
-        }
-
-        const fullData = await getUserData(data.user.id);
-        console.log("[UserContext] Full user data loaded:", fullData);
-        if (!fullData.name) {
-          setUser(mockUser);
-          setLoading(false);
-          return;
-        }
-        setUser(fullData);
-        
-      } catch (err) {
-        console.error("[UserContext] Unexpected error:", err);
-      } finally {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data?.user) {
+        console.warn("[UserContext] No user found or error occurred:", error);
+        setUser(mockUser);  // Fallback to mock user
         setLoading(false);
+        return;
       }
-    };
 
-    fetchUser();
-  }, []);
+      const fullData = await getUserData(data.user.id);
+      console.log("[UserContext] Full user data loaded:", fullData);
+
+      // If required fields are empty, fall back to mock user
+      if (!fullData.name || fullData.milestones.length === 0 || fullData.subjects.length === 0) {
+        console.warn("[UserContext] Missing essential data, using mock data...");
+        setUser(mockUser);  // Fallback to mock user
+        setLoading(false);
+        return;
+      }
+
+      setUser(fullData);  // Set fetched user data if everything is valid
+    } catch (err) {
+      console.error("[UserContext] Unexpected error:", err);
+      setUser(mockUser);  // Fallback to mock user in case of error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchUser();
+}, []);
+
 
   return (
     <UserContext.Provider value={{ user, loading }}>
