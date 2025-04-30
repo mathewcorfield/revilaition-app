@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Subject, AvailableSubject } from "@/types";
 import SubjectDetail from "./SubjectDetail";
 import { useToast } from "@/hooks/use-toast";
-import { addUserSubject, removeUserSubject } from "@/services/dataservice";
+import { addUserSubject, removeUserSubject } from "@/services/dataService";
 
 interface SubjectTabProps {
   userId: string;
