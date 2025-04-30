@@ -153,13 +153,13 @@ const handleRemoveMilestone = async (milestoneId: string) => {
                 marginRight: index === sortedMilestones.length - 1 ? '0' : '',
               }}
             >
-              <Card className="mb-3 w-32 shadow-md hover:shadow-lg transition-shadow border-primary/20">
+              <Card className="mb-3 w-32 shadow-md hover:shadow-lg transition-shadow border-primary/20 relative group">
                 <CardContent className="p-3 text-center">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-sm truncate">{milestone.title}</p>
                     <Button
                       size="icon"
-                      className="p-1 text-red-500 hover:bg-red-100"
+                      className="p-1 text-red-500 hover:bg-primary/10 group-hover:block hidden"
                       onClick={() => handleRemoveMilestone(milestone.id)}
                     >
                       <X size={12} />
