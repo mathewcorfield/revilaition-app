@@ -219,20 +219,22 @@ const filteredSubjects = (availableSubjects || []).filter(
                       <Book size={18} style={{ color: subject.iconColor }} /> 
                       {subject.name}
                     </CardTitle>
+                    <div className="flex items-center gap-2">
                     <Badge variant="outline" className="uppercase">
                       {subject.examBoard}
                     </Badge>
-                  </div>
                   <button
                     onClick={(e) => {
                         e.stopPropagation();
                         handleRemoveSubject(subject.id);
                       }}
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700"
                     aria-label="Remove Subject"
                   >
                     <XCircle size={20} />
                   </button>
+                       </div>
+</div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -270,11 +272,9 @@ const filteredSubjects = (availableSubjects || []).filter(
                 <Book size={40} className="mx-auto text-muted-foreground mb-2" />
                 <h3 className="font-medium mb-1">No Subjects Added Yet</h3>
                 <p className="text-sm text-muted-foreground mb-4">Add your first subject to start tracking your learning progress</p>
-                <DialogTrigger asChild>
                   <Button variant="outline" onClick={() => setIsAddDialogOpen(true)}>
                     <PlusCircle size={16} className="mr-2" /> Add Your First Subject
                   </Button>
-                </DialogTrigger>
               </div>
             )}
           </div>
