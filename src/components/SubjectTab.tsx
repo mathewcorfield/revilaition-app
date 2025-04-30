@@ -11,16 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Subject, AvailableSubject } from "@/types";
 import SubjectDetail from "./SubjectDetail";
 import { useToast } from "@/hooks/use-toast";
+import { addUserSubject, removeUserSubject } from "@/services/dataService";
+import { useUser } from "@/contexts/UserContext";
 
 interface SubjectTabProps {
-  subjects: Subject[] | null;
   availableSubjects: AvailableSubject[] | null;
   availableExamBoards: AvailableExamBoard[] | null;
 }
 
 const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects, availableExamBoards}) => {
   // Default to empty arrays if null
-  const [subjects, setSubjects] = useState<Subject[]>(initialSubjects || []);
+  const { user, setUser } = useUser(); 
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedSubjectToAdd, setSelectedSubjectToAdd] = useState<string>("");
@@ -28,7 +29,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const handleAddSubject = () => {
+  const handleAddSubject = async () => {
     if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
 
 const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
@@ -42,6 +43,10 @@ if (subjectToAdd && !subjectToAdd.launched) {
 }
     
     if (subjectToAdd && selectedExamBoard) {
+
+        try {
+    await addUserSubject(user.id, subjectToAdd.id, selectedExamBoard);
+          
       const newSubject: Subject = {
         id: subjectToAdd.id,
         name: subjectToAdd.name,
@@ -53,8 +58,12 @@ if (subjectToAdd && !subjectToAdd.launched) {
           revised: 0
         }))
       };
-      
-      setSubjects([...subjects, newSubject]);
+          
+      setUser(prevUser => ({
+        ...prevUser,
+        subjects: [...(prevUser?.subjects || []), newSubject],
+      }));
+          
       setIsAddDialogOpen(false);
       setSelectedSubjectToAdd("");
       setSelectedExamBoard("");
@@ -63,12 +72,18 @@ if (subjectToAdd && !subjectToAdd.launched) {
         title: "Subject Added",
         description: `${subjectToAdd.name} has been added to your subjects.`
       });
+            } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to add subject. Please try again.",
+      variant: "destructive",
+    });
     }
   };
 
   // Filter available subjects to exclude the ones that are already selected
 const filteredSubjects = (availableSubjects || []).filter(
-  subject => !subjects.some(s => s.name === subject.name)
+  subject => !user?.subjects?.some(s => s.name === subject.name)
 );
   
   const getLearntProgress = (subject: Subject) => {
@@ -167,7 +182,7 @@ const filteredSubjects = (availableSubjects || []).filter(
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {subjects.map((subject) => (
+            {user?.subjects?.map((subject) => (
               <Card 
                 key={subject.id} 
                 className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
