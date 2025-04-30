@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Subject, AvailableSubject, AvailableExamBoard } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { addUserSubject, removeUserSubject } from "@/services/dataService";
+import { addUserSubject, removeUserSubject, fetchSubtopicsForSubject } from "@/services/dataService";
 import { useUser } from "@/context/UserContext";
 
 interface SubjectTabProps {
@@ -45,13 +45,13 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
   if (subjectToAdd && selectedExamBoard) {
     try {
       await addUserSubject(user.id, subjectToAdd.id, selectedExamBoard);
-
+      const fetchedSubtopics = await fetchSubtopicsForSubject(subjectToAdd.id);
       const newSubject: Subject = {
         id: subjectToAdd.id,
         name: subjectToAdd.name,
         examBoard: selectedExamBoard,
         iconColor: subjectToAdd.iconColor,
-        subtopics: (subjectToAdd.subtopics || []).map(st => ({
+        subtopics: (fetchedSubtopics || []).map(st => ({
           ...st,
           learnt: 0,
           revised: 0,
