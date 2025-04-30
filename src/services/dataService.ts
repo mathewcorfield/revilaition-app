@@ -186,17 +186,18 @@ export const getAllExamBoards = async () => {
     .select("id, name");
 
   if (error) {
-    console.error("Failed to fetch exam boards:", error);
-    return [];
+    console.error("❌ Failed to fetch exam boards:", error);
+    throw error; // Let the caller handle this
   }
 
-  console.log("Collected Exam Boards from Supabase:", data);
-  
-  return data.map((board) => ({
+  console.log("✅ Collected Exam Boards from Supabase:", data);
+
+  return (data ?? []).map((board) => ({
     id: board.id,
     name: board.name,
   }));
 };
+
 
 export const addUserSubject = async (
   userId: string,
