@@ -47,8 +47,8 @@ if (subjectToAdd && !subjectToAdd.launched) {
         name: subjectToAdd.name,
         examBoard: selectedExamBoard,
         iconColor: subjectToAdd.iconColor,
-        subtopics: subjectToAdd.subtopics.map(st => ({
-          ...st,
+        subtopics: (subjectToAdd.subtopics || []).map(st => ({
+              ...st,
           learnt: 0,
           revised: 0
         }))
