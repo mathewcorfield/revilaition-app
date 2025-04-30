@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Book, Check, Edit3 } from "lucide-react";
+import { PlusCircle, Book, Check, Edit3, XCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -80,7 +80,30 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
     }
   }
 };
+  
+const handleRemoveSubject = async (subjectId: string) => {
+    try {
+      // Call the service function to remove the subject from the user_subject table
+      await removeUserSubject(user.id, subjectId);
 
+      // Update the user cache by removing the subject from the user subjects list
+      setUser(prevUser => ({
+        ...prevUser,
+        subjects: prevUser?.subjects.filter(subject => subject.id !== subjectId),
+      }));
+
+      toast({
+        title: "Subject Removed",
+        description: "The subject has been removed from your subjects.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove subject. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Filter available subjects to exclude the ones that are already selected
 const filteredSubjects = (availableSubjects || []).filter(
@@ -188,9 +211,7 @@ const filteredSubjects = (availableSubjects || []).filter(
                 key={subject.id} 
                 className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
                 style={{ borderLeftColor: subject.iconColor }}
-                  onClick={() => {
-                      navigate(`/subject/${subject.id}`);
-                    }}
+                  onClick={() => navigate(`/subject/${subject.id}`)}
               >
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
@@ -202,6 +223,13 @@ const filteredSubjects = (availableSubjects || []).filter(
                       {subject.examBoard}
                     </Badge>
                   </div>
+                  <button
+                    onClick={() => handleRemoveSubject(subject.id)} // Handle removal
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                    aria-label="Remove Subject"
+                  >
+                    <XCircle size={20} />
+                  </button>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
