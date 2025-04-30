@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, GraduationCap, CheckCircle, LightbulbIcon, BookOpenCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HeroSection: React.FC = () => {
   return (
