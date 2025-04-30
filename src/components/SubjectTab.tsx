@@ -1,4 +1,4 @@
-import { useState } from "react";
+?import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -233,7 +233,7 @@ const filteredSubjects = (availableSubjects || []).filter(
               </Card>
             ))}
             
-            {subjects.length === 0 && (
+            {user?.subjects.length === 0 && (
               <div className="col-span-full text-center py-8 bg-muted/50 rounded-lg">
                 <Book size={40} className="mx-auto text-muted-foreground mb-2" />
                 <h3 className="font-medium mb-1">No Subjects Added Yet</h3>
