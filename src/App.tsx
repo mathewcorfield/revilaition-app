@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import SubjectPage from "@/pages/SubjectPage";
+import VerifyEmailPage from "@/pages/VerifyEmailPage";
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
 import { UserProvider } from "@/context/UserContext";
@@ -27,6 +28,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/subject/:id" element={<SubjectPage />} />
               <Route path="*" element={<NotFound />} />
