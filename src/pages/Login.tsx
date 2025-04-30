@@ -125,14 +125,16 @@ const Login = () => {
       return;
     }
 try {
-    const userId = supabase.auth.user()?.id;
-    if (!userId) {
+    const user = (await supabase.auth.getUser()).data?.user;
+    if (!user?.id) {
       toast({
         title: "Error",
         description: "User not authenticated. Please log in again.",
       });
       return;
     }
+
+    const userId = user.id;
 
     // Check if the user already exists in the 'users' table
     const { data: existingUserProfile, error: profileError } = await supabase
@@ -156,7 +158,7 @@ try {
       }
 
       // Update user context with new information
-          const fullUserData = await getUserData(userData.user.id);
+          const fullUserData = await getUserData(userId);
           setUser(fullUserData);
       setShowOnboarding(false);
       toast({
@@ -164,9 +166,10 @@ try {
         description: "Welcome to RevilAItion! Let's start learning.",
       });
       navigate("/dashboard");
-    } catch (error) {
-      toast({
-        title: "Error",
+    }
+  } catch (error) {
+    toast({
+      title: "Error",
         description: "Something went wrong during onboarding. Please try again.",
       });
     }
