@@ -243,3 +243,36 @@ export const fetchSubtopicsForSubject = async (subjectId: string) => {
 
   return data;
 };
+
+export const addEvent = async (userId: string, title: string, type: string, description: string, eventdate: date) => {
+ // Insert the event into the "events" table
+  const { data: eventData, error: eventError } = await supabase
+    .from("events")
+    .insert([{ title, description, type }])
+    .select("event_id")  // Return the event_id after insertion
+
+  if (eventError) {
+    console.error("Failed to add event:", eventError);
+    throw eventError; // Propagate the error for handling at a higher level
+  }
+
+  // Extract the event_id from the inserted event data
+  const eventId = eventData?.[0]?.event_id;
+
+  if (!eventId) {
+    console.error("Failed to retrieve event_id from the inserted event.");
+    throw new Error("Event insertion failed. No event_id returned.");
+  }
+
+  // Insert the event into the "user_events" table
+  const { data: userEventData, error: userEventError } = await supabase
+    .from("user_events")
+    .insert([{ event_id: eventId, user_Id: userId, event_date: eventdate }]);
+
+  if (userEventError) {
+    console.error("Failed to add user event:", userEventError);
+    throw userEventError; // Propagate the error for handling at a higher level
+  }
+
+  return { eventData, userEventData }; // Return both event data and user event data
+};
