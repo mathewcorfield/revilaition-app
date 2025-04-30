@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
+import { useUser } from "@/context/UserContext";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +17,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { setUser } = useUser();
 
  // Call the hook to check if the user is logged in
   useRedirectIfLoggedIn();
@@ -23,7 +25,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    setUser(null);
     try {
       if (isLogin) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -37,7 +39,7 @@ const Login = () => {
           return;
         }
 
-        localStorage.setItem("user", JSON.stringify({ email, name: "User" }));
+        setUser({ email, name });
         toast({
           title: "Login Successful",
           description: "Welcome back to RevilAItion!",
@@ -62,8 +64,27 @@ const Login = () => {
             });
             return;
           }
+          
+        // Insert user data into the `public.users` table
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert([
+            {
+              id: data.user.id, // Use Supabase's user ID
+              email: email,
+              name: name, // Assume 'name' field is provided
+            }
+          ]);
 
-          localStorage.setItem("user", JSON.stringify({ email, name }));
+        if (insertError) {
+          toast({
+            title: "Error",
+            description: "Failed to insert user into database.",
+            variant: "destructive",
+          });
+          return;
+        }
+          setUser({ email, name });
           toast({
             title: "Account Created",
             description: "Welcome to RevilAItion! Please log in.",
