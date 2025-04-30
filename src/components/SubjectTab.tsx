@@ -45,7 +45,7 @@ if (subjectToAdd && !subjectToAdd.launched) {
       const newSubject: Subject = {
         id: subjectToAdd.id,
         name: subjectToAdd.name,
-        examBoard: selectedExamBoard.name,
+        examBoard: selectedExamBoard,
         iconColor: subjectToAdd.iconColor,
         subtopics: (subjectToAdd.subtopics || []).map(st => ({
               ...st,
@@ -134,7 +134,12 @@ const filteredSubjects = (availableSubjects || []).filter(
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Exam Board</label>
-                    <Select value={selectedExamBoard} onValueChange={setSelectedExamBoard}>
+                    <Select value={selectedExamBoard} onValueChange={(value) => {
+                        const selectedBoard = availableExamBoards?.find(board => board.id === value);
+                        if (selectedBoard) {
+                          setSelectedExamBoard(selectedBoard.name);  // Set the name of the board
+                        }
+                      }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Choose an exam board" />
                       </SelectTrigger>
