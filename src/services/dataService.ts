@@ -170,7 +170,7 @@ export const getAllSubjectNames = async () => {
     console.error("Failed to fetch subjects:", error);
     return [];
   }
-  console.log("✅ Collected Subjects from Supabase:", data);
+
   return data.map((subject) => ({
     id: subject.id,
     name: subject.name,
@@ -189,8 +189,6 @@ export const getAllExamBoards = async () => {
     console.error("❌ Failed to fetch exam boards:", error);
     throw error; // Let the caller handle this
   }
-
-  console.log("✅ Collected Exam Boards from Supabase:", data);
 
   return (data ?? []).map((board) => ({
     id: board.id,
