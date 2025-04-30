@@ -1,29 +1,100 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { getAllLevels, getAllCountries } from "@/services/dataService";
 
-const OnboardingModal = ({ setLevel, setCountry, onSubmit }) => {
+const OnboardingModal = ({ level, country, setLevel, setCountry, onSubmit }) => {
+  const [allLevels, setAllLevels] = useState<any[]>([]);
+  const [loadingLevels, setLoadingLevels] = useState(true);
+  const [allCountries, setAllCountries] = useState<any[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
+
+  useEffect(() => {
+    const levelcached = sessionStorage.getItem("allLevels");
+    if (levelcached) {
+      setAllLevels(JSON.parse(levelcached));
+      setLoadingLevels(false);
+    } else {
+      getAllLevels().then((data) => {
+        setAllLevels(data);
+        sessionStorage.setItem("allLevels", JSON.stringify(data));
+        setLoadingLevels(false);
+      });
+    }
+
+    const countrycached = sessionStorage.getItem("allCountries");
+    if (countrycached) {
+      setAllCountries(JSON.parse(countrycached));
+      setLoadingCountries(false);
+    } else {
+      (async () => {
+        try {
+          const data = await getAllCountries();
+          setAllCountries(data);
+          sessionStorage.setItem("allCountries", JSON.stringify(data));
+        } catch (err) {
+          console.error("Error fetching countries:", err);
+        } finally {
+          setLoadingCountries(false);
+        }
+      })();
+    }
+  }, []);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold">Complete Your Onboarding</h2>
+
+        {/* Level Selection */}
         <div className="mt-4">
           <label className="block mb-2">What level are you studying at?</label>
-          <Input
-            type="text"
-            placeholder="e.g., A-level"
-            onChange={(e) => setLevel(e.target.value)}
-          />
+          {loadingLevels ? (
+            <div>Loading levels...</div>
+          ) : (
+            <Select value={level} onValueChange={setLevel}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select your level" />
+              </SelectTrigger>
+              <SelectContent>
+                {allLevels.map((lvl) => (
+                  <SelectItem key={lvl.id} value={lvl.id} disabled={!lvl.launched}>
+                    {lvl.name}
+                    {!lvl.launched && (
+                      <span className="ml-2 text-xs text-muted-foreground">(Coming Soon)</span>
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
+
+        {/* Country Selection */}
         <div className="mt-4">
           <label className="block mb-2">Which country are you based in?</label>
-          <Input
-            type="text"
-            placeholder="e.g., United Kingdom"
-            onChange={(e) => setCountry(e.target.value)}
-          />
+          {loadingCountries ? (
+            <div>Loading countries...</div>
+          ) : (
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select your country" />
+              </SelectTrigger>
+              <SelectContent>
+                {allCountries.map((c) => (
+                  <SelectItem key={c.id} value={c.id} disabled={!c.launched}>
+                    {c.name}
+                    {!c.launched && (
+                      <span className="ml-2 text-xs text-muted-foreground">(Coming Soon)</span>
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
-        <Button className="mt-4" onClick={onSubmit}>
+
+        <Button className="mt-4 w-full" onClick={onSubmit}>
           Submit
         </Button>
       </div>
