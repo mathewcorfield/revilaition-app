@@ -22,32 +22,39 @@ const Dashboard = () => {
   const [loadingExamBoards, setLoadingExamBoards] = useState(true);
 
 useEffect(() => {
-    const subcached = sessionStorage.getItem("allSubjects");
-    const examcached = sessionStorage.getItem("allExamBoards");
-    if (subcached) {
-      setAllSubjects(JSON.parse(subcached));
+  const subcached = sessionStorage.getItem("allSubjects");
+  if (subcached) {
+    setAllSubjects(JSON.parse(subcached));
+    setLoadingSubjects(false);
+  } else {
+    getAllSubjectNames().then((data) => {
+      setAllSubjects(data);
+      sessionStorage.setItem("allSubjects", JSON.stringify(data));
       setLoadingSubjects(false);
-    } else {
-      getAllSubjectNames().then((data) => {
-        setAllSubjects(data);
-        sessionStorage.setItem("allSubjects", JSON.stringify(data));
-        setLoadingSubjects(false);
-      });
-    }
+    });
+  }
+
+  const examcached = sessionStorage.getItem("allExamBoards");
+  console.log("Exam cache:", examcached);
   if (examcached) {
-      setAllExamBoards(JSON.parse(examcached));
+    setAllExamBoards(JSON.parse(examcached));
+    setLoadingExamBoards(false);
+  } else {
+    getAllExamBoards().then((data) => {
+      console.log("Fetched from Supabase:", data);
+      setAllExamBoards(data);
+      sessionStorage.setItem("allExamBoards", JSON.stringify(data));
       setLoadingExamBoards(false);
-    } else {
-      getAllExamBoards().then((data) => {
-        setAllExamBoards(data);
-        sessionStorage.setItem("allExamBoards", JSON.stringify(data));
-        setLoadingExamBoards(false);
-      });
-    }
-    if (!loading && !user) {
-      navigate("/login");
-    }
-  }, [loading, user, navigate]);
+    });
+  }
+}, []);
+
+// Separate auth redirect
+useEffect(() => {
+  if (!loading && !user) {
+    navigate("/login");
+  }
+}, [loading, user, navigate]);
 
 if (loading) {
   return (
