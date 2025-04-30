@@ -190,6 +190,8 @@ export const getAllExamBoards = async () => {
     return [];
   }
 
+  console.log("Collected Exam Boards from Supabase:", data);
+  
   return data.map((board) => ({
     id: board.id,
     name: board.name,
