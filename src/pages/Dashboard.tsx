@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MilestoneTimeline from "@/components/MilestoneTimeline";
 import CalendarTimeline from "@/components/CalendarTimeline";
@@ -13,6 +14,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
 import { getAllSubjectNames, getAllExamBoards } from "@/services/dataService";
 
+const { toast } = useToast();
 const Dashboard = () => {
   const { user, loading } = useUser();
   const navigate = useNavigate();
@@ -108,6 +110,7 @@ const handleLogout = async () => {
             </TabsList>
             <TabsContent value="subjects">
               <SubjectTab 
+                userId={user.id} 
                 subjects={user.subjects} 
                 availableSubjects={allSubjects} 
                 availableExamBoards={allExamBoards}
