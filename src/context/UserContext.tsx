@@ -34,7 +34,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       const fullData = await getUserData(data.user.id);
-
+      console.log("Fetched user:", fullData);
       // If required fields are empty, fall back to mock user
       if (!fullData.name || fullData.milestones.length === 0 || fullData.subjects.length === 0) {
         console.warn("[UserContext] Missing essential data, using mock data...");
