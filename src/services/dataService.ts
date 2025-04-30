@@ -267,7 +267,7 @@ export const addEvent = async (userId: string, title: string, type: string, desc
   // Insert the event into the "user_events" table
   const { data: userEventData, error: userEventError } = await supabase
     .from("user_events")
-    .insert([{ event_id: eventId, user_Id: userId, event_date: eventdate }]);
+    .insert([{ event_id: eventId, user_id: userId, event_date: eventdate }]);
 
   if (userEventError) {
     console.error("Failed to add user event:", userEventError);
