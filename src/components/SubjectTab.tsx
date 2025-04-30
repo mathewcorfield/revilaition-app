@@ -176,7 +176,7 @@ const filteredSubjects = (availableSubjects || []).filter(
                     <Select value={selectedExamBoard} onValueChange={(value) => {
                         const selectedBoard = availableExamBoards?.find(board => board.id === value);
                         if (selectedBoard) {
-                          setSelectedExamBoard(selectedBoard.id);  // Set the name of the board
+                          setSelectedExamBoard(selectedBoard.name);  // Set the name of the board
                         }
                       }}>
                       <SelectTrigger>
@@ -184,7 +184,7 @@ const filteredSubjects = (availableSubjects || []).filter(
                       </SelectTrigger>
                       <SelectContent>
                         {availableExamBoards?.map((board) => (
-                          <SelectItem key={board.id} value={board.id}>
+                          <SelectItem key={board.id} value={board.name}>
                             {board.name}
                           </SelectItem>
                         ))}
