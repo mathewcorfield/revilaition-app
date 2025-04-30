@@ -36,6 +36,11 @@ export interface AvailableSubject {
   subtopics: Omit<Subtopic, 'learnt' | 'revised'>[];
 }
 
+export interface AvailableExamBoard {
+  id: string;
+  name: string;
+}
+
 export interface User {
   id: string;
   name: string;
