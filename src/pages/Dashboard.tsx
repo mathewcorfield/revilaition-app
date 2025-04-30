@@ -14,7 +14,7 @@ import { useUser } from "@/context/UserContext";
 import { getAllSubjectNames, getAllExamBoards } from "@/services/dataService";
 
 const Dashboard = () => {
-  const { user, loading } = useUser();
+  const { user, loading, clearUser} = useUser();
   const navigate = useNavigate();
   const [allSubjects, setAllSubjects] = useState<any[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
@@ -73,7 +73,7 @@ if (loading) {
 const handleLogout = async () => {
   try {
     await supabase.auth.signOut();
-    localStorage.removeItem("user");
+    clearUser();
     navigate("/login");
   } catch (error) {
     console.error("Logout error:", error);
