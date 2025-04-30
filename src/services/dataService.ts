@@ -107,12 +107,12 @@ export const getUserEvents = async (userId: string) => {
 
 export const getUserSubjects = async (userId: string) => {
   const { data, error } = await supabase
-    .from("user_subject_details") // Use the view here
+    .from("user_subject_details")
     .select(`
       subject_id,
-      examboard_name,
       subject_name,
       icon_color,
+      examboard_name,
       subtopic_id,
       subtopic_name,
       description,
@@ -130,24 +130,36 @@ export const getUserSubjects = async (userId: string) => {
     return null;
   }
 
-  return data.map((record: any) => {
-    return {
-      id: record.subject_id,
-      name: record.subject_name,
-      iconColor: record.icon_color,
-      examBoard: record.examboard_name ?? "Unknown",
-      subtopics: [
-        {
-          id: record.subtopic_id,
-          name: record.subtopic_name,
-          description: record.description,
-          learnt: record.user_subtopic_state === "learnt" ? 1 : 0,
-          revised: record.user_subtopic_state === "revised" ? 1 : 0,
-        },
-      ],
-    };
-  });
+  const subjectMap: Record<string, any> = {};
+
+  for (const record of data) {
+    const subjectId = record.subject_id;
+
+    if (!subjectMap[subjectId]) {
+      subjectMap[subjectId] = {
+        id: subjectId,
+        name: record.subject_name,
+        iconColor: record.icon_color,
+        examBoard: record.examboard_name ?? "Unknown",
+        subtopics: [],
+      };
+    }
+
+    // Only push subtopics if present
+    if (record.subtopic_id) {
+      subjectMap[subjectId].subtopics.push({
+        id: record.subtopic_id,
+        name: record.subtopic_name,
+        description: record.description,
+        learnt: record.user_subtopic_state === "learnt" ? 1 : 0,
+        revised: record.user_subtopic_state === "revised" ? 1 : 0,
+      });
+    }
+  }
+
+  return Object.values(subjectMap);
 };
+
 
 export const getAllSubjectNames = async () => {
   const { data, error } = await supabase
