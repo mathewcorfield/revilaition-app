@@ -23,12 +23,14 @@ const Dashboard = () => {
 
 useEffect(() => {
   const subcached = sessionStorage.getItem("allSubjects");
+  console.log("Subject cache:", subcached);
   if (subcached) {
     setAllSubjects(JSON.parse(subcached));
     setLoadingSubjects(false);
   } else {
     getAllSubjectNames().then((data) => {
       setAllSubjects(data);
+      console.log("Fetched from Supabase:", data);
       sessionStorage.setItem("allSubjects", JSON.stringify(data));
       setLoadingSubjects(false);
     });
