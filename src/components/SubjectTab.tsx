@@ -184,7 +184,7 @@ const filteredSubjects = (availableSubjects || []).filter(
                       </SelectTrigger>
                       <SelectContent>
                         {availableExamBoards?.map((board) => (
-                          <SelectItem key={board.id} value={board.name}>
+                          <SelectItem key={board.id} value={board.id}>
                             {board.name}
                           </SelectItem>
                         ))}
