@@ -37,9 +37,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           user: newUser,
           cachedAt: Date.now(),
         };
-        localStorage.setItem(CACHE_KEY, JSON.stringify(cachedUser));
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(cachedUser));
       } else {
-        localStorage.removeItem(CACHE_KEY);
+        sessionStorage.removeItem(CACHE_KEY);
       }
   
       return newUser;
@@ -48,13 +48,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const clearUser = useCallback(() => {
     setUserState(null);
-    localStorage.removeItem(CACHE_KEY);
+    sessionStorage.removeItem(CACHE_KEY);
   }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const cachedRaw = localStorage.getItem(CACHE_KEY);
+        const cachedRaw = sessionStorage.getItem(CACHE_KEY);
         if (cachedRaw) {
           const cachedData: CachedUser = JSON.parse(cachedRaw);
           const now = Date.now();
