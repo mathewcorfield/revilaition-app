@@ -124,24 +124,40 @@ const Login = () => {
       });
       return;
     }
+try {
+    const userId = supabase.auth.user()?.id;
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "User not authenticated. Please log in again.",
+      });
+      return;
+    }
 
-    try {
-      // Save the user's level and country to the database
-      const { data, error } = await supabase
+    // Check if the user already exists in the 'users' table
+    const { data: existingUserProfile, error: profileError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !existingUserProfile) {
+      // If no user profile exists, insert a new record into the 'users' table
+      const { error: insertError } = await supabase
         .from('users')
-        .update({ level, country })
-        .eq('id', supabase.auth.user()?.id);
+        .insert([{ id: userId, current_level: level, country }]);
 
-      if (error) {
+      if (insertError) {
         toast({
           title: "Error",
-          description: error.message,
+          description: insertError.message,
         });
         return;
       }
 
       // Update user context with new information
-      setUser({ ...userProfile, level, country });
+          const fullUserData = await getUserData(userData.user.id);
+          setUser(fullUserData);
       setShowOnboarding(false);
       toast({
         title: "Onboarding Complete",
