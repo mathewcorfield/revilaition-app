@@ -35,17 +35,23 @@ useEffect(() => {
   }
 
   const examcached = sessionStorage.getItem("allExamBoards");
-  console.log("Exam cache:", examcached);
   if (examcached) {
     setAllExamBoards(JSON.parse(examcached));
     setLoadingExamBoards(false);
   } else {
-    getAllExamBoards().then((data) => {
-      console.log("Fetched from Supabase:", data);
-      setAllExamBoards(data);
-      sessionStorage.setItem("allExamBoards", JSON.stringify(data));
-      setLoadingExamBoards(false);
-    });
+    (async () => {
+      try {
+        console.log("Fetching from Supabase");
+        const data = await getAllExamBoards();
+        console.log("Fetched from Supabase:", data);
+        setAllExamBoards(data);
+        sessionStorage.setItem("allExamBoards", JSON.stringify(data));
+      } catch (err) {
+        console.error("Error fetching exam boards:", err);
+      } finally {
+        setLoadingExamBoards(false);
+      }
+    })();
   }
 }, []);
 
