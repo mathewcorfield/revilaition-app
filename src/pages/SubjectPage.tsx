@@ -105,85 +105,82 @@ if (subtopics.length === 0) {
     return;
 }
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
-handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"> {/* Subject header */}
-    <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon"
-                onClick={
-                    () => navigate(-1)
-            }>
-                <ArrowLeft size={18}/>
-            </Button>
-            <div>
-                <h3 className="text-lg font-medium"> {
-                    subject.name
-                }</h3>
-                <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="uppercase"> {
-                        subject.examBoard
-                    }</Badge>
-                    <span className="text-sm text-muted-foreground"> {
-                        subtopics.length
-                    }
-                        subtopics</span>
-                </div>
-            </div>
-            <Button variant="outline"
-                onClick={handleGenerateRandomQuestion}
-                className="ml-auto">
-                <Shuffle size={16}
-                    className="mr-2"/>
-                Random Question
-            </Button>
-        </div>
+handleGenerateQuestion(random.name, random);};
+    
+    return (
+        <div className="space-y-6"> 
+           {/* Subject header */}
+<div className="flex items-center justify-between mb-6">
+  <div className="flex items-center gap-6"> {/* Increased gap between the left elements */}
+    <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+      <ArrowLeft size={18} />
+    </Button>
+    <div>
+      <h3 className="text-2xl font-semibold">{subject.name}</h3> {/* Larger font for subject name */}
+      <div className="flex items-center gap-3"> {/* Increased gap between the badge and the number of subtopics */}
+        <Badge variant="outline" className="uppercase">{subject.examBoard}</Badge>
+        <span className="text-sm text-muted-foreground">{subtopics.length} subtopics</span>
+      </div>
     </div>
+  </div>
+  <Button
+    variant="outline"
+    onClick={handleGenerateRandomQuestion}
+    className="ml-auto py-2 px-6" {/* Added padding for a more spacious button */}
+  >
+    <Shuffle size={16} className="mr-2" />
+    Random Question
+  </Button>
+</div>
+
     {/* Subtopic cards */}
-    <div className="space-y-3"> {
-        subtopics.map((subtopic) => (<Card key={
-                subtopic.id
-            }
-            className="p-4 flex items-center justify-between gap-4 hover:bg-accent/10 transition-colors">
-            <div className="flex-grow">
-                <h4 className="font-medium"> {
-                    subtopic.name
-                }</h4>
-                {
-                subtopic.description && <p className="text-sm text-muted-foreground mt-1"> {
-                    subtopic.description
-                }</p>
-            } </div>
-            <div className="flex items-center gap-2">
-                <Button variant={
-                        subtopic.learnt
-                            ? "default"
-                            : "outline"
-                    }
-                    size="sm"
-                    onClick={
-                        () => handleLearntToggle(subtopic.id)
-                }>
-                    <Check size={16}/> {
-                    subtopic.learnt
-                        ? "Learnt"
-                        : "Mark Learnt"
-                } </Button>
-                <Button variant={
-                        subtopic.revised
-                            ? "secondary"
-                            : "outline"
-                    }
-                    size="sm"
-                    onClick={
-                        () => handleRevisedToggle(subtopic.id)
-                }>
-                    <Edit3 size={16}/> {
-                    subtopic.revised
-                        ? "Revised"
-                        : "Mark Revised"
-                } </Button>
-            </div>
-        </Card>))
-    } </div>
+<div className="space-y-3">
+  {subtopics.map((subtopic) => (
+    <Card
+      key={subtopic.id}
+      className="p-4 flex items-center justify-between gap-4 hover:bg-accent/10 transition-colors"
+    >
+      <div className="flex-grow">
+        <h4 className="font-medium">{subtopic.name}</h4>
+        {subtopic.description && (
+          <p className="text-sm text-muted-foreground mt-1">{subtopic.description}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-3"> {/* Increased gap to space out buttons */}
+        {/* Generate Question Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleGenerateQuestion(subtopic.name, subtopic)}
+        >
+          <HelpCircle size={16} className="mr-1" />
+          Generate Question
+        </Button>
+
+        {/* Mark Learnt Button */}
+        <Button
+          variant={subtopic.learnt ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleLearntToggle(subtopic.id)}
+        >
+          <Check size={16} />
+          {subtopic.learnt ? "Learnt" : "Mark Learnt"}
+        </Button>
+
+        {/* Mark Revised Button */}
+        <Button
+          variant={subtopic.revised ? "secondary" : "outline"}
+          size="sm"
+          onClick={() => handleRevisedToggle(subtopic.id)}
+        >
+          <Edit3 size={16} />
+          {subtopic.revised ? "Revised" : "Mark Revised"}
+        </Button>
+      </div>
+    </Card>
+  ))}
+</div>
+
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
   <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
     <DialogHeader>
