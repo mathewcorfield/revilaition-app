@@ -107,27 +107,16 @@ export const getUserEvents = async (userId: string) => {
 
 export const getUserSubjects = async (userId: string) => {
   const { data, error } = await supabase
-    .from("user_subjects")
+    .from("user_subject_details") // Use the view here
     .select(`
       subject_id,
-      key_examboard_level_subject (
-        examboard (
-          name
-        )
-      ),
-      subjects (
-        id,
-        name,
-        icon_color,
-        subtopics (
-          id,
-          name,
-          description,
-          user_subtopics (
-            state
-          )
-        )
-      )
+      examboard_name,
+      subject_name,
+      icon_color,
+      subtopic_id,
+      subtopic_name,
+      description,
+      user_subtopic_state
     `)
     .eq("user_id", userId);
 
@@ -142,28 +131,23 @@ export const getUserSubjects = async (userId: string) => {
   }
 
   return data.map((record: any) => {
-    const subject = record.subjects;
-    const examBoardName = record.key_examboard_level_subject?.examboard?.name ?? "Unknown";
-
     return {
-      id: subject.id,
-      name: subject.name,
-      iconColor: subject.icon_color,
-      examBoard: examBoardName,
-      subtopics: subject.subtopics.map((sub: any) => {
-        const states = sub.user_subtopics.map((us: any) => us.state);
-        return {
-          id: sub.id,
-          name: sub.name,
-          description: sub.description,
-          learnt: states.includes("learnt") ? 1 : 0,
-          revised: states.includes("revised") ? 1 : 0,
-        };
-      }),
+      id: record.subject_id,
+      name: record.subject_name,
+      iconColor: record.icon_color,
+      examBoard: record.examboard_name ?? "Unknown",
+      subtopics: [
+        {
+          id: record.subtopic_id,
+          name: record.subtopic_name,
+          description: record.description,
+          learnt: record.user_subtopic_state === "learnt" ? 1 : 0,
+          revised: record.user_subtopic_state === "revised" ? 1 : 0,
+        },
+      ],
     };
   });
 };
-
 
 export const getAllSubjectNames = async () => {
   const { data, error } = await supabase
