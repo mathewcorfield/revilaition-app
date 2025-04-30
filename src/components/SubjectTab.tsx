@@ -173,7 +173,6 @@ const filteredSubjects = (availableSubjects || []).filter(
                 className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
                 style={{ borderLeftColor: subject.iconColor }}
                   onClick={() => {
-                      console.log(`Navigating to /subject/${subject.id}`);
                       navigate(`/subject/${subject.id}`);
                     }}
               >
