@@ -293,3 +293,35 @@ export const removeEvent = async (
   }
 };
 
+export const getAllLevels = async () => {
+  const { data, error } = await supabase
+    .from("level")
+    .select("id, name");
+
+  if (error) {
+    console.error("❌ Failed to fetch exam boards:", error);
+    throw error; // Let the caller handle this
+  }
+
+  return (data ?? []).map((level) => ({
+    id: level.id,
+    name: level.name,
+  }));
+};
+
+export const getAllCountries = async () => {
+  const { data, error } = await supabase
+    .from("raw_country")
+    .select("id, name, launched");
+
+  if (error) {
+    console.error("❌ Failed to fetch exam boards:", error);
+    throw error; // Let the caller handle this
+  }
+
+  return (data ?? []).map((country) => ({
+    id: country.id,
+    name: country.name,
+    launched: country.launched,
+  }));
+};
