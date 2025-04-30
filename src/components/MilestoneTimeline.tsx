@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlusCircle, Check } from "lucide-react";
+import { PlusCircle, Check, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { addEvent } from "@/services/dataService"; // Ensure this points to your correct function
+import { addEvent, removeEvent } from "@/services/dataService"; // Ensure this points to your correct function
 import { useUser } from "@/context/UserContext";
 import { Milestone } from "@/types";
 
@@ -72,7 +72,31 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
       });
     }
   };
+  
+const handleRemoveMilestone = async (milestoneId: string) => {
+    try {
+      // Call removeEvent to update the backend (API)
+      await removeEvent(user.id, milestoneId);
 
+      // Update the user milestones in the cache
+      setUser(prevUser => ({
+        ...prevUser,
+        milestones: prevUser?.milestones.filter((milestone) => milestone.id !== milestoneId) || [],
+      }));
+
+      toast({
+        title: "Milestone Removed",
+        description: "The milestone has been removed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove milestone. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -140,6 +164,13 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
                     })}
                   </p>
                 </CardContent>
+                <Button
+                  size="icon"
+                  className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-100"
+                  onClick={() => handleRemoveMilestone(milestone.id)}
+                >
+                  <X size={16} />
+                </Button>
               </Card>
               <div className="w-4 h-4 rounded-full bg-primary z-10" />
             </div>
