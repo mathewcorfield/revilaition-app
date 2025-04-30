@@ -9,10 +9,9 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Subject, AvailableSubject } from "@/types";
-import SubjectDetail from "./SubjectDetail";
 import { useToast } from "@/hooks/use-toast";
 import { addUserSubject, removeUserSubject } from "@/services/dataService";
-import { useUser } from "@/contexts/UserContext";
+import { useUser } from "@/context/UserContext";
 
 interface SubjectTabProps {
   availableSubjects: AvailableSubject[] | null;
