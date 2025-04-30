@@ -184,41 +184,54 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
             </div>
         </Card>))
     } </div>
-    <Dialog open={showDialog}
-        onOpenChange={setShowDialog}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Practice Question</DialogTitle>
-            </DialogHeader>
-            <div className="py-4 space-y-4"> {
-                isGenerating && !question
-                    ? (<div className="text-center text-muted-foreground">Generating question...</div>)
-                    : (selectedSubtopic && question && (<>
-                        <h4 className="font-medium">Topic: {
-                            selectedSubtopic.name
-                        }</h4>
-                        <div className="bg-accent p-4 rounded-md whitespace-pre-wrap"> {question}</div>
-                        <textarea className="w-full p-2 border rounded-md mt-2"
-                            rows={4}
-                            value={answer}
-                            onChange={
-                                (e) => setAnswer(e.target.value)
-                            }
-                            placeholder="Type your answer here..."/>
-                        <Button onClick={handleAnswerSubmit}
-                            className="w-full mt-2"
-                            disabled={isEvaluating}> {
-                            isEvaluating
-                                ? "Evaluating..."
-                                : "Submit Answer"
-                        } </Button>
-                        {
-                        evaluationFeedback && (<div className="mt-4 p-3 border border-muted rounded-md bg-muted/50">
-                            <h5 className="font-medium mb-1">AI Feedback:</h5>
-                            <p className="text-sm whitespace-pre-wrap text-muted-foreground"> {evaluationFeedback}</p>
-                        </div>)
-                    } </>))
-            } </div>
-        </DialogContent>
-    </Dialog>
+    <Dialog open={showDialog} onOpenChange={setShowDialog}>
+  <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
+    <DialogHeader>
+      <DialogTitle>AI Revision Chat</DialogTitle>
+    </DialogHeader>
+    <div className="flex-grow overflow-y-auto space-y-6 pr-2">
+      {isGenerating && !question ? (
+        <div className="text-center text-muted-foreground mt-10">Generating question...</div>
+      ) : (
+        selectedSubtopic && question && (
+          <>
+            <div className="flex flex-col gap-4">
+              {/* AI asks a question */}
+              <div className="self-start max-w-[75%] bg-accent p-3 rounded-xl">
+                <p className="text-sm whitespace-pre-wrap">{question}</p>
+              </div>
+
+              {/* User answers */}
+              {answer && (
+                <div className="self-end max-w-[75%] bg-primary text-primary-foreground p-3 rounded-xl">
+                  <p className="text-sm whitespace-pre-wrap">{answer}</p>
+                </div>
+              )}
+
+              {/* Textarea for user input */}
+              <textarea
+                className="w-full border rounded-md p-2 text-sm"
+                rows={3}
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Type your answer here..."
+                disabled={isEvaluating}
+              />
+              <Button onClick={handleAnswerSubmit} disabled={isEvaluating || !answer}>
+                {isEvaluating ? "Evaluating..." : "Submit Answer"}
+              </Button>
+
+              {/* AI feedback */}
+              {evaluationFeedback && (
+                <div className="self-start max-w-[75%] bg-muted/70 p-3 rounded-xl border border-muted">
+                  <p className="text-sm whitespace-pre-wrap">{evaluationFeedback}</p>
+                </div>
+              )}
+            </div>
+          </>
+        )
+      )}
+    </div>
+  </DialogContent>
+</Dialog>
 </div>);};export default SubjectPage;
