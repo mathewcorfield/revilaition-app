@@ -13,13 +13,12 @@ import SubjectDetail from "./SubjectDetail";
 import { useToast } from "@/hooks/use-toast";
 
 interface SubjectTabProps {
-  userId: string;
   subjects: Subject[] | null;
   availableSubjects: AvailableSubject[] | null;
   availableExamBoards: AvailableExamBoard[] | null;
 }
 
-const SubjectTab: React.FC<SubjectTabProps> = ({ userId, subjects: initialSubjects, availableSubjects, availableExamBoards }) => {
+const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects, availableExamBoards}) => {
   // Default to empty arrays if null
   const [subjects, setSubjects] = useState<Subject[]>(initialSubjects || []);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -28,97 +27,62 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ userId, subjects: initialSubjec
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  const handleAddSubject = () => {
+    if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
 
-  const handleAddSubject = async () => {
-    if (!availableSubjects || !userId) return;
-
-    const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
-    if (subjectToAdd && !subjectToAdd.launched) {
-      toast({
-        title: "Coming Soon",
-        description: `${subjectToAdd.name} is not yet available.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
+const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
+if (subjectToAdd && !subjectToAdd.launched) {
+  toast({
+    title: "Coming Soon",
+    description: `${subjectToAdd.name} is not yet available.`,
+    variant: "destructive",
+  });
+  return;
+}
+    
     if (subjectToAdd && selectedExamBoard) {
-      try {
-        console.log(`Adding subject: ${subjectToAdd.name} for user: ${userId}`); // Debugging log
-
-        const newSubject: Subject = {
-          id: `${subjectToAdd.id}-${Date.now()}`,
-          name: subjectToAdd.name,
-          examBoard: selectedExamBoard,
-          iconColor: subjectToAdd.iconColor,
-          subtopics: subjectToAdd.subtopics.map(st => ({
-            ...st,
-            learnt: 0,
-            revised: 0
-          }))
-        };
-
-        setSubjects([...subjects, newSubject]);
-        setIsAddDialogOpen(false);
-        setSelectedSubjectToAdd("");
-        setSelectedExamBoard("");
-
-        toast({
-          title: "Subject Added",
-          description: `${subjectToAdd.name} has been added to your subjects.`,
-        });
-      } catch (error) {
-        toast({
-          title: "Error Adding Subject",
-          description: String(error),
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const handleRemoveSubject = async (subjectId: string) => {
-    if (!userId) return;
-
-    const matching = availableSubjects?.find(s => subjectId.includes(s.id));
-    if (!matching) return;
-
-    try {
-      console.log(`Removing subject with ID: ${subjectId} for user: ${userId}`); // Debugging log
-
-      const updatedSubjects = subjects.filter(subject => subject.id !== subjectId);
-      setSubjects(updatedSubjects);
-
+      const newSubject: Subject = {
+        id: `${subjectToAdd.id}-${Date.now()}`,
+        name: subjectToAdd.name,
+        examBoard: selectedExamBoard,
+        iconColor: subjectToAdd.iconColor,
+        subtopics: subjectToAdd.subtopics.map(st => ({
+          ...st,
+          learnt: 0,
+          revised: 0
+        }))
+      };
+      
+      setSubjects([...subjects, newSubject]);
+      setIsAddDialogOpen(false);
+      setSelectedSubjectToAdd("");
+      setSelectedExamBoard("");
+      
       toast({
-        title: "Subject Removed",
-        description: "The subject has been removed from your subjects.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error Removing Subject",
-        description: String(error),
-        variant: "destructive",
+        title: "Subject Added",
+        description: `${subjectToAdd.name} has been added to your subjects.`
       });
     }
   };
 
   // Filter available subjects to exclude the ones that are already selected
-  const filteredSubjects = (availableSubjects || []).filter(
-    subject => !subjects.some(s => s.id.includes(subject.id))
-  );
-
+const filteredSubjects = (availableSubjects || []).filter(
+  subject => !subjects.some(s => s.name === subject.name)
+);
+  
   const getLearntProgress = (subject: Subject) => {
     const totalSubtopics = subject.subtopics.length;
     if (totalSubtopics === 0) return 0;
-
+    
     const learntCount = subject.subtopics.reduce((sum, subtopic) => sum + (subtopic.learnt > 0 ? 1 : 0), 0);
     return Math.round((learntCount / totalSubtopics) * 100);
   };
-
+  
   const getRevisedProgress = (subject: Subject) => {
     const totalSubtopics = subject.subtopics.length;
     if (totalSubtopics === 0) return 0;
-
+    
     const revisedCount = subject.subtopics.reduce((sum, subtopic) => sum + (subtopic.revised > 0 ? 1 : 0), 0);
     return Math.round((revisedCount / totalSubtopics) * 100);
   };
@@ -187,7 +151,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ userId, subjects: initialSubjec
                     <Button 
                       onClick={handleAddSubject}
                       disabled={!selectedSubjectToAdd || !selectedExamBoard}
-                      className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full"
                     >
                       Add Subject
                     </Button>
@@ -201,25 +165,13 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ userId, subjects: initialSubjec
             {subjects.map((subject) => (
               <Card 
                 key={subject.id} 
-                className="border-l-4 hover:shadow-md transition-shadow cursor-pointer relative"
+                className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
                 style={{ borderLeftColor: subject.iconColor }}
-                onClick={() => {
-                  navigate(`/subject/${subject.id}`);
-                }}
+                  onClick={() => {
+                      console.log(`Navigating to /subject/${subject.id}`);
+                      navigate(`/subject/${subject.id}`);
+                    }}
               >
-                {/* Remove Button */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click
-                    handleRemoveSubject(subject.id);
-                  }}
-                >
-                  <span className="text-xl text-red-600">X</span>
-                </Button>
-
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg flex items-center gap-2">
@@ -261,7 +213,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ userId, subjects: initialSubjec
                 </CardContent>
               </Card>
             ))}
-
+            
             {subjects.length === 0 && (
               <div className="col-span-full text-center py-8 bg-muted/50 rounded-lg">
                 <Book size={40} className="mx-auto text-muted-foreground mb-2" />
