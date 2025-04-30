@@ -201,12 +201,11 @@ export const getAllExamBoards = async () => {
 
 export const addUserSubject = async (
   userId: string,
-  subjectId: string,
-  examBoardId: string
+  subjectId: string
 ): Promise<any> => { // You can replace `any` with a more specific type if possible
   const { data, error } = await supabase
     .from("user_subjects")
-    .insert([{ user_id: userId, subject_id: subjectId, exam_board_id: examBoardId }]);
+    .insert([{ user_id: userId, subject_id: subjectId}]);
 
   if (error) {
     console.error("Failed to add user subject:", error);
