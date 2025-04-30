@@ -257,7 +257,7 @@ export const addEvent = async (userId: string, title: string, type: string, desc
   }
 
   // Extract the event_id from the inserted event data
-  const eventId = eventData?.[0]?.event_id;
+  const eventId = eventData?.[0]?.id;
 
   if (!eventId) {
     console.error("Failed to retrieve event_id from the inserted event.");
@@ -282,7 +282,7 @@ export const removeEvent = async (
   eventId: string
 ): Promise<void> => {
   const { error } = await supabase
-    .from("user_subjects")
+    .from("user_events")
     .delete()
     .match({ user_id: userId, event_id: eventId });
 
