@@ -78,7 +78,30 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        const fullData = await getUserData(data.user.id);
+        let fullData = await getUserData(data.user.id);
+
+        if (!fullData) {
+          // First-time verified user: insert into `users` table
+          const { data: userProfile, error: insertError } = await supabase
+            .from("users")
+            .insert([
+              {
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.user_metadata?.name || "New User",
+              },
+            ])
+            .select()
+            .single();
+        
+          if (insertError) {
+            console.error("[UserContext] Failed to insert new user:", insertError);
+          }
+        
+          // Re-fetch to populate with joined data (subjects, milestones, etc.)
+          fullData = await getUserData(data.user.id);
+        }
+
         if (
           !fullData.name ||
           fullData.milestones.length === 0 ||
