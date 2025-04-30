@@ -155,7 +155,16 @@ const handleRemoveMilestone = async (milestoneId: string) => {
             >
               <Card className="mb-3 w-32 shadow-md hover:shadow-lg transition-shadow border-primary/20">
                 <CardContent className="p-3 text-center">
-                  <p className="font-medium text-sm truncate">{milestone.title}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-sm truncate">{milestone.title}</p>
+                    <Button
+                      size="icon"
+                      className="p-1 text-red-500 hover:bg-red-100"
+                      onClick={() => handleRemoveMilestone(milestone.id)}
+                    >
+                      <X size={12} />
+                    </Button>
+                  </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {new Date(milestone.date).toLocaleDateString(undefined, {
                       month: 'short',
@@ -164,13 +173,6 @@ const handleRemoveMilestone = async (milestoneId: string) => {
                     })}
                   </p>
                 </CardContent>
-                <Button
-                  size="icon"
-                  className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-100"
-                  onClick={() => handleRemoveMilestone(milestone.id)}
-                >
-                  <X size={16} />
-                </Button>
               </Card>
               <div className="w-4 h-4 rounded-full bg-primary z-10" />
             </div>
