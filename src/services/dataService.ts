@@ -226,6 +226,20 @@ export const removeUserSubject = async (
 
   if (error) {
     console.error("Failed to remove user subject:", error);
+    
     throw error; // Propagate the error for handling at a higher level
   }
+};
+
+export const fetchSubtopicsForSubject = async (subjectId: string) => {
+  const { data, error } = await supabase
+    .from("subtopics")
+    .select("name, category, description")
+    .eq("subject_id", subjectId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
 };
