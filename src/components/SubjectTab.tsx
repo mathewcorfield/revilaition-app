@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Subject, AvailableSubject } from "@/types";
+import { Subject, AvailableSubject, AvailableExamBoard } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { addUserSubject, removeUserSubject } from "@/services/dataService";
 import { useUser } from "@/context/UserContext";
@@ -209,7 +209,7 @@ const filteredSubjects = (availableSubjects || []).filter(
             {user?.subjects?.map((subject) => (
               <Card 
                 key={subject.id} 
-                className="border-l-4 hover:shadow-md transition-shadow cursor-pointer"
+                className="relative border-l-4 hover:shadow-md transition-shadow cursor-pointer"
                 style={{ borderLeftColor: subject.iconColor }}
                   onClick={() => navigate(`/subject/${subject.id}`)}
               >
@@ -224,7 +224,10 @@ const filteredSubjects = (availableSubjects || []).filter(
                     </Badge>
                   </div>
                   <button
-                    onClick={() => handleRemoveSubject(subject.id)} // Handle removal
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveSubject(subject.id);
+                      }}
                     className="absolute top-2 right-2 text-red-500 hover:text-red-700"
                     aria-label="Remove Subject"
                   >
