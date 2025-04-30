@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Subject, AvailableSubject } from "@/types";
 import SubjectDetail from "./SubjectDetail";
 import { useToast } from "@/hooks/use-toast";
-import { addUserSubject, removeUserSubject } from "@/services/dataService";
 
 interface SubjectTabProps {
   userId: string;
@@ -29,96 +28,97 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ userId, subjects: initialSubjec
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
-  
- const handleAddSubject = async () => {
-  if (!availableSubjects || !userId) return;
 
-  const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
-  if (subjectToAdd && !subjectToAdd.launched) {
-    toast({
-      title: "Coming Soon",
-      description: `${subjectToAdd.name} is not yet available.`,
-      variant: "destructive",
-    });
-    return;
-  }
+  const handleAddSubject = async () => {
+    if (!availableSubjects || !userId) return;
 
-  if (subjectToAdd && selectedExamBoard) {
+    const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
+    if (subjectToAdd && !subjectToAdd.launched) {
+      toast({
+        title: "Coming Soon",
+        description: `${subjectToAdd.name} is not yet available.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (subjectToAdd && selectedExamBoard) {
+      try {
+        console.log(`Adding subject: ${subjectToAdd.name} for user: ${userId}`); // Debugging log
+
+        const newSubject: Subject = {
+          id: `${subjectToAdd.id}-${Date.now()}`,
+          name: subjectToAdd.name,
+          examBoard: selectedExamBoard,
+          iconColor: subjectToAdd.iconColor,
+          subtopics: subjectToAdd.subtopics.map(st => ({
+            ...st,
+            learnt: 0,
+            revised: 0
+          }))
+        };
+
+        setSubjects([...subjects, newSubject]);
+        setIsAddDialogOpen(false);
+        setSelectedSubjectToAdd("");
+        setSelectedExamBoard("");
+
+        toast({
+          title: "Subject Added",
+          description: `${subjectToAdd.name} has been added to your subjects.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Error Adding Subject",
+          description: String(error),
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleRemoveSubject = async (subjectId: string) => {
+    if (!userId) return;
+
+    const matching = availableSubjects?.find(s => subjectId.includes(s.id));
+    if (!matching) return;
+
     try {
-      await addUserSubject(userId, subjectToAdd.id);
+      console.log(`Removing subject with ID: ${subjectId} for user: ${userId}`); // Debugging log
 
-      const newSubject: Subject = {
-        id: `${subjectToAdd.id}-${Date.now()}`,
-        name: subjectToAdd.name,
-        examBoard: selectedExamBoard,
-        iconColor: subjectToAdd.iconColor,
-        subtopics: subjectToAdd.subtopics.map(st => ({
-          ...st,
-          learnt: 0,
-          revised: 0
-        }))
-      };
-
-      setSubjects([...subjects, newSubject]);
-      setIsAddDialogOpen(false);
-      setSelectedSubjectToAdd("");
-      setSelectedExamBoard("");
+      const updatedSubjects = subjects.filter(subject => subject.id !== subjectId);
+      setSubjects(updatedSubjects);
 
       toast({
-        title: "Subject Added",
-        description: `${subjectToAdd.name} has been added to your subjects.`
+        title: "Subject Removed",
+        description: "The subject has been removed from your subjects.",
       });
     } catch (error) {
       toast({
-        title: "Error Adding Subject",
+        title: "Error Removing Subject",
         description: String(error),
         variant: "destructive",
       });
     }
-  }
-};
-  
-const handleRemoveSubject = async (subjectId: string) => {
-  if (!userId) return;
+  };
 
-  const matching = availableSubjects?.find(s => subjectId.includes(s.id));
-  if (!matching) return;
-
-  try {
-    await removeUserSubject(userId, matching.id);
-
-    const updatedSubjects = subjects.filter(subject => subject.id !== subjectId);
-    setSubjects(updatedSubjects);
-
-    toast({
-      title: "Subject Removed",
-      description: "The subject has been removed from your subjects.",
-    });
-  } catch (error) {
-    toast({
-      title: "Error Removing Subject",
-      description: String(error),
-      variant: "destructive",
-    });
-  }
-};
   // Filter available subjects to exclude the ones that are already selected
-const filteredSubjects = (availableSubjects || []).filter(
-  subject => !subjects.some(s => s.id.includes(subject.id))
-);
-  
+  const filteredSubjects = (availableSubjects || []).filter(
+    subject => !subjects.some(s => s.id.includes(subject.id))
+  );
+
   const getLearntProgress = (subject: Subject) => {
     const totalSubtopics = subject.subtopics.length;
     if (totalSubtopics === 0) return 0;
-    
+
     const learntCount = subject.subtopics.reduce((sum, subtopic) => sum + (subtopic.learnt > 0 ? 1 : 0), 0);
     return Math.round((learntCount / totalSubtopics) * 100);
   };
-  
+
   const getRevisedProgress = (subject: Subject) => {
     const totalSubtopics = subject.subtopics.length;
     if (totalSubtopics === 0) return 0;
-    
+
     const revisedCount = subject.subtopics.reduce((sum, subtopic) => sum + (subtopic.revised > 0 ? 1 : 0), 0);
     return Math.round((revisedCount / totalSubtopics) * 100);
   };
@@ -198,83 +198,83 @@ const filteredSubjects = (availableSubjects || []).filter(
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-  {subjects.map((subject) => (
-    <Card 
-      key={subject.id} 
-      className="border-l-4 hover:shadow-md transition-shadow cursor-pointer relative"
-      style={{ borderLeftColor: subject.iconColor }}
-      onClick={() => {
-        navigate(`/subject/${subject.id}`);
-      }}
-    >
-      {/* Remove Button */}
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute top-2 right-2"
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent card click
-          handleRemoveSubject(subject.id);
-        }}
-      >
-        <span className="text-xl text-red-600">X</span>
-      </Button>
+            {subjects.map((subject) => (
+              <Card 
+                key={subject.id} 
+                className="border-l-4 hover:shadow-md transition-shadow cursor-pointer relative"
+                style={{ borderLeftColor: subject.iconColor }}
+                onClick={() => {
+                  navigate(`/subject/${subject.id}`);
+                }}
+              >
+                {/* Remove Button */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="absolute top-2 right-2"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    handleRemoveSubject(subject.id);
+                  }}
+                >
+                  <span className="text-xl text-red-600">X</span>
+                </Button>
 
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Book size={18} style={{ color: subject.iconColor }} /> 
-            {subject.name}
-          </CardTitle>
-          <Badge variant="outline" className="uppercase">
-            {subject.examBoard}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <div className="flex items-center gap-1">
-                <Check size={14} className="text-green-500" />
-                <span>Learnt</span>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Book size={18} style={{ color: subject.iconColor }} /> 
+                      {subject.name}
+                    </CardTitle>
+                    <Badge variant="outline" className="uppercase">
+                      {subject.examBoard}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <div className="flex items-center gap-1">
+                          <Check size={14} className="text-green-500" />
+                          <span>Learnt</span>
+                        </div>
+                        <span>{getLearntProgress(subject)}%</span>
+                      </div>
+                      <Progress value={getLearntProgress(subject)} className="h-1.5" />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <div className="flex items-center gap-1">
+                          <Edit3 size={14} className="text-blue-500" />
+                          <span>Revised</span>
+                        </div>
+                        <span>{getRevisedProgress(subject)}%</span>
+                      </div>
+                      <Progress value={getRevisedProgress(subject)} className="h-1.5" />
+                    </div>
+                  </div>
+                  <Separator className="my-3" />
+                  <div className="text-xs text-muted-foreground">
+                    {subject.subtopics.length} subtopics
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            {subjects.length === 0 && (
+              <div className="col-span-full text-center py-8 bg-muted/50 rounded-lg">
+                <Book size={40} className="mx-auto text-muted-foreground mb-2" />
+                <h3 className="font-medium mb-1">No Subjects Added Yet</h3>
+                <p className="text-sm text-muted-foreground mb-4">Add your first subject to start tracking your learning progress</p>
+                <DialogTrigger asChild>
+                  <Button variant="outline" onClick={() => setIsAddDialogOpen(true)}>
+                    <PlusCircle size={16} className="mr-2" /> Add Your First Subject
+                  </Button>
+                </DialogTrigger>
               </div>
-              <span>{getLearntProgress(subject)}%</span>
-            </div>
-            <Progress value={getLearntProgress(subject)} className="h-1.5" />
+            )}
           </div>
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <div className="flex items-center gap-1">
-                <Edit3 size={14} className="text-blue-500" />
-                <span>Revised</span>
-              </div>
-              <span>{getRevisedProgress(subject)}%</span>
-            </div>
-            <Progress value={getRevisedProgress(subject)} className="h-1.5" />
-          </div>
-        </div>
-        <Separator className="my-3" />
-        <div className="text-xs text-muted-foreground">
-          {subject.subtopics.length} subtopics
-        </div>
-      </CardContent>
-    </Card>
-  ))}
-  
-  {subjects.length === 0 && (
-    <div className="col-span-full text-center py-8 bg-muted/50 rounded-lg">
-      <Book size={40} className="mx-auto text-muted-foreground mb-2" />
-      <h3 className="font-medium mb-1">No Subjects Added Yet</h3>
-      <p className="text-sm text-muted-foreground mb-4">Add your first subject to start tracking your learning progress</p>
-      <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => setIsAddDialogOpen(true)}>
-          <PlusCircle size={16} className="mr-2" /> Add Your First Subject
-        </Button>
-      </DialogTrigger>
-    </div>
-  )}
-</div>
         </>
       )}
     </div>
