@@ -147,7 +147,7 @@ try {
       // If no user profile exists, insert a new record into the 'users' table
       const { error: insertError } = await supabase
         .from('users')
-        .insert([{ id: userId, current_level: level, country }]);
+        .insert([{ id: userId, current_level: level, country_id: country }]);
 
       if (insertError) {
         toast({
