@@ -43,9 +43,9 @@ if (subjectToAdd && !subjectToAdd.launched) {
     
     if (subjectToAdd && selectedExamBoard) {
       const newSubject: Subject = {
-        id: `${subjectToAdd.id}-${Date.now()}`,
+        id: subjectToAdd.id,
         name: subjectToAdd.name,
-        examBoard: selectedExamBoard,
+        examBoard: selectedExamBoard.name,
         iconColor: subjectToAdd.iconColor,
         subtopics: (subjectToAdd.subtopics || []).map(st => ({
               ...st,
