@@ -195,3 +195,23 @@ export const getAllExamBoards = async () => {
     name: board.name,
   }));
 };
+
+// INSERT a subject into user_subjects
+export async function addUserSubject(userId: string, subjectId: string, examBoardId: string) {
+  const { data, error } = await supabase
+    .from("user_subjects")
+    .insert([{ user_id: userId, subject_id: subjectId}]);
+
+  if (error) throw error;
+  return data;
+}
+
+// DELETE a subject from user_subjects
+export async function removeUserSubject(userId: string, subjectId: string) {
+  const { error } = await supabase
+    .from("user_subjects")
+    .delete()
+    .match({ user_id: userId, subject_id: subjectId });
+
+  if (error) throw error;
+}
