@@ -65,25 +65,6 @@ const Login = () => {
             return;
           }
           
-        // Insert user data into the `public.users` table
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id, // Use Supabase's user ID
-              email: email,
-              name: name, // Assume 'name' field is provided
-            }
-          ]);
-
-        if (insertError) {
-          toast({
-            title: "Error",
-            description: "Failed to insert user into database.",
-            variant: "destructive",
-          });
-          return;
-        }
           setUser({ email, name });
           toast({
             title: "Account Created",
