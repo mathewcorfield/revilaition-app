@@ -110,13 +110,15 @@ export const getUserSubjects = async (userId: string) => {
     .from("user_subjects")
     .select(`
       subject_id,
+      key_examboard_level_subject (
+        examboard (
+          name
+        )
+      ),
       subjects (
         id,
         name,
         icon_color,
-        key_examboard_level_subject (
-          examboard (name)
-        ),
         subtopics (
           id,
           name,
@@ -128,25 +130,26 @@ export const getUserSubjects = async (userId: string) => {
       )
     `)
     .eq("user_id", userId);
-  
+
   if (error) {
     console.error("Failed to fetch subjects:", error);
     return [];
   }
 
   if (!data) {
-    console.warn("No subjects found with ID:", userId);
+    console.warn("No subjects found for user:", userId);
     return null;
   }
 
   return data.map((record: any) => {
     const subject = record.subjects;
+    const examBoardName = record.key_examboard_level_subject?.examboard?.name ?? "Unknown";
 
     return {
       id: subject.id,
       name: subject.name,
-      examBoard: subject.key_examboard_level_subject?.examboard?.name || "",
       iconColor: subject.icon_color,
+      examBoard: examBoardName,
       subtopics: subject.subtopics.map((sub: any) => {
         const states = sub.user_subtopics.map((us: any) => us.state);
         return {
@@ -161,3 +164,38 @@ export const getUserSubjects = async (userId: string) => {
   });
 };
 
+
+export const getAllSubjectNames = async () => {
+  const { data, error } = await supabase
+    .from("subjects")
+    .select("id, name, category, launched, icon_color");
+
+  if (error) {
+    console.error("Failed to fetch subjects:", error);
+    return [];
+  }
+
+  return data.map((subject) => ({
+    id: subject.id,
+    name: subject.name,
+    category: subject.category,
+    launched: subject.launched,
+    iconColor: subject.icon_color,
+  }));
+};
+
+export const getAllExamBoards = async () => {
+  const { data, error } = await supabase
+    .from("examboard")
+    .select("id, name");
+
+  if (error) {
+    console.error("Failed to fetch exam boards:", error);
+    return [];
+  }
+
+  return data.map((board) => ({
+    id: board.id,
+    name: board.name,
+  }));
+};

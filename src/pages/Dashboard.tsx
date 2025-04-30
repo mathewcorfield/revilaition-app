@@ -11,12 +11,39 @@ import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
+import { getAllSubjectNames, getAllExamBoards } from "@/services/dataService";
 
 const Dashboard = () => {
   const { user, loading } = useUser();
   const navigate = useNavigate();
+  const [allSubjects, setAllSubjects] = useState<any[]>([]);
+  const [loadingSubjects, setLoadingSubjects] = useState(true);
+  const [allExamBoards, setAllExamBoards] = useState<any[]>([]);
+  const [loadingExamBoards, setLoadingExamBoards] = useState(true);
 
 useEffect(() => {
+    const subcached = sessionStorage.getItem("allSubjects");
+    const examcached = sessionStorage.getItem("allExamBoards");
+    if (subcached) {
+      setAllSubjects(JSON.parse(subcached));
+      setLoadingSubjects(false);
+    } else {
+      getAllSubjectNames().then((data) => {
+        setAllSubjects(data);
+        sessionStorage.setItem("allSubjects", JSON.stringify(data));
+        setLoadingSubjects(false);
+      });
+    }
+  if (examcached) {
+      setAllExamBoards(JSON.parse(examcached));
+      setLoadingExamBoards(false);
+    } else {
+      getAllExamBoards().then((data) => {
+        setAllExamBoards(data);
+        sessionStorage.setItem("allExamBoards", JSON.stringify(data));
+        setLoadingExamBoards(false);
+      });
+    }
     if (!loading && !user) {
       navigate("/login");
     }
@@ -82,7 +109,8 @@ const handleLogout = async () => {
             <TabsContent value="subjects">
               <SubjectTab 
                 subjects={user.subjects} 
-                availableSubjects={user.availableSubjects} 
+                availableSubjects={allSubjects} 
+                availableExamBoards={allExamBoards}
               />
             </TabsContent>
             <TabsContent value="personality">

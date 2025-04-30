@@ -15,9 +15,10 @@ import { useToast } from "@/hooks/use-toast";
 interface SubjectTabProps {
   subjects: Subject[] | null;
   availableSubjects: AvailableSubject[] | null;
+  availableExamBoards: AvailableExamBoard[] | null;
 }
 
-const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects }) => {
+const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects, availableExamBoards}) => {
   // Default to empty arrays if null
   const [subjects, setSubjects] = useState<Subject[]>(initialSubjects || []);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -26,10 +27,19 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
+  
   const handleAddSubject = () => {
     if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
 
-    const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
+const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
+if (subjectToAdd && !subjectToAdd.launched) {
+  toast({
+    title: "Coming Soon",
+    description: `${subjectToAdd.name} is not yet available.`,
+    variant: "destructive",
+  });
+  return;
+}
     
     if (subjectToAdd && selectedExamBoard) {
       const newSubject: Subject = {
@@ -57,9 +67,9 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   };
 
   // Filter available subjects to exclude the ones that are already selected
-  const filteredSubjects = (availableSubjects || []).filter(
-    subject => !subjects.includes(subject.id)
-  );
+const filteredSubjects = (availableSubjects || []).filter(
+  subject => !subjects.some(s => s.name === subject.name)
+);
   
   const getLearntProgress = (subject: Subject) => {
     const totalSubtopics = subject.subtopics.length;
@@ -106,13 +116,20 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
                       <SelectTrigger>
                         <SelectValue placeholder="Choose a subject" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {filteredSubjects.map(subject => (
-                          <SelectItem key={subject.id} value={subject.id}>
-                            {subject.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
+                        <SelectContent>
+                          {filteredSubjects.map(subject => (
+                            <SelectItem 
+                              key={subject.id} 
+                              value={subject.id} 
+                              disabled={subject.launched !== true}
+                            >
+                              {subject.name}
+                              {subject.launched !== true && (
+                                <span className="ml-2 text-xs text-muted-foreground">(Coming Soon)</span>
+                              )}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
@@ -122,12 +139,11 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
                         <SelectValue placeholder="Choose an exam board" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="aqa">AQA</SelectItem>
-                        <SelectItem value="wjec">WJEC</SelectItem>
-                        <SelectItem value="edexcel">Edexcel</SelectItem>
-                        <SelectItem value="ocr">OCR</SelectItem>
-                        <SelectItem value="ccea">CCEA</SelectItem>
-                        <SelectItem value="sqa">SQA</SelectItem>
+                        {availableExamBoards?.map((board) => (
+                          <SelectItem key={board.id} value={board.id}>
+                            {board.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

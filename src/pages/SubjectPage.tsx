@@ -16,23 +16,26 @@ const SubjectPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user, loading } = useUser();
-
+  
+  const [subject, setSubject] = useState<any | null>(null);
   const [subtopics, setSubtopics] = useState<Subtopic[]>([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
   const [question, setQuestion] = useState<string | null>(null);
   const [answer, setAnswer] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!loading && user && id) {
-      const foundSubject = user.subjects.find((s) => s.id === id);
-      if (foundSubject) {
-        setSubtopics(foundSubject.subtopics);
-      }
+  console.log("Route id:", id);
+  console.log("Available subjects:", user?.subjects.map(s => s.id));
+  
+useEffect(() => {
+  if (!loading && user?.subjects && id) {
+    const subject = user.subjects.find((s) => String(s.id) === String(id));
+    if (subject) {
+      setSubtopics(subject.subtopics);
+      setSubject(subject); // Use local subject state
     }
-  }, [user, id, loading]);
-
-  const subject = user?.subjects.find((s) => s.id === id);
+  }
+}, [user, id, loading]);
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
