@@ -78,9 +78,10 @@ const SubjectPage: React.FC = () => {
             );
         } finally {
             setIsGenerating(false);
-        
+        }
     }
 };
+    
 const handleAnswerSubmit = async () => {
     if (!answer) {
         toast({title: "Error", description: "Please provide an answer."});
@@ -97,9 +98,11 @@ const handleAnswerSubmit = async () => {
             {title: "Error", description: "Failed to evaluate answer."}
         );
     } finally {
-        setIsEvaluating(false);
+        setIsEvaluating(false);  
+    }
+};
     
-}};const handleGenerateRandomQuestion = () => {
+const handleGenerateRandomQuestion = () => {
 if (subtopics.length === 0) {
     toast({title: "No Subtopics", description: "No subtopics to generate questions from."});
     return;
@@ -126,8 +129,8 @@ handleGenerateQuestion(random.name, random);};
   <Button
     variant="outline"
     onClick={handleGenerateRandomQuestion}
-    className="ml-auto py-2 px-6" {/* Added padding for a more spacious button */}
-  >
+    className="ml-auto py-2 px-6" 
+    >
     <Shuffle size={16} className="mr-2" />
     Random Question
   </Button>
@@ -231,4 +234,8 @@ handleGenerateQuestion(random.name, random);};
     </div>
   </DialogContent>
 </Dialog>
-</div>);};export default SubjectPage;
+</div>
+);
+};
+
+export default SubjectPage;
