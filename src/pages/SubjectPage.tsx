@@ -24,15 +24,18 @@ const SubjectPage: React.FC = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [evaluationFeedback, setEvaluationFeedback] = useState<string | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
     if (!loading && user?.subjects && id) {
-      const subject = user.subjects.find((s) => String(s.id) === String(id));
-      if (subject) {
-        setSubtopics(subject.subtopics);
-        setSubject(subject);
-      }
+        const subject = user.subjects.find((s) => String(s.id) === String(id));
+        if (subject) {
+            setSubtopics(subject.subtopics || []); // Ensure subtopics is always an array
+            setSubject(subject); // Use local subject state
+        } else {
+            // Handle the case where subject is not found
+            console.error("Subject not found with ID:", id);
+        }
     }
-  }, [user, id, loading]);
+}, [user, id, loading]);
 
   const handleLearntToggle = (subtopicId: string) => {
     setSubtopics((prev) =>
