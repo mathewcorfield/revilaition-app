@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { useUser } from "@/context/UserContext";
+import { getUserData } from "@/hooks/getUserData";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,7 +40,22 @@ const Login = () => {
           return;
         }
 
-        setUser({ email, name });
+      // Get the logged-in user's details
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !userData?.user) {
+          toast({
+            title: "Error",
+            description: "Unable to fetch user data. Please try again later.",
+          });
+          return;
+        }
+
+        // Assuming getUserData is a function that fetches extra user data
+        const fullUserData = await getUserData(userData.user.id);
+
+        // Set the user in the global context
+        setUser(fullUserData);
         toast({
           title: "Login Successful",
           description: "Welcome back to RevilAItion!",
