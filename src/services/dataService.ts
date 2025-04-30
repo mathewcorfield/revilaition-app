@@ -249,7 +249,7 @@ export const addEvent = async (userId: string, title: string, type: string, desc
   const { data: eventData, error: eventError } = await supabase
     .from("events")
     .insert([{ title, description, type }])
-    .select("event_id")  // Return the event_id after insertion
+    .select("id")  // Return the event_id after insertion
 
   if (eventError) {
     console.error("Failed to add event:", eventError);
@@ -276,3 +276,20 @@ export const addEvent = async (userId: string, title: string, type: string, desc
 
   return { eventData, userEventData }; // Return both event data and user event data
 };
+
+export const removeEvent = async (
+  userId: string,
+  eventId: string
+): Promise<void> => {
+  const { error } = await supabase
+    .from("user_subjects")
+    .delete()
+    .match({ user_id: userId, event_id: eventId });
+
+  if (error) {
+    console.error("Failed to remove user event:", error);
+    
+    throw error; // Propagate the error for handling at a higher level
+  }
+};
+
