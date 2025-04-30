@@ -296,7 +296,7 @@ export const removeEvent = async (
 export const getAllLevels = async () => {
   const { data, error } = await supabase
     .from("level")
-    .select("id, name");
+    .select("id, name, launched");
 
   if (error) {
     console.error("❌ Failed to fetch exam boards:", error);
@@ -306,6 +306,7 @@ export const getAllLevels = async () => {
   return (data ?? []).map((level) => ({
     id: level.id,
     name: level.name,
+    launched: level.launched,
   }));
 };
 
