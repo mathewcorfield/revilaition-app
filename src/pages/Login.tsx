@@ -94,11 +94,7 @@ const Login = () => {
             });
             return;
           }
-          
-            // Temporarily store user info (in session or context)
-            sessionStorage.setItem("pendingUserEmail", email);
-            sessionStorage.setItem("pendingUserName", name);
-          
+
           toast({
             title: "Account Created",
             description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
