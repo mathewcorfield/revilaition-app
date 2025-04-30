@@ -19,7 +19,7 @@ interface SubjectTabProps {
   availableExamBoards: AvailableExamBoard[] | null;
 }
 
-const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, availableSubjects, availableExamBoards}) => {
+const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExamBoards}) => {
   // Default to empty arrays if null
   const { user, setUser } = useUser(); 
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -30,56 +30,58 @@ const SubjectTab: React.FC<SubjectTabProps> = ({ subjects: initialSubjects, avai
   const navigate = useNavigate();
   
   const handleAddSubject = async () => {
-    if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
+  if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
 
-const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
-if (subjectToAdd && !subjectToAdd.launched) {
-  toast({
-    title: "Coming Soon",
-    description: `${subjectToAdd.name} is not yet available.`,
-    variant: "destructive",
-  });
-  return;
-}
-    
-    if (subjectToAdd && selectedExamBoard) {
+  const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
+  
+  if (subjectToAdd && !subjectToAdd.launched) {
+    toast({
+      title: "Coming Soon",
+      description: `${subjectToAdd.name} is not yet available.`,
+      variant: "destructive",
+    });
+    return;
+  }
+  
+  if (subjectToAdd && selectedExamBoard) {
+    try {
+      await addUserSubject(user.id, subjectToAdd.id, selectedExamBoard);
 
-        try {
-    await addUserSubject(user.id, subjectToAdd.id, selectedExamBoard);
-          
       const newSubject: Subject = {
         id: subjectToAdd.id,
         name: subjectToAdd.name,
         examBoard: selectedExamBoard,
         iconColor: subjectToAdd.iconColor,
         subtopics: (subjectToAdd.subtopics || []).map(st => ({
-              ...st,
+          ...st,
           learnt: 0,
-          revised: 0
-        }))
+          revised: 0,
+        })),
       };
-          
+
       setUser(prevUser => ({
         ...prevUser,
         subjects: [...(prevUser?.subjects || []), newSubject],
       }));
-          
+
       setIsAddDialogOpen(false);
       setSelectedSubjectToAdd("");
       setSelectedExamBoard("");
       
       toast({
         title: "Subject Added",
-        description: `${subjectToAdd.name} has been added to your subjects.`
+        description: `${subjectToAdd.name} has been added to your subjects.`,
       });
-            } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to add subject. Please try again.",
-      variant: "destructive",
-    });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add subject. Please try again.",
+        variant: "destructive",
+      });
     }
-  };
+  }
+};
+
 
   // Filter available subjects to exclude the ones that are already selected
 const filteredSubjects = (availableSubjects || []).filter(
