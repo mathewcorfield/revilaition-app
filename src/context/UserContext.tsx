@@ -12,6 +12,7 @@ import { mockUser } from "@/data/mockData";
 
 type UserContextType = {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   loading: boolean;
 };
 
@@ -57,9 +58,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <UserContext.Provider value={{ user, loading }}>
-      {children}
-    </UserContext.Provider>
+<UserContext.Provider value={{ user, setUser, loading }}>
+  {children}
+</UserContext.Provider>
   );
 };
 
