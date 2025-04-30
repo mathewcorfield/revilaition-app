@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { useUser } from "@/context/UserContext";
 import { getUserData } from "@/hooks/getUserData";
+import OnboardingModal from "@/components/OnboardingModal";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +17,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [level, setLevel] = useState(""); // User's study level
+  const [country, setCountry] = useState(""); // User's country
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setUser } = useUser();
@@ -51,16 +55,26 @@ const Login = () => {
           return;
         }
 
-        // Assuming getUserData is a function that fetches extra user data
-        const fullUserData = await getUserData(userData.user.id);
+// Check if the user has a `userID` in the database (first login check)
+        const { data: userProfile, error: profileError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userData.user.id)
+          .single();
 
-        // Set the user in the global context
-        setUser(fullUserData);
-        toast({
-          title: "Login Successful",
-          description: "Welcome back to RevilAItion!",
-        });
-        navigate("/dashboard");
+        if (profileError || !userProfile) {
+          // If no profile found, show onboarding
+          setShowOnboarding(true);
+        } else {
+          // If user profile exists, proceed normally
+          const fullUserData = await getUserData(userData.user.id);
+          setUser(fullUserData);
+          toast({
+            title: "Login Successful",
+            description: "Welcome back to RevilAItion!",
+          });
+          navigate("/dashboard");
+        }
       } else {
         if (email && password && name) {
           const { data, error } = await supabase.auth.signUp({
@@ -100,7 +114,48 @@ const Login = () => {
       });
     }
   };
+  
+// Onboarding logic - Save the user's answers
+  const handleOnboardingSubmit = async () => {
+    if (!level || !country) {
+      toast({
+        title: "Error",
+        description: "Please complete the onboarding questions.",
+      });
+      return;
+    }
 
+    try {
+      // Save the user's level and country to the database
+      const { data, error } = await supabase
+        .from('users')
+        .update({ level, country })
+        .eq('id', supabase.auth.user()?.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+        });
+        return;
+      }
+
+      // Update user context with new information
+      setUser({ ...userProfile, level, country });
+      setShowOnboarding(false);
+      toast({
+        title: "Onboarding Complete",
+        description: "Welcome to RevilAItion! Let's start learning.",
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong during onboarding. Please try again.",
+      });
+    }
+  };
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
       <div className="w-full max-w-md">
@@ -161,6 +216,14 @@ const Login = () => {
           </CardFooter>
         </Card>
       </div>
+            {/* Show onboarding modal if it's the user's first login */}
+      {showOnboarding && (
+        <OnboardingModal
+          setLevel={setLevel}
+          setCountry={setCountry}
+          onSubmit={handleOnboardingSubmit}
+        />
+      )}
     </div>
   );
 };
