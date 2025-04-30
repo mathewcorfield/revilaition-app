@@ -26,17 +26,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const setUserAndCache = useCallback((newUser: User | null) => {
-    setUserState(newUser);
-    if (newUser) {
-      const cachedUser: CachedUser = {
-        user: newUser,
-        cachedAt: Date.now(),
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cachedUser));
-    } else {
-      localStorage.removeItem(CACHE_KEY);
-    }
+  const setUserAndCache = useCallback((newUserOrUpdater: User | null | ((prevUser: User | null) => User | null)) => {
+    setUserState(prev => {
+      const newUser = typeof newUserOrUpdater === "function"
+        ? (newUserOrUpdater as (prevUser: User | null) => User | null)(prev)
+        : newUserOrUpdater;
+  
+      if (newUser) {
+        const cachedUser: CachedUser = {
+          user: newUser,
+          cachedAt: Date.now(),
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cachedUser));
+      } else {
+        localStorage.removeItem(CACHE_KEY);
+      }
+  
+      return newUser;
+    });
   }, []);
 
   const clearUser = useCallback(() => {
