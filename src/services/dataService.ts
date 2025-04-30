@@ -170,7 +170,7 @@ export const getAllSubjectNames = async () => {
     console.error("Failed to fetch subjects:", error);
     return [];
   }
-
+  console.log("✅ Collected Subjects from Supabase:", data);
   return data.map((subject) => ({
     id: subject.id,
     name: subject.name,
