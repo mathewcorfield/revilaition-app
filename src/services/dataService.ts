@@ -257,7 +257,7 @@ export const fetchSubtopicsForSubject = async (subjectId: string) => {
   return data;
 };
 
-export const addEvent = async (userId: string, title: string, type: string, description: string, eventdate: date) => {
+export const addEvent = async (userId: string, title: string, type: string, description: string, eventdate: Date) => {
   // Check if an event with the same title already exists
 const { data: existingEvent, error: fetchError } = await supabase
   .from("events")
@@ -303,7 +303,7 @@ if (!existingEvent) {
     throw userEventError; // Propagate the error for handling at a higher level
   }
 
-  return { eventData, userEventData }; // Return both event data and user event data
+  return {  }; 
 };
 
 export const removeEvent = async (
