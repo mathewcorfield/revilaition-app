@@ -258,6 +258,21 @@ export const fetchSubtopicsForSubject = async (subjectId: string) => {
 };
 
 export const addEvent = async (userId: string, title: string, type: string, description: string, eventdate: date) => {
+  // Check if an event with the same title already exists
+const { data: existingEvent, error: fetchError } = await supabase
+  .from("events")
+  .select("id")
+  .eq("title", title) // Match the title
+  .single(); // Get a single row if exists
+
+if (fetchError) {
+  // Handle any error that occurred during the fetch operation
+  console.error("Error fetching event:", fetchError);
+  return;
+}
+let eventId: string | undefined;
+// If an event with the same title doesn't exist, insert a new one
+if (!existingEvent) {
  // Insert the event into the "events" table
   const { data: eventData, error: eventError } = await supabase
     .from("events")
@@ -270,8 +285,9 @@ export const addEvent = async (userId: string, title: string, type: string, desc
   }
 
   // Extract the event_id from the inserted event data
-  const eventId = eventData?.[0]?.id;
-
+   eventId = eventData?.[0]?.id;
+}
+  else { eventId = existingEvent}
   if (!eventId) {
     console.error("Failed to retrieve event_id from the inserted event.");
     throw new Error("Event insertion failed. No event_id returned.");
