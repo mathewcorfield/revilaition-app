@@ -9,7 +9,7 @@ import {    Dialog,    DialogContent,    DialogHeader,    DialogTitle,    Dialog
 import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
 import {toast} from "@/components/ui/use-toast";
 import {Subtopic} from "@/types";
-import { addUserSubtopic } from "@/services/dataService";
+import { addUserSubtopic, addEvent  } from "@/services/dataService";
         
 const SubjectPage: React.FC = () => {
     const navigate = useNavigate();
@@ -24,6 +24,68 @@ const SubjectPage: React.FC = () => {
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
+const [isLearning, setIsLearning] = useState(false); // To track if the user is learning
+const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in seconds
+const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+
+useEffect(() => {
+  let interval: NodeJS.Timeout | null = null;
+  if (isLearning) {
+    interval = setInterval(() => {
+      setElapsedTime((prev) => prev + 1);
+    }, 1000);
+  }
+
+  return () => {
+    if (interval) clearInterval(interval);
+  };
+}, [isLearning]);
+        
+        const handleLogLearning = async () => {
+                  const userId = user?.id; // Ensure user is not undefined
+  const subtopicId = selectedSubtopic?.id; // Ensure subtopic is selected
+  if (!userId || !subtopicId) {
+    toast({ title: "Error", description: "User or Subtopic not found." });
+    return;
+  }
+    const eventDate = new Date();
+
+    try {
+      // Log the learning event with the elapsed time
+      await addEvent(userId, `Learned ${subtopicId}`, "Event", `Learned for ${elapsedTime} seconds`, eventDate);
+
+      // Toast feedback
+      toast({
+        title: "Learning Logged",
+        description: `You have logged ${elapsedTime} seconds of learning for ${subtopicId}.`,
+      });
+
+      // Redirect back to the subject page
+      navigate("/subject"); // Replace with your subject page route
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to log the learning event.",
+      });
+      console.error("Error logging learning event:", err);
+    }
+  };
+
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const handleStartLearning = () => {
+    setIsLearning(true); // Start the learning timer
+  };
+
+  const handleStopLearning = () => {
+    setIsLearning(false); // Stop the learning timer
+    handleLogLearning(); // Log the learning event
+  };
+        
     useEffect(() => {
         if (!loading && user ?. subjects && id) {
             const subject = user.subjects.find((s) => String(s.id) === String(id));
@@ -50,7 +112,7 @@ const SubjectPage: React.FC = () => {
   );
 
   try {
-    await addUserSubtopic(user.id, subtopicId, 0);
+    await addUserSubtopic(user.id, subtopicId, newValue);
           if (setUser) {
       const updatedSubjects = user.subjects.map((subject) => {
         if (String(subject.id) === String(id)) {
@@ -85,7 +147,7 @@ const handleRevisedToggle = async (subtopicId: string) => {
   );
 
   try {
-    await addUserSubtopic(user.id, subtopicId, 1);
+    await addUserSubtopic(user.id, subtopicId, newValue);
           if (setUser) {
       const updatedSubjects = user.subjects.map((subject) => {
         if (String(subject.id) === String(id)) {
@@ -206,7 +268,7 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
                 }>
                     <Check size={16}/> {
                     subtopic.learnt
-                        ? "Learnt"
+                        ? "Mark as Learnt"
                         : "Learnt"
                 } </Button>
                 <Button variant={
@@ -220,7 +282,7 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
                 }>
                     <Edit3 size={16}/> {
                     subtopic.revised
-                        ? "Revised"
+                        ? "Mark as Revised"
                         : "Revised"
                 } </Button>
                 <Button
