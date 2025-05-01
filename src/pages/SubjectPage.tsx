@@ -9,6 +9,8 @@ import {    Dialog,    DialogContent,    DialogHeader,    DialogTitle,    Dialog
 import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
 import {toast} from "@/components/ui/use-toast";
 import {Subtopic} from "@/types";
+import { addUserSubtopic } from "@/services/dataService";
+        
 const SubjectPage: React.FC = () => {
     const navigate = useNavigate();
     const {id} = useParams();
@@ -37,30 +39,32 @@ const SubjectPage: React.FC = () => {
     if (!subject) {
         return <div className="text-center mt-8">Subject not found</div>;
     }
-    const handleLearntToggle = (subtopicId : string) => {
-        setSubtopics((prev) => prev.map(
-            (st) => st.id === subtopicId
-                ? {
-                    ...st,
-                    learnt: st.learnt === 1
-                        ? 0
-                        : 1
-                }
-                : st
-        ));
-    };
-    const handleRevisedToggle = (subtopicId : string) => {
-        setSubtopics((prev) => prev.map(
-            (st) => st.id === subtopicId
-                ? {
-                    ...st,
-                    revised: st.revised === 1
-                        ? 0
-                        : 1
-                }
-                : st
-        ));
-    };
+    const handleLearntToggle = async (subtopicId: string) => {
+  setSubtopics((prev) =>
+    prev.map((st) =>
+      st.id === subtopicId ? { ...st, learnt: st.learnt === 1 ? 0 : 1 } : st
+    )
+  );
+  const newValue = subtopics.find((st) => st.id === subtopicId)?.learnt === 1 ? 0 : 1;
+  try {
+    await addUserSubtopic(user.id, subtopicId, 0);
+  } catch (err) {
+    toast({ title: "Error", description: "Failed to update 'Learnt' status." });
+  }
+};
+const handleRevisedToggle = async (subtopicId: string) => {
+  setSubtopics((prev) =>
+    prev.map((st) =>
+      st.id === subtopicId ? { ...st, revised: st.revised === 1 ? 0 : 1 } : st
+    )
+  );
+  const newValue = subtopics.find((st) => st.id === subtopicId)?.revised === 1 ? 0 : 1;
+  try {
+    await addUserSubtopic(user.id, subtopicId, 1);
+  } catch (err) {
+    toast({ title: "Error", description: "Failed to update 'Revised' status." });
+  }
+};
     const handleGenerateQuestion = async (subtopicName : string, subtopic : Subtopic) => {
         setIsGenerating(true);
         setSelectedSubtopic(subtopic);
@@ -81,6 +85,7 @@ const SubjectPage: React.FC = () => {
         
     }
 };
+    
 const handleAnswerSubmit = async () => {
     if (!answer) {
         toast({title: "Error", description: "Please provide an answer."});
@@ -108,34 +113,28 @@ const random = subtopics[Math.floor(Math.random() * subtopics.length)];
 handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"> {/* Subject header */}
     <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon"
-                onClick={
-                    () => navigate(-1)
-            }>
-                <ArrowLeft size={18}/>
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft size={18} />
             </Button>
             <div>
-                <h3 className="text-lg font-medium"> {
-                    subject.name
-                }</h3>
+                <h3 className="text-lg font-medium">{subject.name}</h3>
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="uppercase"> {
-                        subject.examBoard
-                    }</Badge>
-                    <span className="text-sm text-muted-foreground"> {
-                        subtopics.length
-                    }
-                        subtopics</span>
+                <Badge variant="outline" className="uppercase">{subject.examBoard}</Badge>
+                <span className="text-sm text-muted-foreground">{subtopics.length} subtopics</span>
                 </div>
             </div>
-            <Button variant="outline"
-                onClick={handleGenerateRandomQuestion}
-                className="ml-auto">
-                <Shuffle size={16}
-                    className="mr-2"/>
-                Random Question
-            </Button>
         </div>
+        <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={handleGenerateRandomQuestion} 
+              className="flex items-center gap-2"
+              disabled={isGenerating}
+            >
+              <Shuffle size={16} className="mr-2" />
+              Random Question
+            </Button>
+  </div>
     </div>
     {/* Subtopic cards */}
     <div className="space-y-3"> {
@@ -165,7 +164,7 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
                     <Check size={16}/> {
                     subtopic.learnt
                         ? "Learnt"
-                        : "Mark Learnt"
+                        : "Learnt"
                 } </Button>
                 <Button variant={
                         subtopic.revised
@@ -179,8 +178,16 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
                     <Edit3 size={16}/> {
                     subtopic.revised
                         ? "Revised"
-                        : "Mark Revised"
+                        : "Revised"
                 } </Button>
+                <Button
+      variant="outline"
+      size="sm"
+      onClick={() => handleGenerateQuestion(subtopic.name, subtopic)}
+    >
+      <HelpCircle size={16} />
+      Generate Question
+    </Button>
             </div>
         </Card>))
     } </div>
