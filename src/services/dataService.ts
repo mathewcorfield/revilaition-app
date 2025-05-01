@@ -146,14 +146,29 @@ export const getUserSubjects = async (userId: string) => {
     }
 
     // Only push subtopics if present
-    if (record.subtopic_id) {
-      subjectMap[subjectId].subtopics.push({
-        id: record.subtopic_id,
-        name: record.subtopic_name,
-        description: record.description,
-        learnt: record.user_subtopic_state === "learnt" ? 1 : 0,
-        revised: record.user_subtopic_state === "revised" ? 1 : 0,
-      });
+if (record.subtopic_id) {
+  // Initialize both states to 0
+  let learnt = 0;
+  let revised = 0;
+
+  // Update the state based on `user_subtopic_state`
+  if (record.user_subtopic_state === "Learnt") {
+    learnt = 1;
+  } else if (record.user_subtopic_state === "Revised") {
+    revised = 1;
+  } else if (record.user_subtopic_state === "Learnt and Revised") {
+    learnt = 1;
+    revised = 1;
+  }
+
+  // Push the subtopic with the correct learnt and revised states
+  subjectMap[subjectId].subtopics.push({
+    id: record.subtopic_id,
+    name: record.subtopic_name,
+    description: record.description,
+    learnt: learnt,
+    revised: revised,
+  });
     }
   }
 
