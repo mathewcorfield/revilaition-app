@@ -65,6 +65,7 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
         description: `${newMilestoneTitle} has been added to your milestones.`,
       });
     } catch (error) {
+      console.error("Error adding milestone:", error);
       toast({
         title: "Error",
         description: "Failed to add milestone. Please try again.",
