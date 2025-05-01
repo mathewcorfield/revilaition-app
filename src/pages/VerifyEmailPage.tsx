@@ -12,15 +12,37 @@ const VerifyEmailPage = () => {
   const { setUser } = useUser();
 
   useEffect(() => {
-        // Check if there is an authenticated session
-    const user = supabase.auth.user();
-    // If there's no session, prompt the user to log in again
-    if (!user) {
-      setMessage("No active session. Please log in again.");
-      navigate("/login");
-      setChecking(false);
-      return;
-    }
+    // Check for an authenticated session using getUser()
+    const checkSession = async () => {
+      const { data: userData, error } = await supabase.auth.getUser();
+
+      if (error || !userData?.user) {
+        console.error("Auth check error:", error);
+        setMessage("Error checking email status. Please refresh.");
+        setChecking(false);
+        navigate("/login");  // Redirect to login if no user session
+        return;
+      }
+
+      // Check if the email is verified
+      if (userData.user.email_confirmed_at) {
+        setMessage("Email verified! Preparing your dashboard...");
+
+        try {
+          const fullData = await getUserData(userData.user.id);
+          setUser(fullData);
+          navigate("/dashboard");
+        } catch (err) {
+          console.error("Failed to fetch full user data:", err);
+          setMessage("Verified, but error loading profile. Please try again.");
+        }
+      }
+    };
+
+    // Call check session function immediately
+    checkSession();
+
+    // Set an interval to check for email verification periodically
     const interval = setInterval(async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
@@ -30,6 +52,7 @@ const VerifyEmailPage = () => {
         setChecking(false);
         return;
       }
+
       if (data?.user?.email_confirmed_at) {
         clearInterval(interval);
         setMessage("Email verified! Preparing your dashboard...");
