@@ -14,7 +14,7 @@ import { addUserSubtopic } from "@/services/dataService";
 const SubjectPage: React.FC = () => {
     const navigate = useNavigate();
     const {id} = useParams();
-    const {user, loading} = useUser();
+    const {user, loading, setUser} = useUser();
     const [subject, setSubject] = useState < any | null > (null);
     const [subtopics, setSubtopics] = useState < Subtopic[] > ([]);
     const [selectedSubtopic, setSelectedSubtopic] = useState < Subtopic | null > (null);
@@ -51,6 +51,25 @@ const SubjectPage: React.FC = () => {
 
   try {
     await addUserSubtopic(user.id, subtopicId, 0);
+          if (setUser) {
+      const updatedSubjects = user.subjects.map((subject) => {
+        if (String(subject.id) === String(id)) {
+          return {
+            ...subject,
+            subtopics: subject.subtopics.map((st) =>
+              st.id === subtopicId ? { ...st, learnt: newValue } : st
+            ),
+          };
+        }
+        return subject;
+      });
+
+      setUser({ ...user, subjects: updatedSubjects });
+    }
+              toast({
+      title: newValue === 1 ? "Marked as Learnt" : "Unmarked as Learnt",
+      description: `You have ${newValue === 1 ? "learnt" : "unmarked"} the topic: "${subtopic?.name}"`,
+    });
   } catch (err) {
     toast({ title: "Error", description: "Failed to update 'Learnt' status." });
   }
@@ -67,6 +86,25 @@ const handleRevisedToggle = async (subtopicId: string) => {
 
   try {
     await addUserSubtopic(user.id, subtopicId, 1);
+          if (setUser) {
+      const updatedSubjects = user.subjects.map((subject) => {
+        if (String(subject.id) === String(id)) {
+          return {
+            ...subject,
+            subtopics: subject.subtopics.map((st) =>
+              st.id === subtopicId ? { ...st, revised: newValue } : st
+            ),
+          };
+        }
+        return subject;
+      });
+
+      setUser({ ...user, subjects: updatedSubjects });
+    }
+              toast({
+      title: newValue === 1 ? "Marked as revised" : "Unmarked as revised",
+      description: `You have ${newValue === 1 ? "revised" : "unmarked"} the topic: "${subtopic?.name}"`,
+    });
   } catch (err) {
     toast({ title: "Error", description: "Failed to update 'Revised' status." });
   }
