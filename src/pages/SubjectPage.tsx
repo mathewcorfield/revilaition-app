@@ -132,6 +132,12 @@ useEffect(() => {
       title: newValue === 1 ? "Marked as Learnt" : "Unmarked as Learnt",
       description: `You have ${newValue === 1 ? "learnt" : "unmarked"} the topic: "${subtopic?.name}"`,
     });
+          // Start the timer when "Learnt" is clicked
+    if (newValue === 1) {
+      handleStartLearning(); // Start the learning timer
+    } else {
+      handleStopLearning(); // Stop the learning timer when unmarked as learnt
+    }
   } catch (err) {
     toast({ title: "Error", description: "Failed to update 'Learnt' status." });
   }
@@ -167,6 +173,12 @@ const handleRevisedToggle = async (subtopicId: string) => {
       title: newValue === 1 ? "Marked as revised" : "Unmarked as revised",
       description: `You have ${newValue === 1 ? "revised" : "unmarked"} the topic: "${subtopic?.name}"`,
     });
+          // Start the timer when "Learnt" is clicked
+    if (newValue === 1) {
+      handleStartLearning(); // Start the learning timer
+    } else {
+      handleStopLearning(); // Stop the learning timer when unmarked as learnt
+    }
   } catch (err) {
     toast({ title: "Error", description: "Failed to update 'Revised' status." });
   }
@@ -268,8 +280,8 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
                 }>
                     <Check size={16}/> {
                     subtopic.learnt
-                        ? "Mark as Learnt"
-                        : "Learnt"
+                        ? "Learnt"
+                        : "Mark as Learnt"
                 } </Button>
                 <Button variant={
                         subtopic.revised
@@ -282,8 +294,8 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
                 }>
                     <Edit3 size={16}/> {
                     subtopic.revised
-                        ? "Mark as Revised"
-                        : "Revised"
+                        ? "Revised"
+                        : "Mark as Revised"
                 } </Button>
                 <Button
       variant="outline"
