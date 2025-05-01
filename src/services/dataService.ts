@@ -330,9 +330,11 @@ export const addUserSubtopic = async (
   subtopicId: string,
   state: number
 ) => {
+    const learnt = state === 0 ? true : false;
+  const revised = state === 1 ? true : false;
   const { error } = await supabase
     .from("user_subtopics")
-    .insert([{ user_id: userId, subtopic_id: subtopicId, state: state}])
+    .insert([{ user_id: userId, subtopic_id: subtopicId, learnt, revised }]);
 
   if (error) throw error;
 };
