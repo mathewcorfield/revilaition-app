@@ -12,9 +12,24 @@ const VerifyEmailPage = () => {
   const { setUser } = useUser();
 
   useEffect(() => {
+        // Check if there is an authenticated session
+    const user = supabase.auth.user();
+    // If there's no session, prompt the user to log in again
+    if (!user) {
+      setMessage("No active session. Please log in again.");
+      navigate("/login");
+      setChecking(false);
+      return;
+    }
     const interval = setInterval(async () => {
       const { data, error } = await supabase.auth.getUser();
-
+      if (error) {
+        console.error("Auth check error:", error);
+        setMessage("Error checking email status. Please refresh.");
+        clearInterval(interval);
+        setChecking(false);
+        return;
+      }
       if (data?.user?.email_confirmed_at) {
         clearInterval(interval);
         setMessage("Email verified! Preparing your dashboard...");
@@ -27,11 +42,6 @@ const VerifyEmailPage = () => {
           console.error("Failed to fetch full user data:", err);
           setMessage("Verified, but error loading profile. Please try again.");
         }
-      } else if (error) {
-        console.error("Auth check error:", error);
-        setMessage("Error checking email status. Please refresh.");
-        clearInterval(interval);
-        setChecking(false);
       }
     }, 3000);
 
