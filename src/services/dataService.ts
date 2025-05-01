@@ -287,7 +287,7 @@ if (!existingEvent) {
   // Extract the event_id from the inserted event data
    eventId = eventData?.[0]?.id;
 }
-  else { eventId = existingEvent}
+  else { eventId = existingEvent.id}
   if (!eventId) {
     console.error("Failed to retrieve event_id from the inserted event.");
     throw new Error("Event insertion failed. No event_id returned.");
