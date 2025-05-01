@@ -232,7 +232,7 @@ export const removeUserSubject = async (
 export const fetchSubtopicsForSubject = async (subjectId: string) => {
   const { data, error } = await supabase
     .from("subtopics")
-    .select("name, category, description")
+    .select("id, name, category, description")
     .eq("subject_id", subjectId);
 
   if (error) {
