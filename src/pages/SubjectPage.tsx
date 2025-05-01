@@ -40,12 +40,15 @@ const SubjectPage: React.FC = () => {
         return <div className="text-center mt-8">Subject not found</div>;
     }
     const handleLearntToggle = async (subtopicId: string) => {
+  const subtopic = subtopics.find((st) => st.id === subtopicId);
+  const newValue = subtopic?.learnt === 1 ? 0 : 1;
+
   setSubtopics((prev) =>
     prev.map((st) =>
-      st.id === subtopicId ? { ...st, learnt: st.learnt === 1 ? 0 : 1 } : st
+      st.id === subtopicId ? { ...st, learnt: newValue } : st
     )
   );
-  const newValue = subtopics.find((st) => st.id === subtopicId)?.learnt === 1 ? 0 : 1;
+
   try {
     await addUserSubtopic(user.id, subtopicId, 0);
   } catch (err) {
@@ -53,12 +56,15 @@ const SubjectPage: React.FC = () => {
   }
 };
 const handleRevisedToggle = async (subtopicId: string) => {
+  const subtopic = subtopics.find((st) => st.id === subtopicId);
+  const newValue = subtopic?.revised === 1 ? 0 : 1;
+
   setSubtopics((prev) =>
     prev.map((st) =>
-      st.id === subtopicId ? { ...st, revised: st.revised === 1 ? 0 : 1 } : st
+      st.id === subtopicId ? { ...st, revised: newValue } : st
     )
   );
-  const newValue = subtopics.find((st) => st.id === subtopicId)?.revised === 1 ? 0 : 1;
+
   try {
     await addUserSubtopic(user.id, subtopicId, 1);
   } catch (err) {
@@ -110,18 +116,17 @@ if (subtopics.length === 0) {
     return;
 }
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
-handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"> {/* Subject header */}
+handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"> 
+        {/* Subject header */}
     <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
               <ArrowLeft size={18} />
             </Button>
-            <div>
+            <div className="flex items-center gap-6 flex-wrap">
                 <h3 className="text-lg font-medium">{subject.name}</h3>
-                <div className="flex items-center gap-2">
                 <Badge variant="outline" className="uppercase">{subject.examBoard}</Badge>
                 <span className="text-sm text-muted-foreground">{subtopics.length} subtopics</span>
-                </div>
             </div>
         </div>
         <div className="flex items-center gap-4">
