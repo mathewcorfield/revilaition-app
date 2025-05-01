@@ -324,3 +324,15 @@ export const getAllCountries = async () => {
     launched: country.launched,
   }));
 };
+
+export const addUserSubtopic = async (
+  userId: string,
+  subtopicId: string,
+  state: number
+) => {
+  const { error } = await supabase
+    .from("user_subtopics")
+    .insert([{ user_id: userId, subtopic_id: subtopicId, state: state}])
+
+  if (error) throw error;
+};
