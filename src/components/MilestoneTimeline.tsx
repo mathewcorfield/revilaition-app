@@ -158,14 +158,16 @@ const handleRemoveMilestone = async (milestoneId: string) => {
                 <CardContent className="p-3 text-center">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-sm truncate">{milestone.title}</p>
-                    <Button
-                      size="icon"
-                      variant="ghost"
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveMilestone(milestone.id);
+                      }}
                       className="text-red-500 opacity-0 group-hover:opacity-100 hover:text-red-700 transition-opacity"
-                      onClick={() => handleRemoveMilestone(milestone.id)}
+                      aria-label="Remove Milestone"
                     >
-                      <X size={12} />
-                    </Button>
+                      <X size={20} />
+                    </button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {new Date(milestone.date).toLocaleDateString(undefined, {
