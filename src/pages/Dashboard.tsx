@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MilestoneTimeline from "@/components/MilestoneTimeline";
 import CalendarTimeline from "@/components/CalendarTimeline";
@@ -9,100 +8,49 @@ import MotivationTab from "@/components/MotivationTab";
 import Footer from '@/components/Footer';
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
-import { getAllSubjectNames, getAllExamBoards } from "@/services/dataService";
+import useSubjects from "@/hooks/useSubjects";
+import useExamBoards from "@/hooks/useExamBoards";
+import useAuthRedirect from "@/hooks/AuthRedirect";
+import useLogout from "@/hooks/useLogout";
 
 const Dashboard = () => {
-  const { user, loading, clearUser} = useUser();
-  const navigate = useNavigate();
-  const [allSubjects, setAllSubjects] = useState<any[]>([]);
-  const [loadingSubjects, setLoadingSubjects] = useState(true);
-  const [allExamBoards, setAllExamBoards] = useState<any[]>([]);
-  const [loadingExamBoards, setLoadingExamBoards] = useState(true);
-
-useEffect(() => {
-  const subcached = sessionStorage.getItem("allSubjects");
-  if (subcached) {
-    setAllSubjects(JSON.parse(subcached));
-    setLoadingSubjects(false);
-  } else {
-    getAllSubjectNames().then((data) => {
-      setAllSubjects(data);
-      sessionStorage.setItem("allSubjects", JSON.stringify(data));
-      setLoadingSubjects(false);
-    });
+  useAuthRedirect();
+  
+  const { allSubjects, loadingSubjects } = useSubjects();
+  const { allExamBoards, loadingExamBoards } = useExamBoards();
+  const { user, loading: userLoading } = useUser();
+  const logout = useLogout();
+  
+  if (loadingSubjects || loadingExamBoards || userLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-xl font-medium">
+        Loading your Dashboard...
+      </div>
+    );
   }
-
-  const examcached = sessionStorage.getItem("allExamBoards");
-  if (examcached) {
-    setAllExamBoards(JSON.parse(examcached));
-    setLoadingExamBoards(false);
-  } else {
-    (async () => {
-      try {
-        const data = await getAllExamBoards();
-        setAllExamBoards(data);
-        sessionStorage.setItem("allExamBoards", JSON.stringify(data));
-      } catch (err) {
-        console.error("Error fetching exam boards:", err);
-      } finally {
-        setLoadingExamBoards(false);
-      }
-    })();
-  }
-}, []);
-
-// Separate auth redirect
-useEffect(() => {
-  if (!loading && !user) {
-    navigate("/login");
-  }
-}, [loading, user, navigate]);
-
-if (loading) {
-  return (
-    <div className="flex items-center justify-center h-screen text-xl font-medium">
-      Loading...
-    </div>
-  );
-}
-
-  if (!user) return null;
-
-const handleLogout = async () => {
-  try {
-    await supabase.auth.signOut();
-    clearUser();
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout error:", error);
-    toast({
-      title: "Logout Error",
-      description: "There was an issue logging out. Please try again.",
-    });
-  }
-};
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            <Link to="/" className="flex items-center gap-2">
           <GraduationCap className="h-8 w-8 text-brand-purple" />
           <span className="font-bold text-xl text-gray-900">Revilaition</span>
+              </Link>
             <span className="text-muted-foreground">|</span>
-            <span>{user?.name ?? "Your"}'s Dashboard</span>
+            <span>{user?.name ? `${user.name}'s` : "Your"} Dashboard</span>
           </div>
-          <Button variant="outline" onClick={handleLogout}>Log Out</Button>
+          <Button variant="outline" onClick={logout}>Log Out</Button>
         </div>
       </header>
       <main className="container mx-auto p-4 flex-grow">
         <div className="mb-8">
-          <MilestoneTimeline milestones={user.milestones} />
+          <MilestoneTimeline milestones={user?.milestones || []} />
         </div>
         <div className="mb-8">
-          <CalendarTimeline events={user.events} />
+          <CalendarTimeline events={user?.events || []} />
         </div>
         <div className="border rounded-lg shadow-sm bg-white p-4">
           <Tabs defaultValue="subjects" className="w-full">
@@ -119,7 +67,7 @@ const handleLogout = async () => {
             </TabsList>
             <TabsContent value="subjects">
               <SubjectTab 
-                subjects={user.subjects} 
+                subjects={user?.subjects || []} 
                 availableSubjects={allSubjects} 
                 availableExamBoards={allExamBoards}
               />
