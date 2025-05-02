@@ -21,7 +21,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onRemoveSubject }) =
   return (
     <Card
       key={subject.id}
-      className="relative border-l-4 hover:shadow-md transition-shadow cursor-pointer"
+      className="relative group border-l-4 hover:shadow-md transition-shadow cursor-pointer"
       style={{ borderLeftColor: subject.iconColor }}
       onClick={() => navigate(`/subject/${subject.id}`)}
     >
