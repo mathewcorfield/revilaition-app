@@ -19,6 +19,7 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
   availableExamBoards,
   isOpen,
   setIsOpen,
+  userSubjects,
 }) => {
   const [selectedSubjectToAdd, setSelectedSubjectToAdd] = useState<string>("");
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
