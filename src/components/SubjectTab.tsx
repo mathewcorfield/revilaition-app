@@ -12,6 +12,7 @@ import { AvailableExamBoard } from "@/types";
 import { useRemoveSubject } from "@/hooks/removeUserSubject";
 import { useAddSubject } from "@/hooks/addUserSubject";
 import { useUser } from "@/context/UserContext";
+import SubjectCard from "@/components/SubjectCard"; 
 
 interface SubjectTabProps {
   availableSubjects: AvailableSubject[] | null;
@@ -52,13 +53,6 @@ const calculateProgress = (subject: Subject, key: "learnt" | "revised") => {
 
   return (
     <div className="space-y-6">
-      {selectedSubject ? (
-        <SubjectDetail 
-          subject={selectedSubject} 
-          onBack={() => setSelectedSubject(null)}
-        />
-      ) : (
-        <>
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">My Subjects</h3>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -131,64 +125,11 @@ const calculateProgress = (subject: Subject, key: "learnt" | "revised") => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {user?.subjects?.map((subject) => (
-              <Card 
-                key={subject.id} 
-                className="relative border-l-4 hover:shadow-md transition-shadow cursor-pointer"
-                style={{ borderLeftColor: subject.iconColor }}
-                  onClick={() => navigate(`/subject/${subject.id}`)}
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Book size={18} style={{ color: subject.iconColor }} /> 
-                      {subject.name}
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="uppercase">
-                      {subject.examBoard}
-                    </Badge>
-                  <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveSubject(subject.id);
-                      }}
-                    className="text-red-500 hover:text-red-700"
-                    aria-label="Remove Subject"
-                  >
-                    <XCircle size={20} />
-                  </button>
-                       </div>
-</div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <div className="flex items-center gap-1">
-                          <Check size={14} className="text-green-500" />
-                          <span>Learnt</span>
-                        </div>
-                        <span>{calculateProgress(subject, "learnt")}%</span>
-                      </div>
-                      <Progress value={calculateProgress(subject, "learnt")} className="h-1.5" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <div className="flex items-center gap-1">
-                          <Edit3 size={14} className="text-blue-500" />
-                          <span>Revised</span>
-                        </div>
-                        <span>{calculateProgress(subject, "revised")}%</span>
-                      </div>
-                      <Progress value={calculateProgress(subject, "revised")} className="h-1.5" />
-                    </div>
-                  </div>
-                  <Separator className="my-3" />
-                  <div className="text-xs text-muted-foreground">
-                    {subject.subtopics.length} subtopics
-                  </div>
-                </CardContent>
-              </Card>
+              <SubjectCard
+                key={subject.id}
+                subject={subject}
+                onRemoveSubject={handleRemoveSubject}
+              />
             ))}
             
             {user?.subjects.length === 0 && (
@@ -202,8 +143,6 @@ const calculateProgress = (subject: Subject, key: "learnt" | "revised") => {
               </div>
             )}
           </div>
-        </>
-      )}
     </div>
   );
 };
