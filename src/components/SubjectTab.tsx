@@ -30,7 +30,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
                 availableExamBoards={availableExamBoards || []}
                 isOpen={isAddDialogOpen}
                 setIsOpen={setIsAddDialogOpen}
-                user?.subjects
+                userSubjects={user?.subjects}
               />
           </div>
 
