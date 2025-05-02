@@ -23,10 +23,6 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
   const { handleAddSubject, isAdding } = useAddSubject();
 
-  const filteredSubjects = availableSubjects.filter(
-    subject => subject.launched === true
-  );
-
   const handleAdd = () => {
     if (!selectedSubjectToAdd || !selectedExamBoard) return;
     handleAddSubject(selectedSubjectToAdd, availableSubjects, selectedExamBoard);
