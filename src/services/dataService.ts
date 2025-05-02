@@ -180,6 +180,8 @@ export const getAllSubjectNames = async () => {
   const { data, error } = await supabase
     .from("subjects")
     .select("id, name, category, launched, icon_color");
+    .order('launched', { ascending: false }) // Launched first
+    .order('name', { ascending: true }); // Then alphabetical
 
   if (error) {
     console.error("Failed to fetch subjects:", error);
@@ -199,6 +201,8 @@ export const getAllExamBoards = async () => {
   const { data, error } = await supabase
     .from("examboard")
     .select("id, name, launched");
+    .order('launched', { ascending: false }) // Launched first
+    .order('name', { ascending: true }); // Then alphabetical
 
   if (error) {
     console.error("❌ Failed to fetch exam boards:", error);
