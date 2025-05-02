@@ -9,9 +9,9 @@ import Footer from '@/components/Footer';
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
-import useSubjects from "@/hooks/useSubjects";
-import useExamBoards from "@/hooks/useExamBoards";
-import useAuthRedirect from "@/hooks/AuthRedirect";
+import useSubjects from "@/hooks/getSubjects";
+import useExamBoards from "@/hooks/getExamBoards";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 import useLogout from "@/hooks/useLogout";
 
 const Dashboard = () => {
