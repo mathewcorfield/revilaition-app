@@ -6,11 +6,11 @@
   </url>
   <url>
     <loc>https://www.revilaition.com/#/login</loc>
-    <priority>0.8</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.revilaition.com/#/verify-email</loc>
-    <priority>0.6</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.revilaition.com/#/dashboard</loc>
@@ -27,5 +27,17 @@
     <url>
     <loc>https://www.revilaition.com/#/subject/32</loc>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.revilaition.com/privacy-policy</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.revilaition.com/terms-of-service</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.revilaition.com/cookie-policy</loc>
+    <priority>0.8</priority>
   </url>
 </urlset>
