@@ -21,18 +21,21 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
   setIsOpen,
   userSubjects,
 }) => {
-  const [selectedSubject, setselectedSubject] = useState<Subject | null>(null);
-  const [selectedExamBoard, setSelectedExamBoard] = useState<string >("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
+  const [selectedExamBoardId, setSelectedExamBoardId] = useState<string>("");
   const { handleAddSubject, isAdding } = useAddSubject();
 
   const handleAdd = () => {
-    if (!selectedSubject || !selectedExamBoard) return;
-    const selectedBoard = availableExamBoards.find(board => board.id === selectedExamBoard);
-    const updatedSubject = { ...updatedSubject, examBoard: selectedBoard.name };
+    const subject = availableSubjects.find(s => s.id === selectedSubjectId);
+    const examBoard = availableExamBoards.find(b => b.id === selectedExamBoardId);
+    
+    if (!subject || !examBoard) return;
+    
+    const updatedSubject = { ...subject, examBoard: examBoard.name };
     handleAddSubject(updatedSubject);
     setIsOpen(false);
-    setselectedSubject("");
-    setSelectedExamBoard("");
+    setSelectedSubjectId("");
+    setSelectedExamBoardId("");
   };
   
 const filteredSubjects = availableSubjects.filter(
@@ -54,7 +57,7 @@ const filteredSubjects = availableSubjects.filter(
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Subject</label>
-            <Select value={selectedSubject} onValueChange={setselectedSubject}>
+            <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
               <SelectTrigger>
                 <SelectValue placeholder="Choose a subject" />
               </SelectTrigger>
@@ -76,7 +79,7 @@ const filteredSubjects = availableSubjects.filter(
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Exam Board</label>
-            <Select value={selectedExamBoard} onValueChange={setSelectedExamBoard}>  
+            <Select value={selectedExamBoardId} onValueChange={setSelectedExamBoardId}>
               <SelectTrigger>
                 <SelectValue placeholder="Choose an exam board" />
               </SelectTrigger>
@@ -95,7 +98,7 @@ const filteredSubjects = availableSubjects.filter(
           <div className="pt-4">
             <Button 
               onClick={handleAdd}
-              disabled={!selectedSubject || !selectedExamBoard || isAdding}
+              disabled={!selectedSubjectId || !selectedExamBoardId || isAdding}
               className="w-full"
             >
               {isAdding ? 'Adding...' : 'Add Subject'}
