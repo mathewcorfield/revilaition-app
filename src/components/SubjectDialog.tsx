@@ -74,12 +74,7 @@ const filteredSubjects = availableSubjects.filter(
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Exam Board</label>
-            <Select value={selectedExamBoard} onValueChange={(value) => {
-              const selectedBoard = availableExamBoards.find(board => board.id === value);
-              if (selectedBoard) {
-                setSelectedExamBoard(selectedBoard.name);
-              }
-            }}>
+            <Select value={selectedExamBoard} onValueChange={setSelectedExamBoard}>  
               <SelectTrigger>
                 <SelectValue placeholder="Choose an exam board" />
               </SelectTrigger>
