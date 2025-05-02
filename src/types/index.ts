@@ -39,6 +39,7 @@ export interface AvailableSubject {
 export interface AvailableExamBoard {
   id: string;
   name: string;
+  launched: boolean;
 }
 
 export interface User {
