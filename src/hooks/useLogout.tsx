@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
-import { toast } from "@/components/ui/toast";
 
 const useLogout = () => {
   const navigate = useNavigate();
