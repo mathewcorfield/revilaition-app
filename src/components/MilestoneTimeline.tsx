@@ -160,6 +160,7 @@ const handleRemoveMilestone = async (milestoneId: string) => {
                     <p className="font-medium text-sm truncate">{milestone.title}</p>
                     <Button
                       size="icon"
+                      variant="ghost"
                       className="text-red-500 opacity-0 group-hover:opacity-100 hover:text-red-700 transition-opacity"
                       onClick={() => handleRemoveMilestone(milestone.id)}
                     >
