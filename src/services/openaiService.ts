@@ -5,7 +5,7 @@ interface OpenAIResponse {
 
 // The function to get a revision question
 export const getRevisionQuestion = async (subject: string, examboard: string, level: string): Promise<string> => {
-  const apiUrl = "https://gptchat-c49x.onrender.com/api/chat";
+  const apiUrl = import.meta.env.VITE_OPENAI_URL;
 
   try {
     const res = await fetch(apiUrl, {
