@@ -179,7 +179,7 @@ if (record.subtopic_id) {
 export const getAllSubjectNames = async () => {
   const { data, error } = await supabase
     .from("subjects")
-    .select("id, name, category, launched, icon_color");
+    .select("id, name, category, launched, icon_color")
     .order('launched', { ascending: false }) // Launched first
     .order('name', { ascending: true }); // Then alphabetical
 
@@ -200,7 +200,7 @@ export const getAllSubjectNames = async () => {
 export const getAllExamBoards = async () => {
   const { data, error } = await supabase
     .from("examboard")
-    .select("id, name, launched");
+    .select("id, name, launched")
     .order('launched', { ascending: false }) // Launched first
     .order('name', { ascending: true }); // Then alphabetical
 
