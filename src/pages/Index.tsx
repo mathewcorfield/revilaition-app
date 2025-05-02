@@ -5,17 +5,11 @@ import FeatureCard from '@/components/FeatureCard';
 import PricingCard from '@/components/PricingCard';
 import TestimonialCard from '@/components/TestimonialCard';
 import Footer from '@/components/Footer';
-import { 
-  Brain, 
-  BookOpen, 
-  PencilRuler, 
-  LineChart, 
-  Sparkles, 
-  MessageSquareText, 
-  BarChart3
-} from 'lucide-react';
+import {   Brain,   BookOpen,   PencilRuler,   LineChart,   Sparkles,   MessageSquareText,   BarChart3} from 'lucide-react';
+import { handleCheckout } from "@/services/payments";
 
 const Index = () => {
+  const [currentUser, setCurrentUser] = useState(null);
   const features = [
     {
       icon: Brain,
@@ -82,13 +76,15 @@ const Index = () => {
         price: "£9.99/month",
         features: ['Everything in Free', 'Up to 50 AI prompts a month', 'Priority Support', 'Personality tailored AI'],
         buttonText: "Get Started",
-        isPopular: true
+        isPopular: true,
+        priceId: "prod_SEpS8sUZPtBSkV"
     },
     {
         planName: "Premium",
         price: "£25/month",
         features: ['Everything in Standard', 'Unlimited AI prompts', 'Dedicated Support', 'AI tuned to your desired outcomes'],
-        buttonText: "Subscribe Now"
+        buttonText: "Subscribe Now",
+        priceId: "prod_SEpSEO65HhWXfu"
     }
   ];
 
@@ -185,6 +181,8 @@ const Index = () => {
                   features={pricing.features}
                   buttonText={pricing.buttonText}
                   isPopular={pricing.isPopular}
+                  priceId={pricing.priceId}
+                  onSelect={(priceId) => handleCheckout(priceId, currentUser?.id)}
                 />
               ))}
             </div>
