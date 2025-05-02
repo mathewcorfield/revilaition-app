@@ -9,8 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Subject, AvailableSubject, AvailableExamBoard } from "@/types";
-import { useToast } from "@/hooks/use-toast";
-import { addUserSubject, removeUserSubject, fetchSubtopicsForSubject } from "@/services/dataService";
+import { addUserSubject, fetchSubtopicsForSubject } from "@/services/dataService";
+import { useRemoveSubject } from "@/hooks/removeUserSubject";
 import { useUser } from "@/context/UserContext";
 
 interface SubjectTabProps {
@@ -25,7 +25,6 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedSubjectToAdd, setSelectedSubjectToAdd] = useState<string>("");
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
-  const { toast } = useToast();
   const navigate = useNavigate();
   
   const handleAddSubject = async () => {
@@ -81,31 +80,8 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
   }
 };
   
-const handleRemoveSubject = async (subjectId: string) => {
-    try {
-      // Call the service function to remove the subject from the user_subject table
-      await removeUserSubject(user.id, subjectId);
+const { handleRemoveSubject } = useRemoveSubject();
 
-      // Update the user cache by removing the subject from the user subjects list
-      setUser(prevUser => ({
-        ...prevUser,
-        subjects: prevUser?.subjects.filter(subject => subject.id !== subjectId),
-      }));
-
-      toast({
-        title: "Subject Removed",
-        description: "The subject has been removed from your subjects.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to remove subject. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Filter available subjects to exclude the ones that are already selected
 const filteredSubjects = (availableSubjects || []).filter(
   subject => !user?.subjects?.some(s => s.name === subject.name)
 );
