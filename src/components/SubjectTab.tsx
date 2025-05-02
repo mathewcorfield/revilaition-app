@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Subject, AvailableSubject, AvailableExamBoard } from "@/types";
-import { addUserSubject, fetchSubtopicsForSubject } from "@/services/dataService";
+import { AvailableExamBoard } from "@/types";
 import { useRemoveSubject } from "@/hooks/removeUserSubject";
+import { useAddSubject } from "@/hooks/addUserSubject";
 import { useUser } from "@/context/UserContext";
 
 interface SubjectTabProps {
@@ -27,79 +27,27 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
   const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
   const navigate = useNavigate();
   
-  const handleAddSubject = async () => {
-  if (!availableSubjects) return;  // If availableSubjects is null, prevent any action
-
-  const subjectToAdd = availableSubjects.find(s => s.id === selectedSubjectToAdd);
-  
-  if (subjectToAdd && !subjectToAdd.launched) {
-    toast({
-      title: "Coming Soon",
-      description: `${subjectToAdd.name} is not yet available.`,
-      variant: "destructive",
-    });
-    return;
-  }
-  
-  if (subjectToAdd && selectedExamBoard) {
-    try {
-      await addUserSubject(user.id, subjectToAdd.id, selectedExamBoard);
-      const fetchedSubtopics = await fetchSubtopicsForSubject(subjectToAdd.id);
-      const newSubject: Subject = {
-        id: subjectToAdd.id,
-        name: subjectToAdd.name,
-        examBoard: selectedExamBoard,
-        iconColor: subjectToAdd.iconColor,
-        subtopics: (fetchedSubtopics || []).map(st => ({
-          ...st,
-          learnt: 0,
-          revised: 0,
-        })),
-      };
-
-      setUser(prevUser => ({
-        ...prevUser,
-        subjects: [...(prevUser?.subjects || []), newSubject],
-      }));
-
-      setIsAddDialogOpen(false);
-      setSelectedSubjectToAdd("");
-      setSelectedExamBoard("");
-      
-      toast({
-        title: "Subject Added",
-        description: `${subjectToAdd.name} has been added to your subjects.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add subject. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }
-};
-  
-const { handleRemoveSubject } = useRemoveSubject();
+  const { handleAddSubject, isAdding } = useAddSubject();
+  const { handleRemoveSubject } = useRemoveSubject();
 
 const filteredSubjects = (availableSubjects || []).filter(
   subject => !user?.subjects?.some(s => s.name === subject.name)
 );
   
-  const getLearntProgress = (subject: Subject) => {
+const calculateProgress = (subject: Subject, key: "learnt" | "revised") => {
     const totalSubtopics = subject.subtopics.length;
     if (totalSubtopics === 0) return 0;
-    
-    const learntCount = subject.subtopics.reduce((sum, subtopic) => sum + (subtopic.learnt > 0 ? 1 : 0), 0);
-    return Math.round((learntCount / totalSubtopics) * 100);
+
+    const count = subject.subtopics.reduce(
+      (sum, subtopic) => sum + (subtopic[key] > 0 ? 1 : 0),
+      0
+    );
+    return Math.round((count / totalSubtopics) * 100);
   };
   
-  const getRevisedProgress = (subject: Subject) => {
-    const totalSubtopics = subject.subtopics.length;
-    if (totalSubtopics === 0) return 0;
-    
-    const revisedCount = subject.subtopics.reduce((sum, subtopic) => sum + (subtopic.revised > 0 ? 1 : 0), 0);
-    return Math.round((revisedCount / totalSubtopics) * 100);
+  const handleAddSubjectClick = () => {
+    if (!selectedSubjectToAdd || !selectedExamBoard) return;
+    handleAddSubject(selectedSubjectToAdd, availableSubjects, selectedExamBoard);
   };
 
   return (
@@ -169,11 +117,11 @@ const filteredSubjects = (availableSubjects || []).filter(
                   </div>
                   <div className="pt-4">
                     <Button 
-                      onClick={handleAddSubject}
-                      disabled={!selectedSubjectToAdd || !selectedExamBoard}
+                      onClick={handleAddSubjectClick}
+                      disabled={!selectedSubjectToAdd || !selectedExamBoard || isAdding}
                       className="w-full"
                     >
-                      Add Subject
+                      {isAdding ? 'Adding...' : 'Add Subject'}
                     </Button>
                   </div>
                 </div>
@@ -220,9 +168,9 @@ const filteredSubjects = (availableSubjects || []).filter(
                           <Check size={14} className="text-green-500" />
                           <span>Learnt</span>
                         </div>
-                        <span>{getLearntProgress(subject)}%</span>
+                        <span>{calculateProgress(subject, "learnt")}%</span>
                       </div>
-                      <Progress value={getLearntProgress(subject)} className="h-1.5" />
+                      <Progress value={calculateProgress(subject, "learnt")} className="h-1.5" />
                     </div>
                     <div>
                       <div className="flex justify-between text-sm mb-1">
@@ -230,9 +178,9 @@ const filteredSubjects = (availableSubjects || []).filter(
                           <Edit3 size={14} className="text-blue-500" />
                           <span>Revised</span>
                         </div>
-                        <span>{getRevisedProgress(subject)}%</span>
+                        <span>{calculateProgress(subject, "revised")}%</span>
                       </div>
-                      <Progress value={getRevisedProgress(subject)} className="h-1.5" />
+                      <Progress value={calculateProgress(subject, "revised")} className="h-1.5" />
                     </div>
                   </div>
                   <Separator className="my-3" />
