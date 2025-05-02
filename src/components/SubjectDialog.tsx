@@ -4,7 +4,7 @@ import { PlusCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAddSubject } from "@/hooks/addUserSubject";
-import { AvailableSubject, AvailableExamBoard } from "@/types";
+import { Subject, AvailableSubject, AvailableExamBoard } from "@/types";
 
 interface AddSubjectDialogProps {
   availableSubjects: AvailableSubject[];
@@ -21,15 +21,17 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
   setIsOpen,
   userSubjects,
 }) => {
-  const [selectedSubjectToAdd, setSelectedSubjectToAdd] = useState<string>("");
-  const [selectedExamBoard, setSelectedExamBoard] = useState<string>("");
+  const [selectedSubject, setselectedSubject] = useState<Subject | null>(null);
+  const [selectedExamBoard, setSelectedExamBoard] = useState<string >("");
   const { handleAddSubject, isAdding } = useAddSubject();
 
   const handleAdd = () => {
-    if (!selectedSubjectToAdd || !selectedExamBoard) return;
-    handleAddSubject(selectedSubjectToAdd, availableSubjects, selectedExamBoard);
+    if (!selectedSubject || !selectedExamBoard) return;
+    const selectedBoard = availableExamBoards.find(board => board.id === selectedExamBoard);
+    const updatedSubject = { ...updatedSubject, examBoard: selectedBoard.name };
+    handleAddSubject(updatedSubject);
     setIsOpen(false);
-    setSelectedSubjectToAdd("");
+    setselectedSubject("");
     setSelectedExamBoard("");
   };
   
@@ -52,7 +54,7 @@ const filteredSubjects = availableSubjects.filter(
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Subject</label>
-            <Select value={selectedSubjectToAdd} onValueChange={setSelectedSubjectToAdd}>
+            <Select value={selectedSubject} onValueChange={setselectedSubject}>
               <SelectTrigger>
                 <SelectValue placeholder="Choose a subject" />
               </SelectTrigger>
@@ -93,7 +95,7 @@ const filteredSubjects = availableSubjects.filter(
           <div className="pt-4">
             <Button 
               onClick={handleAdd}
-              disabled={!selectedSubjectToAdd || !selectedExamBoard || isAdding}
+              disabled={!selectedSubject || !selectedExamBoard || isAdding}
               className="w-full"
             >
               {isAdding ? 'Adding...' : 'Add Subject'}
