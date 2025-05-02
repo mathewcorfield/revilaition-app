@@ -21,19 +21,16 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
   
   const { handleRemoveSubject } = useRemoveSubject();
 
-const filteredSubjects = (availableSubjects || []).filter(
-  subject => !user?.subjects?.some(s => s.name === subject.name)
-);
-
   return (
     <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">My Subjects</h3>
               <AddSubjectDialog
-                availableSubjects={filteredSubjects || []}
+                availableSubjects={availableSubjects || []}
                 availableExamBoards={availableExamBoards || []}
                 isOpen={isAddDialogOpen}
                 setIsOpen={setIsAddDialogOpen}
+                user?.subjects
               />
           </div>
 
