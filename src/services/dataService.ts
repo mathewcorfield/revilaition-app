@@ -198,7 +198,7 @@ export const getAllSubjectNames = async () => {
 export const getAllExamBoards = async () => {
   const { data, error } = await supabase
     .from("examboard")
-    .select("id, name");
+    .select("id, name, launched");
 
   if (error) {
     console.error("❌ Failed to fetch exam boards:", error);
@@ -208,6 +208,7 @@ export const getAllExamBoards = async () => {
   return (data ?? []).map((board) => ({
     id: board.id,
     name: board.name,
+    launched: board.launched,
   }));
 };
 
