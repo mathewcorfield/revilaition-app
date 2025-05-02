@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Book, Check, Edit3, XCircle } from "lucide-react";
+import { Book, Check, Edit3, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { calculateProgress } from "@/utils/calculateProgress";
@@ -40,10 +40,10 @@ const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onRemoveSubject }) =
                 e.stopPropagation();
                 onRemoveSubject(subject.id);
               }}
-              className="text-red-500 hover:text-red-700"
+              className="text-red-500 opacity-0 group-hover:opacity-100 hover:text-red-700 transition-opacity"
               aria-label="Remove Subject"
             >
-              <XCircle size={20} />
+              <X size={20} />
             </button>
           </div>
         </div>
