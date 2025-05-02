@@ -11,6 +11,7 @@ interface AddSubjectDialogProps {
   availableExamBoards: AvailableExamBoard[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  userSubjects: Subject[];
 }
 
 const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
@@ -30,7 +31,11 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
     setSelectedSubjectToAdd("");
     setSelectedExamBoard("");
   };
-
+  
+const filteredSubjects = availableSubjects.filter(
+  subject => !userSubjects.some(s => s.name === subject.name)
+);
+  
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -51,7 +56,7 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
                 <SelectValue placeholder="Choose a subject" />
               </SelectTrigger>
               <SelectContent>
-                {availableSubjects.map(subject => (
+                {filteredSubjects.map(subject => (
                   <SelectItem 
                     key={subject.id} 
                     value={subject.id} 
@@ -79,8 +84,11 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
               </SelectTrigger>
               <SelectContent>
                 {availableExamBoards.map((board) => (
-                  <SelectItem key={board.id} value={board.id}>
+                  <SelectItem key={board.id} value={board.id} disabled={board.launched !== true}>
                     {board.name}
+                    {board.launched !== true && (
+                      <span className="ml-2 text-xs text-muted-foreground">(Coming Soon)</span>
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>
