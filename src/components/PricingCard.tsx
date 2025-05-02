@@ -7,6 +7,8 @@ interface PricingCardProps {
   features: string[];
   buttonText: string;
   isPopular?: boolean;
+  priceId: string;
+  onSelect: (priceId: string) => void;
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
@@ -15,6 +17,8 @@ const PricingCard: React.FC<PricingCardProps> = ({
   features,
   buttonText,
   isPopular = false,
+  priceId, 
+  onSelect 
 }) => {
   return (
     <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover-card-animation">
@@ -33,7 +37,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
           </li>
         ))}
       </ul>
-      <button className="w-full py-2 px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors">
+      <button className="w-full py-2 px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors" onClick={() => onSelect(priceId)}>
         {buttonText}
       </button>
     </div>
