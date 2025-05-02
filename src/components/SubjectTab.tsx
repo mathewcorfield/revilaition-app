@@ -6,7 +6,7 @@ import { AvailableSubject, AvailableExamBoard } from "@/types";
 import { useUser } from "@/context/UserContext";
 import { useRemoveSubject } from "@/hooks/removeUserSubject";
 import SubjectCard from "@/components/SubjectCard"; 
-import AddSubjectDialog from "@/components/AddSubjectDialog";
+import AddSubjectDialog from "@/components/SubjectDialog";
 
 interface SubjectTabProps {
   availableSubjects: AvailableSubject[] | null;
@@ -30,7 +30,7 @@ const filteredSubjects = (availableSubjects || []).filter(
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">My Subjects</h3>
               <AddSubjectDialog
-                availableSubjects={availableSubjects || []}
+                availableSubjects={filteredSubjects || []}
                 availableExamBoards={availableExamBoards || []}
                 isOpen={isAddDialogOpen}
                 setIsOpen={setIsAddDialogOpen}
