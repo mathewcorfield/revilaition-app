@@ -1,8 +1,8 @@
-export const handleCheckout = async (priceId: string, userId: string) => {
+export const handleCheckout = async (priceId: string, userId: string, navigate: Function) => {
   if (!userId) {
     alert("Please log in to subscribe");
     sessionStorage.setItem("pendingCheckout", JSON.stringify({ priceId }));
-    window.location.href = "/login";
+    navigate("/login");
     return;
   }
   const { data: profile, error } = await supabase
