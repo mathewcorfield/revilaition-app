@@ -8,7 +8,7 @@ export const getRevisionQuestion = async (subject: string, examboard: string, le
   const apiUrl = import.meta.env.VITE_OPENAI_URL;
 
   try {
-    const res = await fetch(apiUrl, {
+    const res = await fetch(`${apiUrl}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -30,10 +30,10 @@ export const getRevisionQuestion = async (subject: string, examboard: string, le
 
 // The function to evaluate an answer
 export const evaluateAnswer = async (answer: string, question: string, examboard: string, level: string): Promise<string> => {
-  const apiUrl = "https://gptchat-c49x.onrender.com/api/chat";
+  const apiUrl = import.meta.env.VITE_OPENAI_URL;
 
   try {
-    const res = await fetch(apiUrl, {
+    const res = await fetch(`${apiUrl}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
