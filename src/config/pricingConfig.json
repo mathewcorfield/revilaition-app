@@ -23,7 +23,7 @@
         "Personality tailored AI"
       ],
       "buttonText": "Get Started",
-      "priceId": "prod_SEpS8sUZPtBSkV",
+      "priceId": "price_1RKLnEHPSB8XYlbnvfQ9BHUM",
       "checkoutUrl": "https://checkout.stripe.com/pay/your-checkout-session-id-for-standard"
     },
     {
@@ -36,7 +36,7 @@
         "AI tuned to your desired outcomes"
       ],
       "buttonText": "Subscribe Now",
-      "priceId": "prod_SEpSEO65HhWXfu",
+      "priceId": "price_1RKLnbHPSB8XYlbnzkwHSFpV",
       "checkoutUrl": "https://checkout.stripe.com/pay/your-checkout-session-id-for-premium"
     }
   ]
