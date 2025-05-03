@@ -4,13 +4,13 @@ export const handleCheckout = async (priceId: string, userId: string) => {
     if (!paymentUrl) {
   throw new Error("Stripe URL not configured.");
 }
-    const response = await fetch(paymentUrl, {
+    const response = await fetch(`${paymentUrl}/create-checkout-session`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, priceId }),
     });
 if (!response.ok) {
-  throw new Error(`HTTP error! status: ${response.status}`);
+  throw new Error(`Failed to create checkout session. Status: ${response.status}`);
 }
     const data = await response.json();
     if (data.url) {
@@ -20,6 +20,23 @@ if (!response.ok) {
     }
   } catch (err: any) {
     console.error("Checkout error:", err);
-    alert("Failed to initiate checkout. Please try again later.");
+    alert(`Failed to initiate checkout: ${err.message}. Please try again later.`);
+  }
+};
+
+export const fetchCheckoutSession = async (sessionId: string) => {
+    try {
+      const paymentUrl = import.meta.env.VITE_STRIPE_URL;
+    if (!paymentUrl) {
+  throw new Error("Stripe URL not configured.");
+}
+  const response = await fetch(`${paymentUrl}/get-session?session_id=${sessionId}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch session. Status: ${response.status}`);
+  }
+  return response.json();
+  } catch (err: any) {
+    console.error("Fetch session error:", err);
+    throw new Error(`Error fetching session: ${err.message}`);
   }
 };
