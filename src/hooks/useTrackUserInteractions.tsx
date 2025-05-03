@@ -16,7 +16,7 @@ const useTrackUserInteractions = () => {
     // Handle click event
     const handleClick = async (event: MouseEvent) => {
       const targetElement = event.target as HTMLElement;
-      const element = target.innerText?.trim().slice(0, 100) || "Unknown Element";
+      const element = targetElement.innerText?.trim().slice(0, 100) || "Unknown Element";
       const userID = await getUserID(); // Retrieve user ID asynchronously
       await insertInteraction("click", element, new Date().toISOString(), userID);
     };
