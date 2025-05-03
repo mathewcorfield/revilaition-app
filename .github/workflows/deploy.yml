@@ -20,17 +20,13 @@ jobs:
       - name: Install dependencies
         run: npm install
         
-      # Inject Supabase secrets into the environment
-      - name: Set up environment variables for Supabase
-        run: |
-          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> $GITHUB_ENV
-          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> $GITHUB_ENV
-
       - name: Build the project
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_STRIPE_URL: ${{ secrets.VITE_STRIPE_URL }}
+          VITE_OPENAI_URL: ${{ secrets.VITE_OPENAI_URL }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
