@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import SubscriptionPage from "@/pages/SubscriptionPage";
+import SuccessPage from "@/pages/SuccessPage";
 import SubjectPage from "@/pages/SubjectPage";
 import VerifyEmailPage from "@/pages/VerifyEmailPage";
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -33,6 +35,8 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/verify-email" element={<VerifyEmailPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/subscription" element={<SubscriptionPage />} />
+              <Route path="/success" element={<SuccessPage />} />
               <Route path="/subject/:id" element={<SubjectPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
