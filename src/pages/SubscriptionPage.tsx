@@ -1,0 +1,44 @@
+import React from "react";
+import PricingCard from "@/components/PricingCard";
+import pricingData from "@/config/pricingConfig.json";
+import { handleCheckout } from "@/services/payments";
+import { useUser } from "@/context/UserContext";
+
+const SubscriptionPage = () => {
+  const { user } = useUser();
+  const handleSelect = (priceId: string) => {
+    handleCheckout(priceId, user.id);
+  };
+  return (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose Your Plan</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Choose the best plan to help you achieve your study goals!
+          </p>
+        </div>
+
+        <section id="pricing" className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-3 gap-8">
+              {pricingData.plans.map((plan) => (
+                <PricingCard
+                  key={plan.priceId}
+                  planName={plan.planName}
+                  price={plan.price}
+                  features={plan.features}
+                  buttonText={plan.buttonText}
+                  priceId={plan.priceId}
+                  onSelect={handleSelect}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default SubscriptionPage;
