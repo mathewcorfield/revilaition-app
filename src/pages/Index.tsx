@@ -6,15 +6,8 @@ import PricingCard from '@/components/PricingCard';
 import TestimonialCard from '@/components/TestimonialCard';
 import Footer from '@/components/Footer';
 import {   Brain,   BookOpen,   PencilRuler,   LineChart,   Sparkles,   MessageSquareText,   BarChart3} from 'lucide-react';
-import { handleCheckout } from "@/services/payments";
-import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
-  const handleCheckoutClick = (priceId: string, userId: string) => {
-    handleCheckout(priceId, userId, navigate);
-  };
   const features = [
     {
       icon: Brain,
@@ -187,7 +180,6 @@ const Index = () => {
                   buttonText={pricing.buttonText}
                   isPopular={pricing.isPopular}
                   priceId={pricing.priceId}
-                  onSelect={(priceId) => handleCheckoutClick(priceId, currentUser?.id)}
                 />
               ))}
             </div>
