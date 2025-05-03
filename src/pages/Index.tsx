@@ -66,7 +66,7 @@ const Index = () => {
     {
         planName: "Free",
         price: "Free",
-        features: ['Revision Planner', 'Up to 5 AI prompts a month', 'Community Support'],
+        features: ['Past Paper review', 'Revision Planner', 'Up to 5 AI prompts a month', 'Community Support'],
         buttonText: "Sign Up"
     },
     {
@@ -80,7 +80,7 @@ const Index = () => {
     {
         planName: "Premium",
         price: "£25/month",
-        features: ['Everything in Standard', 'Unlimited AI prompts', 'Dedicated Support', 'AI tuned to your desired outcomes'],
+        features: ['Everything in Standard', 'Unlimited AI prompts', 'Dedicated Support', 'AI tuned to you'],
         buttonText: "Subscribe Now",
         priceId: "prod_SEpSEO65HhWXfu"
     }
