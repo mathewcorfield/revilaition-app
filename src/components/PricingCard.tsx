@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 
 interface PricingCardProps {
@@ -8,7 +9,7 @@ interface PricingCardProps {
   buttonText: string;
   isPopular?: boolean;
   priceId: string;
-  onSelect: (priceId: string) => void;
+  onSelect?: (priceId: string) => void;
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
@@ -20,6 +21,15 @@ const PricingCard: React.FC<PricingCardProps> = ({
   priceId, 
   onSelect 
 }) => {
+    const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(priceId);
+    } else {
+      navigate('/login'); // fallback if not provided
+    }
+  };
   return (
     <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover-card-animation">
       {isPopular && (
@@ -37,7 +47,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
           </li>
         ))}
       </ul>
-      <button className="w-full py-2 px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors" onClick={() => onSelect(priceId)}>
+      <button className="w-full py-2 px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors" onClick={handleClick}>
         {buttonText}
       </button>
     </div>
