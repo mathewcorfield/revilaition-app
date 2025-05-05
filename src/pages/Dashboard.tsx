@@ -17,7 +17,6 @@ import useIsTrialMode from '@/hooks/useIsTrialMode';
 
 const Dashboard = () => {
   const isTrial = useIsTrialMode();
-  useAuthRedirect(isTrial)
   
   const { allSubjects, loadingSubjects } = useSubjects();
   const { allExamBoards, loadingExamBoards } = useExamBoards();
