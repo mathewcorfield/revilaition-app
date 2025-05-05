@@ -1,20 +1,20 @@
 [
     {
-      quote: "Revilaition transformed my study routine. I'm learning so much more efficiently now and seeing better results in my exams.",
-      author: "Sarah J.",
-      role: "GCSE Student",
-      rating: 5
+      "quote": "Revilaition transformed my study routine. I'm learning so much more efficiently now and seeing better results in my exams.",
+      "author": "Sarah J.",
+      "role": "GCSE Student",
+      "rating": 5
     },
     {
-      quote: "As a teacher, I recommend Revilaition to all my students. It's like having a personal tutor available 24/7.",
-      author: "Michael T.",
-      role: "Secondary School Teacher",
-      rating: 5
+      "quote": "As a teacher, I recommend Revilaition to all my students. It's like having a personal tutor available 24/7.",
+      "author": "Michael T.",
+      "role": "Secondary School Teacher",
+      "rating": 5
     },
     {
-      quote: "The personalized study plans are amazing! Revilaition helped me organize my revision and focus on areas I was struggling with.",
-      author: "Amy L.",
-      role: "Sixth Form Student",
-      rating: 4
+      "quote": "The personalized study plans are amazing! Revilaition helped me organize my revision and focus on areas I was struggling with.",
+      "author": "Amy L.",
+      "role": "Sixth Form Student",
+      "rating": 4
     }
   ]
