@@ -231,23 +231,25 @@ try {
               className="w-full mt-4 flex items-center justify-center"
               disabled={googleLoading}
             >
-              {/* Google Logo */}
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/768px-Google_%22G%22_Logo.svg.png" alt="Google Logo" className="w-6 h-6 mr-2" />
+              <img src="/google.webp" alt="Google Logo" className="w-6 h-6 mr-2" />
               {googleLoading ? "Signing in with Google..." : "Sign in with Google"}
             </Button>
             {/* Add Terms and Privacy Policy message here */}
         {!isLogin && (
-          <div className="mt-4 text-sm text-center text-muted">
+          <div className="mt-4 text-sm text-center .text-muted-foreground">
             <p>
-              By signing up you agree to our{" "}
+              By signing up you agree to our
+            </p>
+            <div className="mt-2 text-center">
               <Link to="/terms-of-service" className="text-blue-500 hover:underline">
                 Terms of Service
-              </Link>{" "}
-              and{" "}
+              </Link>
+            </div>
+            <div className="mt-2 text-center">
               <Link to="/privacy-policy" className="text-blue-500 hover:underline">
                 Privacy Policy
-              </Link>.
-            </p>
+              </Link>
+            </div>
           </div>
         )}
           </CardContent>
