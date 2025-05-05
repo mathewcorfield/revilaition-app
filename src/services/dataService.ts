@@ -374,3 +374,17 @@ export const addUserSubtopic = async (
 
   if (error) throw error;
 };
+
+export const getQuestionsForSubtopic = async (subtopicId: string) => {
+  const { data, error } = await supabase
+    .from("questions")
+    .select("id, name, marks, mark_scheme, past")
+    .eq("subtopic_id", subtopicId);
+
+  if (error) {
+    console.error("[getQuestionsForSubtopic] Supabase error:", error);
+    throw new Error("Failed to fetch questions.");
+  }
+
+  return data ?? [];
+};
