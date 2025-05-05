@@ -13,7 +13,7 @@ import { addUserSubtopic, addEvent, getQuestionsForSubtopic } from "@/services/d
         
 const SubjectPage: React.FC = () => {
         const location = useLocation();
-        const isTrial = location.state?.isTrial;
+        const isTrial = location.state?.isTrial ?? false;
     const navigate = useNavigate();
     const {id} = useParams();
     const {user, loading, setUser} = useUser();
