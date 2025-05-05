@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MilestoneTimeline from "@/components/MilestoneTimeline";
 import CalendarTimeline from "@/components/CalendarTimeline";
@@ -23,6 +23,7 @@ const Dashboard = () => {
   const { allExamBoards, loadingExamBoards } = useExamBoards();
   const { user, loading: userLoading } = useUser();
   const logout = useLogout();
+  const navigate = useNavigate();
   
   if (loadingSubjects || loadingExamBoards || userLoading) {
     return (
