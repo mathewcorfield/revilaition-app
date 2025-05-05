@@ -1,0 +1,32 @@
+[
+  {
+    "icon": "Brain",
+    "title": "AI-Powered Learning",
+    "description": "Our AI adapts to your learning style and creates personalized study materials to help you understand complex topics."
+  },
+  {
+    "icon": "BookOpen",
+    "title": "Comprehensive Resources",
+    "description": "Access a vast library of study materials, practice questions, and explanations across various subjects and curricula."
+  },
+  {
+    "icon": "PencilRuler",
+    "title": "Custom Study Plans",
+    "description": "Get tailored study schedules based on your goals, strengths, and weaknesses to maximize your learning efficiency."
+  },
+  {
+    "icon": "MessageSquareText",
+    "title": "Interactive Assistance",
+    "description": "Ask questions and get instant, detailed explanations to help you overcome challenging concepts."
+  },
+  {
+    "icon": "LineChart",
+    "title": "Progress Tracking",
+    "description": "Monitor your improvement over time with detailed analytics that highlight your strengths and areas for growth."
+  },
+  {
+    "icon": "Sparkles",
+    "title": "Smart Revision",
+    "description": "Our spaced repetition system ensures you review information at the optimal time for maximum retention."
+  }
+]
