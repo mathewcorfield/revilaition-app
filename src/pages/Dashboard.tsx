@@ -59,7 +59,7 @@ Verify your email and log in to unlock full AI-powered revision tools and insigh
           </div>
         )}
         <div className="mb-8">
-          <MilestoneTimeline milestones={user?.milestones || []} />
+          <MilestoneTimeline milestones={user?.milestones || []} isTrial=isTrial />
         </div>
         <div className="mb-8">
           <CalendarTimeline events={user?.events || []} />
