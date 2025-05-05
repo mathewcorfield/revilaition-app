@@ -11,9 +11,10 @@ import { Milestone } from "@/types";
 
 interface MilestoneTimelineProps {
   milestones: Milestone[];
+  isTrial: boolean;
 }
 
-const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => {
+const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones, isTrial }) => {
   const { user, setUser } = useUser();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newMilestoneTitle, setNewMilestoneTitle] = useState("");
@@ -38,9 +39,9 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
       // Format the date to YYYY-MM-DD
     const formattedDate = new Date(newMilestoneDate).toISOString().split('T')[0]; 
       
-      // Call the new `addEvent` function
+      if (!isTrial) {
       await addEvent(user.id, newMilestoneTitle, "Milestone", "Milestone Event", newMilestoneDate);
-
+      }
       // Assuming the event is successfully added, update the user cache with the new milestone
       const newMilestone: Milestone = {
         title: newMilestoneTitle,
