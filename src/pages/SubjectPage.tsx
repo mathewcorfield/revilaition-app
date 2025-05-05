@@ -381,7 +381,7 @@ handleGenerateQuestion(random.name, random);}
     </div>
   </DialogContent>
 </Dialog>
-</div>
+
 <Dialog open={isLearning} onOpenChange={setIsLearning}>
   <DialogContent className="max-w-sm">
     <DialogHeader>
@@ -403,6 +403,7 @@ handleGenerateQuestion(random.name, random);}
     </div>
   </DialogContent>
 </Dialog>
+</div>
 );
 };
 export default SubjectPage;
