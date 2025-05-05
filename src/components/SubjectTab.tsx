@@ -11,9 +11,10 @@ import AddSubjectDialog from "@/components/SubjectDialog";
 interface SubjectTabProps {
   availableSubjects: AvailableSubject[] | null;
   availableExamBoards: AvailableExamBoard[] | null;
+  isTrial?: boolean;
 }
 
-const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExamBoards}) => {
+const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExamBoards, isTrial}) => {
   // Default to empty arrays if null
   const { user, setUser } = useUser(); 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -40,6 +41,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
                 key={subject.id}
                 subject={subject}
                 onRemoveSubject={handleRemoveSubject}
+                isTrial={isTrial}
               />
             ))}
             
