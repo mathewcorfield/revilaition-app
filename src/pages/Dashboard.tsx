@@ -13,7 +13,7 @@ import useSubjects from "@/hooks/getSubjects";
 import useExamBoards from "@/hooks/getExamBoards";
 import useAuthRedirect from "@/hooks/useAuthRedirect";
 import useLogout from "@/hooks/useLogout";
-import { useIsTrialMode } from '@/hooks/useIsTrialMode';
+import useIsTrialMode from '@/hooks/useIsTrialMode';
 
 const Dashboard = () => {
   const isTrial = useIsTrialMode();
