@@ -39,7 +39,7 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
   };
   
 const filteredSubjects = availableSubjects.filter(
-  subject => !userSubjects.some(s => s.name === subject.name)
+  subject => !(userSubjects ?? []).some(s => s.name === subject.name)
 );
   
   return (
