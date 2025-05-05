@@ -32,6 +32,7 @@ const SubjectTab: React.FC<SubjectTabProps> = ({availableSubjects, availableExam
                 isOpen={isAddDialogOpen}
                 setIsOpen={setIsAddDialogOpen}
                 userSubjects={user?.subjects}
+                isTrial={isTrial}
               />
           </div>
 
