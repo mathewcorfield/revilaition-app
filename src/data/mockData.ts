@@ -5,6 +5,8 @@ export const mockUser: User = {
   name: "TRIAL",
   email: "alex@example.com",
   level: "A-Level",
+  isTrial: true,
+  isVerified: true,
   milestones: [
     {
       id: "m1",
