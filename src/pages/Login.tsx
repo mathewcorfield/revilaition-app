@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -223,6 +223,21 @@ try {
                 {loading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Sign In" : "Sign Up"}
               </Button>
             </form>
+            {/* Add Terms and Privacy Policy message here */}
+        {!isLogin && (
+          <div className="mt-4 text-sm text-center text-muted">
+            <p>
+              By signing up you agree to our{" "}
+              <Link to="/terms-of-service" className="text-blue-500 hover:underline">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy-policy" className="text-blue-500 hover:underline">
+                Privacy Policy
+              </Link>.
+            </p>
+          </div>
+        )}
           </CardContent>
           <CardFooter className="flex justify-center">
             <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
