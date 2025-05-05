@@ -10,11 +10,11 @@ import { calculateProgress } from "@/utils/calculateProgress";
 interface SubjectCardProps {
   subject: Subject;
   onRemoveSubject: (id: string) => void;
+  isTrial?: boolean;
 }
 
 const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onRemoveSubject }) => {
   const navigate = useNavigate();
-
   const learntProgress = calculateProgress(subject, "learnt");
   const revisedProgress = calculateProgress(subject, "revised");
 
@@ -23,7 +23,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onRemoveSubject }) =
       key={subject.id}
       className="relative group border-l-4 hover:shadow-md transition-shadow cursor-pointer"
       style={{ borderLeftColor: subject.iconColor }}
-      onClick={() => navigate(`/subject/${subject.id}`)}
+      onClick={() => {navigate(`/subject/${subject.id}`, { state: { isTrial } });}}
     >
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
