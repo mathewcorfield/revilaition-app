@@ -47,6 +47,8 @@ export interface User {
   name: string;
   email: string;
   level: string;
+  isTrial: boolean;
+  isVerified: boolean;
   milestones: Milestone[];
   events: Event[];
   subjects: Subject[];
