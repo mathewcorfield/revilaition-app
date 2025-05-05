@@ -3,10 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { handleCheckout } from "@/services/payments";
 
-const useRedirectIfLoggedIn = () => {
+const useRedirectIfLoggedIn = (isTrial: boolean) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (isTrial) {
+        navigate("/dashboard?trial=true");
+      return;
+      }
     const checkAuth = async () => {
       console.log("Checking user and session...");
 
