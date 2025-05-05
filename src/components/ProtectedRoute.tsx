@@ -1,31 +1,17 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabaseClient'; // Your Supabase client
+import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/context/UserContext';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [loading, setLoading] = useState(true);
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useUser();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
-        navigate('/login'); // Redirect to login if user is not authenticated
-      } else {
-        setLoading(false);
-      }
-    };
+  if (!user?.isVerified) {
+    // If the user is not verified, redirect them to the verification page or show a message
+    navigate('/verify-email'); // Assuming you have a page for email verification
+    return null; // Don't render the protected content
+  }
 
-    checkUser();
-  }, [navigate]);
-
-  if (loading) return <p>Loading...</p>; // Optional: Show loading until we confirm auth state
-
-  return <>{children}</>;
+  return <>{children}</>; // Render the children (protected content)
 };
-
-export default ProtectedRoute;
