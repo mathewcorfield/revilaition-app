@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { useUser } from "@/context/UserContext";
 import { getUserData } from "@/hooks/getUserData";
+import useGoogleSignIn from "@/hooks/useGoogleSignIn";
 import OnboardingModal from "@/components/OnboardingModal";
 
 const Login = () => {
@@ -26,6 +27,8 @@ const Login = () => {
 
  // Call the hook to check if the user is logged in
   useRedirectIfLoggedIn();
+
+  const { loading: googleLoading, handleGoogleSignIn } = useGoogleSignIn();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,6 +226,15 @@ try {
                 {loading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Sign In" : "Sign Up"}
               </Button>
             </form>
+                        <Button 
+              onClick={handleGoogleSignIn} 
+              className="w-full mt-4 flex items-center justify-center"
+              disabled={googleLoading}
+            >
+              {/* Google Logo */}
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/768px-Google_%22G%22_Logo.svg.png" alt="Google Logo" className="w-6 h-6 mr-2" />
+              {googleLoading ? "Signing in with Google..." : "Sign in with Google"}
+            </Button>
             {/* Add Terms and Privacy Policy message here */}
         {!isLogin && (
           <div className="mt-4 text-sm text-center text-muted">
