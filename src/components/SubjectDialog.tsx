@@ -12,6 +12,7 @@ interface AddSubjectDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   userSubjects: Subject[];
+  isTrial: boolean;
 }
 
 const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
@@ -20,10 +21,11 @@ const AddSubjectDialog: React.FC<AddSubjectDialogProps> = ({
   isOpen,
   setIsOpen,
   userSubjects,
+  isTrial,
 }) => {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
   const [selectedExamBoardId, setSelectedExamBoardId] = useState<string>("");
-  const { handleAddSubject, isAdding } = useAddSubject();
+  const { handleAddSubject, isAdding } = useAddSubject(isTrial);
 
   const handleAdd = () => {
     const subject = availableSubjects.find(s => s.id === selectedSubjectId);
