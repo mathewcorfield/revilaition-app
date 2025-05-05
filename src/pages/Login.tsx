@@ -81,7 +81,7 @@ const Login = () => {
             email,
             password,
             options: {
-              emailRedirectTo: "https://revilaition.com/verify-email",
+              emailRedirectTo: "https://revilaition.com/login",
             },
           });
 
@@ -99,7 +99,7 @@ const Login = () => {
             title: "Account Created",
             description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
           });
-          navigate("/verify-email");
+          navigate('/dashboard?trial=true');
         }
       }
     } catch (error) {
