@@ -6,86 +6,11 @@ import PricingCard from '@/components/PricingCard';
 import TestimonialCard from '@/components/TestimonialCard';
 import Footer from '@/components/Footer';
 import {   Brain,   BookOpen,   PencilRuler,   LineChart,   Sparkles,   MessageSquareText,   BarChart3} from 'lucide-react';
+import pricingData from "@/config/pricingConfig.json";
+import featureData from "@/config/featuresConfig.json";
+import testimonialData from "@/config/testimonialsConfig.json";
 
 const Index = () => {
-  const features = [
-    {
-      icon: Brain,
-      title: "AI-Powered Learning",
-      description: "Our AI adapts to your learning style and creates personalized study materials to help you understand complex topics."
-    },
-    {
-      icon: BookOpen,
-      title: "Comprehensive Resources",
-      description: "Access a vast library of study materials, practice questions, and explanations across various subjects and curricula."
-    },
-    {
-      icon: PencilRuler,
-      title: "Custom Study Plans",
-      description: "Get tailored study schedules based on your goals, strengths, and weaknesses to maximize your learning efficiency."
-    },
-    {
-      icon: MessageSquareText,
-      title: "Interactive Assistance",
-      description: "Ask questions and get instant, detailed explanations to help you overcome challenging concepts."
-    },
-    {
-      icon: LineChart,
-      title: "Progress Tracking",
-      description: "Monitor your improvement over time with detailed analytics that highlight your strengths and areas for growth."
-    },
-    {
-      icon: Sparkles,
-      title: "Smart Revision",
-      description: "Our spaced repetition system ensures you review information at the optimal time for maximum retention."
-    }
-  ];
-
-  const testimonials = [
-    {
-      quote: "Revilaition transformed my study routine. I'm learning so much more efficiently now and seeing better results in my exams.",
-      author: "Sarah J.",
-      role: "GCSE Student",
-      rating: 5
-    },
-    {
-      quote: "As a teacher, I recommend Revilaition to all my students. It's like having a personal tutor available 24/7.",
-      author: "Michael T.",
-      role: "Secondary School Teacher",
-      rating: 5
-    },
-    {
-      quote: "The personalized study plans are amazing! Revilaition helped me organize my revision and focus on areas I was struggling with.",
-      author: "Amy L.",
-      role: "Sixth Form Student",
-      rating: 4
-    }
-  ];
-
-  const pricing = [
-    {
-        planName: "Free",
-        price: "Free",
-        features: ['Past Paper review', 'Revision Planner', 'Up to 5 AI prompts a month', 'Community Support'],
-        buttonText: "Sign Up"
-    },
-    {
-        planName: "Standard",
-        price: "£9.99/month",
-        features: ['Everything in Free', 'Up to 50 AI prompts a month', 'Priority Support', 'Personality tailored AI'],
-        buttonText: "Get Started",
-        isPopular: true,
-        priceId: "prod_SEpS8sUZPtBSkV"
-    },
-    {
-        planName: "Premium",
-        price: "£25/month",
-        features: ['Everything in Standard', 'Unlimited AI prompts', 'Dedicated Support', 'AI tuned to you'],
-        buttonText: "Subscribe Now",
-        priceId: "prod_SEpSEO65HhWXfu"
-    }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -104,7 +29,7 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
+              {featureData.map((feature, index) => (
                 <FeatureCard 
                   key={index}
                   icon={feature.icon}
@@ -147,7 +72,7 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
+              {testimonialData.map((testimonial, index) => (
                 <TestimonialCard 
                   key={index}
                   quote={testimonial.quote}
@@ -171,15 +96,15 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
-              {pricing.map((pricing, index) => (
-                <PricingCard 
-                  key={index}
-                  planName={pricing.planName}
-                  price={pricing.price}
-                  features={pricing.features}
-                  buttonText={pricing.buttonText}
-                  isPopular={pricing.isPopular}
-                  priceId={pricing.priceId}
+              {pricingData.plans.map((plan) => (
+                <PricingCard
+                  key={plan.priceId}
+                  planName={plan.planName}
+                  price={plan.price}
+                  features={plan.features}
+                  buttonText={plan.buttonText}
+                  priceId={plan.priceId}
+                  onSelect={handleSelect}
                 />
               ))}
             </div>
