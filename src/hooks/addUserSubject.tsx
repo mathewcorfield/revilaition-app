@@ -4,7 +4,7 @@ import { addUserSubject, fetchSubtopicsForSubject } from "@/services/dataService
 import { useToast } from "@/hooks/use-toast";
 import { Subject } from "@/types";
 
-export const useAddSubject = () => {
+export const useAddSubject = (isTrial: boolean) => {
   const { user, setUser } = useUser();
   const { toast } = useToast();
   const [isAdding, setIsAdding] = useState(false);
@@ -24,8 +24,9 @@ export const useAddSubject = () => {
     if (selectedSubject) {
       try {
         setIsAdding(true); // Start loading state
-        
+        if (!isTrial){
         await addUserSubject(user.id, selectedSubject.id);
+        }
         const fetchedSubtopics = await fetchSubtopicsForSubject(selectedSubject.id);
         
         const newSubject: Subject = {
