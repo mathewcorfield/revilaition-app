@@ -10,10 +10,10 @@ import { calculateProgress } from "@/utils/calculateProgress";
 interface SubjectCardProps {
   subject: Subject;
   onRemoveSubject: (id: string) => void;
-  isTrial?: boolean;
+  isTrial: boolean;
 }
 
-const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onRemoveSubject }) => {
+const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onRemoveSubject,isTrial }) => {
   const navigate = useNavigate();
   const learntProgress = calculateProgress(subject, "learnt");
   const revisedProgress = calculateProgress(subject, "revised");
