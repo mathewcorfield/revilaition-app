@@ -54,7 +54,7 @@ const Dashboard = () => {
       <main className="container mx-auto p-4 flex-grow">
         {isTrial && (
           <div className="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-900 border border-yellow-300">
-            <strong>Trial Mode:</strong> You're in Trial Mode:</strong> Welcome to Revilaition! You're currently exploring with limited features. 
+            <strong>You're in Trial Mode:</strong> Welcome to Revilaition! You're currently exploring with limited features. 
 Verify your email and log in to unlock full AI-powered revision tools and insights.
           </div>
         )}
