@@ -1,17 +1,19 @@
 import {useState, useEffect} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams, useLocation} from "react-router-dom";
 import {useUser} from "@/context/UserContext";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {    ArrowLeft,    Check,    Edit3,    HelpCircle,    Shuffle} from "lucide-react";
-import {    Dialog,    DialogContent,    DialogHeader,    DialogTitle,    DialogTrigger} from "@/components/ui/dialog";
+import {    Dialog,    DialogContent,    DialogHeader,    DialogTitle,    DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
 import {toast} from "@/components/ui/use-toast";
 import {Subtopic} from "@/types";
-import { addUserSubtopic, addEvent  } from "@/services/dataService";
+import { addUserSubtopic, addEvent, getQuestionsForSubtopic } from "@/services/dataService";
         
 const SubjectPage: React.FC = () => {
+        const location = useLocation();
+        const isTrial = location.state?.isTrial;
     const navigate = useNavigate();
     const {id} = useParams();
     const {user, loading, setUser} = useUser();
@@ -24,9 +26,9 @@ const SubjectPage: React.FC = () => {
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
-const [isLearning, setIsLearning] = useState(false); // To track if the user is learning
-const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in seconds
-const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+        const [isLearning, setIsLearning] = useState(false); // To track if the user is learning
+        const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in seconds
+        const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
 useEffect(() => {
   let interval: NodeJS.Timeout | null = null;
@@ -78,6 +80,7 @@ useEffect(() => {
   };
 
   const handleStartLearning = () => {
+          setElapsedTime(0);
     setIsLearning(true); // Start the learning timer
   };
 
@@ -191,8 +194,19 @@ const handleRevisedToggle = async (subtopicId: string) => {
         setEvaluationFeedback(null); // clear previous feedback
         setShowDialog(true);
         try {
+                if (isTrial) {
+                        const questions = await getQuestionsForSubtopic(subtopic.id);
+                        if (questions.length === 0) {
+                                throw new Error("No trial questions available for this subtopic.");
+                              }
+                        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                         const response = `${randomQuestion.name} (${randomQuestion.marks} marks).\nExample mark scheme: ${randomQuestion.mark_scheme}`;
+                        setQuestion(response);
+                } else {
             const response = await getRevisionQuestion(subtopicName, subject.examBoard, subject.level);
-            setQuestion(response);
+                setQuestion(response);
+                }
+                
             toast({title: "Question Generated", description: "Here is your question!"});
         } catch {
             toast(
@@ -208,6 +222,13 @@ const handleAnswerSubmit = async () => {
     if (!answer) {
         toast({title: "Error", description: "Please provide an answer."});
         return;
+    }
+        if (isTrial) {
+      toast({
+        title: "Action Required",
+        description: "Please verify your email and log in to receive AI feedback.",
+      });
+      return;
     }
     setIsEvaluating(true);
     setEvaluationFeedback(null);
@@ -228,7 +249,9 @@ if (subtopics.length === 0) {
     return;
 }
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
-handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"> 
+handleGenerateQuestion(random.name, random);}
+        ;return (
+        <div className="space-y-6"> 
         {/* Subject header */}
     <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -358,4 +381,28 @@ handleGenerateQuestion(random.name, random);};return (<div className="space-y-6"
     </div>
   </DialogContent>
 </Dialog>
-</div>);};export default SubjectPage;
+</div>
+<Dialog open={isLearning} onOpenChange={setIsLearning}>
+  <DialogContent className="max-w-sm">
+    <DialogHeader>
+      <DialogTitle>Learning Session</DialogTitle>
+      <DialogDescription>
+        Timer is running. Close this dialog to continue working.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="text-2xl font-bold text-center text-green-600 mt-4">
+      ⏱ {formatTime(elapsedTime)}
+    </div>
+    <div className="flex justify-end mt-6">
+      <Button variant="destructive" onClick={() => {
+        setIsLearning(false);
+        setElapsedTime(0);
+      }}>
+        Stop Timer
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+);
+};
+export default SubjectPage;
