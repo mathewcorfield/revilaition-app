@@ -110,7 +110,6 @@ const Login = () => {
       }
     } catch (error) {
       setLoading(false);
-      Sentry.captureException(error);
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
