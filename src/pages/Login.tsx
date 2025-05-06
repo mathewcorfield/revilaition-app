@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { useUser } from "@/context/UserContext";
 import { getUserData } from "@/hooks/getUserData";
 import useGoogleSignIn from "@/hooks/useGoogleSignIn";
@@ -19,8 +18,10 @@ const Login = () => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [level, setLevel] = useState(""); // User's study level
-  const [country, setCountry] = useState(""); // User's country
+  const [level, setLevel] = useState("");
+  const [country, setCountry] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong" | "">("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setUser } = useUser();
@@ -33,7 +34,6 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setUser(null);
     try {
       if (isLogin) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -45,6 +45,7 @@ const Login = () => {
             title: "Error",
             description: error.message,
           });
+          setLoading(false)
           return;
         }
 
@@ -56,6 +57,7 @@ const Login = () => {
             title: "Error",
             description: "Unable to fetch user data. Please try again later.",
           });
+          setLoading(false)
           return;
         }
 
@@ -89,22 +91,35 @@ const Login = () => {
             },
           });
 
-          setLoading(false);
-
           if (error) {
             toast({
               title: "Error",
               description: error.message,
             });
+            setLoading(false);
             return;
           }
 
+          const userId = data?.user?.id;
+
+          if (userId) {
+            const { error: insertError } = await supabase
+              .from("users")
+              .insert([{ id: userId, name }]); // Add name to users table
+        
+            if (insertError) {
+              toast({
+                title: "Error",
+                description: insertError.message,
+              });
+            }
+          }
+          
           toast({
             title: "Account Created",
             description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
           });
           sessionStorage.setItem("isTrial", "true");
-          const { user} = useUser();
           navigate('/dashboard');
         }
       }
@@ -124,6 +139,7 @@ const Login = () => {
         title: "Error",
         description: "Please complete the onboarding questions.",
       });
+      setLoading(false)
       return;
     }
 try {
@@ -133,6 +149,7 @@ try {
         title: "Error",
         description: "User not authenticated. Please log in again.",
       });
+      setLoading(false)
       return;
     }
 
@@ -149,13 +166,14 @@ try {
       // If no user profile exists, insert a new record into the 'users' table
       const { error: insertError } = await supabase
         .from('users')
-        .insert([{ id: userId, current_level: level, country_id: country }]);
+        .insert([{ id: userId, current_level: level, country_id: country, name }]);
 
       if (insertError) {
         toast({
           title: "Error",
           description: insertError.message,
         });
+        setLoading(false)
         return;
       }
 
@@ -176,7 +194,15 @@ try {
       });
     }
   };
-  
+  const evaluateStrength = (password: string) => {
+  let strength: "Weak" | "Medium" | "Strong" | "" = "Weak";
+  if (password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password) && /[^A-Za-z0-9]/.test(password)) {
+    strength = "Strong";
+  } else if (password.length >= 6 && /[A-Z]/.test(password) && /\d/.test(password)) {
+    strength = "Medium";
+  }
+  setPasswordStrength(strength);
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
       <div className="w-full max-w-md">
@@ -235,15 +261,70 @@ try {
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setPassword(val);
+                    evaluateStrength(val);
+                  }}
                   required
                   autoComplete="current-password" // Adding autocomplete for password
                 />
+                <button
+                  type="button"
+                  className="absolute right-2 top-2 text-sm text-muted-foreground"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </div>
+              {password && (
+                  <p
+                    className={`text-sm ${
+                      passwordStrength === "Strong"
+                        ? "text-green-600"
+                        : passwordStrength === "Medium"
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    Strength: {passwordStrength}
+                  </p>
+                )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Sign In" : "Sign Up"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full mt-2 text-sm text-blue-500"
+                onClick={async () => {
+                  if (!email) {
+                    toast({ title: "Email Required", description: "Enter your email to receive a login link." });
+                    return;
+                  }
+                  setLoading(true);
+                  const { error } = await supabase.auth.signInWithOtp({
+                    email,
+                    options: {
+                      emailRedirectTo: "https://www.revilaition.com/#/dashboard",
+                    },
+                  });
+                  setLoading(false);
+              
+                  if (error) {
+                    toast({ title: "Error", description: error.message });
+                  } else {
+                    toast({
+                      title: "Check your inbox",
+                      description: "We've sent you a magic link to log in.",
+                    });
+                  }
+                }}
+              >
+                Send Magic Link Instead
               </Button>
             </form>
                         <Button 
@@ -256,7 +337,7 @@ try {
             </Button>
             {/* Add Terms and Privacy Policy message here */}
         {!isLogin && (
-          <div className="mt-4 text-sm text-center .text-muted-foreground">
+          <div className="mt-4 text-sm text-center text-muted-foreground">
             <p>
               By signing up you agree to our
             </p>
