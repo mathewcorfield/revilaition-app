@@ -85,7 +85,7 @@ const Login = () => {
             email,
             password,
             options: {
-              emailRedirectTo: "https://revilaition.com/dashboard",
+              emailRedirectTo: "https://www.revilaition.com/#/dashboard",
             },
           });
 
