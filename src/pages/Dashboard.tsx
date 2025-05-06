@@ -54,8 +54,9 @@ const Dashboard = () => {
                 : `${user?.name ? `${user.name}'s` : "Your"} Dashboard`}
             </span>
           </div>
+          <Button onClick={() => navigate("/subscription")}>Subscribe for Full Access</Button>
            {isTrial ? (
-            <Button onClick={() => navigate("/login")}>Log in to Get Full Access</Button>
+            <Button onClick={() => navigate("/login")}>Verify & Login to end trial mode</Button>
           ) : (
           <Button variant="outline" onClick={logout}>Log Out</Button>
       )}
