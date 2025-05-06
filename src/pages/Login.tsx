@@ -182,7 +182,11 @@ try {
       <div className="w-full max-w-md">
         <Card className="border-primary/20 shadow-lg animate-fade-in">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold text-primary">RevilAItion</CardTitle>
+            <CardTitle className="text-3xl font-bold text-primary">
+              Revil
+              <span className="text-yellow-400 font-extrabold">AI</span>
+              tion
+            </CardTitle>
             <CardDescription>
               {isLogin ? "Sign in to access your learning journey" : "Create an account to start your learning journey"}
             </CardDescription>
