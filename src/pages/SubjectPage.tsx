@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {useNavigate, useParams, useLocation} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {ArrowLeft,   Shuffle} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Button} from "@/components/ui/button";
@@ -15,8 +15,7 @@ import {useSubjectData } from "@/hooks/useSubjectData";
 import {useLearningTimer } from "@/hooks/useLearningTimer";
         
 const SubjectPage: React.FC = () => {
-        const location = useLocation();
-        const isTrial = location.state?.isTrial ?? false;
+        const isTrial = sessionStorage.getItem("isTrial") === "true";
         const navigate = useNavigate();
         const {id} = useParams();
         const {user, loading, setUser} = useUser();
@@ -32,7 +31,11 @@ const SubjectPage: React.FC = () => {
         const userId = user?.id;
         const subtopicId = selectedSubtopic?.id;
         const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
-        
+        useEffect(() => {
+            if (!loading && !user && !isTrial) {
+              navigate("/login"); // or homepage
+            }
+          }, [user, loading, isTrial, navigate]);
         if (loading) {
                 return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
         }
