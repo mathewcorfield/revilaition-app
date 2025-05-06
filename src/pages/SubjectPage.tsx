@@ -28,17 +28,17 @@ const SubjectPage: React.FC = () => {
         const [isEvaluating, setIsEvaluating] = useState(false);
         const [showDialog, setShowDialog] = useState(false);
         const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
-
+        
+        const userId = user?.id;
+        const subtopicId = selectedSubtopic?.id;
+        const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
+        
         if (loading) {
                 return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
         }
         if (!subject) {
                 return <div className="text-center mt-8">Subject not found</div>;
         }
-        const userId = user?.id;
-        const subtopicId = selectedSubtopic?.id;
-
-        const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
         
         const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
             const newValue = subtopic[type] === 1 ? 0 : 1;
