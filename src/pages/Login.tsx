@@ -37,6 +37,7 @@ const Login = () => {
     try {
       if (isLogin) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        sessionStorage.removeItem("isTrial");
         setLoading(false);
 
         if (error) {
@@ -102,7 +103,8 @@ const Login = () => {
             title: "Account Created",
             description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
           });
-          navigate('/dashboard?trial=true');
+          sessionStorage.setItem("isTrial", "true");
+          navigate('/dashboard');
         }
       }
     } catch (error) {
