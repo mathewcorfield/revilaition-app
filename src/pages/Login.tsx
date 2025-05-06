@@ -107,7 +107,7 @@ const Login = () => {
           if (userId) {
             const { error: insertError } = await supabase
               .from("users")
-              .insert([{ id: userId, name }]); // Add name to users table
+              .insert([{ id: userId, full_name: name }]);
         
             if (insertError) {
               toast({
@@ -168,7 +168,7 @@ try {
       // If no user profile exists, insert a new record into the 'users' table
       const { error: insertError } = await supabase
         .from('users')
-        .insert([{ id: userId, current_level: level, country_id: country, name }]);
+        .insert([{ id: userId, current_level: level, country_id: country, full_name: name }]);
 
       if (insertError) {
         toast({
@@ -212,9 +212,9 @@ try {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-3xl font-bold text-primary">
               Revil
-              <span className="text-yellow-400 font-extrabold">AI</span>
+              <span className="text-black">AI</span>
               tion <br /> Revil
-              <span className="text-green-400 font-bold">AI</span>
+              <span className="text-cyan-300 font-bold animate-shimmer bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">AI</span>
               tion <br /> Revil
               <span className="text-cyan-300">AI</span>
               tion
