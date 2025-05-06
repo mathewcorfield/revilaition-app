@@ -35,27 +35,29 @@ const App = () => {
  useTrackUserInteractions(); // Tracking user interactions
   
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster /> {/* Make sure you only need this one */}
-        <Sonner />  {/* Use this only if it's necessary */}
-          <UserProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/verify-email" element={<VerifyEmailPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/subscription" element={<SubscriptionPage />} />
-              <Route path="/success" element={<SuccessPage />} />
-              <Route path="/subject/:id" element={<SubjectPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/cookie-policy" element={<CookiePolicy />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </UserProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <Sentry.ErrorBoundary fallback={<p>Something went wrong.</p>}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster /> {/* Make sure you only need this one */}
+          <Sonner />  {/* Use this only if it's necessary */}
+            <UserProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/subscription" element={<SubscriptionPage />} />
+                <Route path="/success" element={<SuccessPage />} />
+                <Route path="/subject/:id" element={<SubjectPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </UserProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </Sentry.ErrorBoundary>
   );
 };
 
