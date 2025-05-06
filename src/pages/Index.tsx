@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import FeatureCard from '@/components/FeatureCard';
@@ -11,6 +12,10 @@ import featureData from "@/config/featuresConfig.json";
 import testimonialData from "@/config/testimonialsConfig.json";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const handleSelect = (priceId: string) => {
+    navigate("/login");
+  };
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
