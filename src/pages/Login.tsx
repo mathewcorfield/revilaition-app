@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { supabase } from "../lib/supabaseClient";
 import { Link , useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,7 @@ const Login = () => {
   const [level, setLevel] = useState("");
   const [country, setCountry] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong" | "">("");
+  const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong" | "">("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setUser } = useUser();
@@ -260,6 +261,7 @@ try {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
+                <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -278,8 +280,9 @@ try {
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label="Toggle password visibility"
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
+                </div>
               </div>
               {password && (
                   <p
