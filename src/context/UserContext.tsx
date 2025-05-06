@@ -4,7 +4,7 @@ import { getUserData } from "@/hooks/getUserData";
 import { User } from "@/types";
 import { mockUser } from "@/data/mockData"; 
 
-const CACHE_KEY = "user";
+const CACHE_KEY = isTrial ? "user_trial" : "user";
 const CACHE_EXPIRY_MINUTES = 120; 
 
 type CachedUser = {
@@ -67,7 +67,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             return;
           } else {
             console.info("[UserContext] Cache expired, refetching...");
-            localStorage.removeItem(CACHE_KEY);
+            sessionStorage.removeItem(CACHE_KEY);
           }
         }
 
@@ -84,8 +84,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        const fullData = await getUserData(data.user.id);
-        setUserAndCache(fullData);
+       try {
+          const fullData = await getUserData(data.user.id);
+          if (!fullData) throw new Error("Failed to retrieve user data");
+          setUserAndCache(fullData);
+        } catch (err) {
+          console.error("[UserContext] Failed to get full user data:", err);
+          clearUser();
+        }
       } catch (err) {
         console.error("[UserContext] Unexpected error:", err);
       } finally {
