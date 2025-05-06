@@ -32,11 +32,11 @@ const useRedirectIfLoggedIn = (isTrial: boolean) => {
       if (user) {
             console.log("Valid user found. Redirecting to dashboard...");
             navigate("/dashboard");
-          }
         } else {
           console.log("No valid user found. Stay on login page.");
-        }
-      };
+      }
+        };
+      
 
     checkAuth();
   }, [navigate]);
