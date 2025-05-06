@@ -1,14 +1,15 @@
 import {useState, useEffect} from "react";
 import {useNavigate, useParams, useLocation} from "react-router-dom";
+import {    ArrowLeft,    Check,    Edit3,    HelpCircle,    Shuffle} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {    ArrowLeft,    Check,    Edit3,    HelpCircle,    Shuffle} from "lucide-react";
 import {    Dialog,    DialogContent,    DialogHeader,    DialogTitle,    DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
 import {toast} from "@/components/ui/use-toast";
+import { SubtopicCard } from "@/components/SubtopicCard";
 import {Subtopic} from "@/types";
+import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
 import { addUserSubtopic, addEvent, getQuestionsForSubtopic } from "@/services/dataService";
 import { useSubjectData } from "@/hooks/useSubjectData";
         
@@ -267,61 +268,17 @@ handleGenerateQuestion(random.name, random);}
             </Button>
   </div>
     </div>
-    {/* Subtopic cards */}
-    <div className="space-y-3"> {
-        subtopics.map((subtopic) => (<Card key={
-                subtopic.id
-            }
-            className="p-4 flex items-center justify-between gap-4 hover:bg-accent/10 transition-colors">
-            <div className="flex-grow">
-                <h4 className="font-medium"> {
-                    subtopic.name
-                }</h4>
-                {
-                subtopic.description && <p className="text-sm text-muted-foreground mt-1"> {
-                    subtopic.description
-                }</p>
-            } </div>
-            <div className="flex items-center gap-2">
-                <Button variant={
-                        subtopic.learnt
-                            ? "default"
-                            : "outline"
-                    }
-                    size="sm"
-                    onClick={
-                        () => handleLearntToggle(subtopic.id)
-                }>
-                    <Check size={16}/> {
-                    subtopic.learnt
-                        ? "Learnt"
-                        : "Mark as Learnt"
-                } </Button>
-                <Button variant={
-                        subtopic.revised
-                            ? "secondary"
-                            : "outline"
-                    }
-                    size="sm"
-                    onClick={
-                        () => handleRevisedToggle(subtopic.id)
-                }>
-                    <Edit3 size={16}/> {
-                    subtopic.revised
-                        ? "Revised"
-                        : "Mark as Revised"
-                } </Button>
-                <Button
-      variant="outline"
-      size="sm"
-      onClick={() => handleGenerateQuestion(subtopic.name, subtopic)}
-    >
-      <HelpCircle size={16} />
-      Generate Question
-    </Button>
-            </div>
-        </Card>))
-    } </div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {subtopics.map((subtopic) => (
+    <SubtopicCard
+            key={subtopic.id}
+            subtopic={subtopic}
+            onLearntToggle={handleLearntToggle}
+            onRevisedToggle={handleRevisedToggle}
+            onGenerateQuestion={handleGenerateQuestion}
+          />
+  ))}
+</div>
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
   <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
     <DialogHeader>
