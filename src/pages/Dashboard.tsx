@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MilestoneTimeline from "@/components/MilestoneTimeline";
 import CalendarTimeline from "@/components/CalendarTimeline";
