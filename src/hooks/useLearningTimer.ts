@@ -7,8 +7,8 @@ interface UseLearningTimerProps {
   subtopicId: string | undefined; 
 }
 export function useLearningTimer({ userId, subtopicId }: UseLearningTimerProps) {
-        const [isLearning, setIsLearning] = useState(false); // To track if the user is learning
-        const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in seconds
+        const [isLearning, setIsLearning] = useState(false);
+        const [elapsedTime, setElapsedTime] = useState(0);
         const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
 useEffect(() => {
@@ -58,12 +58,12 @@ useEffect(() => {
 
   const handleStartLearning = () => {
           setElapsedTime(0);
-    setIsLearning(true); // Start the learning timer
+    setIsLearning(true); 
   };
 
   const handleStopLearning = () => {
-    setIsLearning(false); // Stop the learning timer
-    handleLogLearning(); // Log the learning event
+    setIsLearning(false); 
+    //handleLogLearning();  FUTURE LOG the learning event
   };
    return {
     isLearning,
