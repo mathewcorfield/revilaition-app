@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import { addEvent } from "@/services/dataService";
-import { toast } from "@/components/ui/toast";
+import {toast} from "@/components/ui/use-toast";
 
 interface UseLearningTimerProps {
   userId: string | undefined; 
