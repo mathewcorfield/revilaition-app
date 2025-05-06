@@ -1,184 +1,75 @@
 import {useState, useEffect} from "react";
 import {useNavigate, useParams, useLocation} from "react-router-dom";
-import {    ArrowLeft,    Check,    Edit3,    HelpCircle,    Shuffle} from "lucide-react";
+import {ArrowLeft,   Shuffle} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {    Dialog,    DialogContent,    DialogHeader,    DialogTitle,    DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {Dialog,    DialogContent,    DialogHeader,    DialogTitle,    DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import {toast} from "@/components/ui/use-toast";
 import { SubtopicCard } from "@/components/SubtopicCard";
 import {Subtopic} from "@/types";
 import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
-import { addUserSubtopic, addEvent, getQuestionsForSubtopic } from "@/services/dataService";
-import { useSubjectData } from "@/hooks/useSubjectData";
+import {addUserSubtopic, getQuestionsForSubtopic } from "@/services/dataService";
+import {useSubjectData } from "@/hooks/useSubjectData";
+import {useLearningTimer } from "@/hooks/useLearningTimer";
         
 const SubjectPage: React.FC = () => {
         const location = useLocation();
         const isTrial = location.state?.isTrial ?? false;
-    const navigate = useNavigate();
-    const {id} = useParams();
-    const {user, loading, setUser} = useUser();
-    const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
-    const [selectedSubtopic, setSelectedSubtopic] = useState < Subtopic | null > (null);
-    const [question, setQuestion] = useState < string | null > (null);
-    const [answer, setAnswer] = useState < string > ('');
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [isEvaluating, setIsEvaluating] = useState(false);
-    const [showDialog, setShowDialog] = useState(false);
-    const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
-        const [isLearning, setIsLearning] = useState(false); // To track if the user is learning
-        const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in seconds
-        const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+        const navigate = useNavigate();
+        const {id} = useParams();
+        const {user, loading, setUser} = useUser();
+        const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
+        const [selectedSubtopic, setSelectedSubtopic] = useState <Subtopic | null >(null);
+        const [question, setQuestion] = useState <string | null >(null);
+        const [answer, setAnswer] = useState <string >('');
+        const [isGenerating, setIsGenerating] = useState(false);
+        const [isEvaluating, setIsEvaluating] = useState(false);
+        const [showDialog, setShowDialog] = useState(false);
+        const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
 
-useEffect(() => {
-  let interval: NodeJS.Timeout | null = null;
-  if (isLearning) {
-    interval = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
-    }, 1000);
-  }
-
-  return () => {
-    if (interval) clearInterval(interval);
-  };
-}, [isLearning]);
-        
-        const handleLogLearning = async () => {
-                  const userId = user?.id; // Ensure user is not undefined
-  const subtopicId = selectedSubtopic?.id; // Ensure subtopic is selected
-  if (!userId || !subtopicId) {
-    toast({ title: "Error", description: "User or Subtopic not found." });
-    return;
-  }
-    const eventDate = new Date();
-
-    try {
-      // Log the learning event with the elapsed time
-      await addEvent(userId, `Learned ${subtopicId}`, "Event", `Learned for ${elapsedTime} seconds`, eventDate);
-
-      // Toast feedback
-      toast({
-        title: "Learning Logged",
-        description: `You have logged ${elapsedTime} seconds of learning for ${subtopicId}.`,
-      });
-
-      // Redirect back to the subject page
-      navigate("/subject"); // Replace with your subject page route
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to log the learning event.",
-      });
-      console.error("Error logging learning event:", err);
-    }
-  };
-
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  };
-
-  const handleStartLearning = () => {
-          setElapsedTime(0);
-    setIsLearning(true); // Start the learning timer
-  };
-
-  const handleStopLearning = () => {
-    setIsLearning(false); // Stop the learning timer
-    handleLogLearning(); // Log the learning event
-  };
-        
-    if (loading) {
-        return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-    }
-    if (!subject) {
-        return <div className="text-center mt-8">Subject not found</div>;
-    }
-    const handleLearntToggle = async (subtopicId: string) => {
-  const subtopic = subtopics.find((st) => st.id === subtopicId);
-  const newValue = subtopic?.learnt === 1 ? 0 : 1;
-
-  setSubtopics((prev) =>
-    prev.map((st) =>
-      st.id === subtopicId ? { ...st, learnt: newValue } : st
-    )
-  );
-
-  try {
-    await addUserSubtopic(user.id, subtopicId, newValue);
-          if (setUser) {
-      const updatedSubjects = user.subjects.map((subject) => {
-        if (String(subject.id) === String(id)) {
-          return {
-            ...subject,
-            subtopics: subject.subtopics.map((st) =>
-              st.id === subtopicId ? { ...st, learnt: newValue } : st
-            ),
-          };
+        if (loading) {
+                return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
         }
-        return subject;
-      });
-
-      setUser({ ...user, subjects: updatedSubjects });
-    }
-              toast({
-      title: newValue === 1 ? "Marked as Learnt" : "Unmarked as Learnt",
-      description: `You have ${newValue === 1 ? "learnt" : "unmarked"} the topic: "${subtopic?.name}"`,
-    });
-          // Start the timer when "Learnt" is clicked
-    if (newValue === 1) {
-      handleStartLearning(); // Start the learning timer
-    } else {
-      handleStopLearning(); // Stop the learning timer when unmarked as learnt
-    }
-  } catch (err) {
-    toast({ title: "Error", description: "Failed to update 'Learnt' status." });
-  }
-};
-const handleRevisedToggle = async (subtopicId: string) => {
-  const subtopic = subtopics.find((st) => st.id === subtopicId);
-  const newValue = subtopic?.revised === 1 ? 0 : 1;
-
-  setSubtopics((prev) =>
-    prev.map((st) =>
-      st.id === subtopicId ? { ...st, revised: newValue } : st
-    )
-  );
-
-  try {
-    await addUserSubtopic(user.id, subtopicId, newValue);
-          if (setUser) {
-      const updatedSubjects = user.subjects.map((subject) => {
-        if (String(subject.id) === String(id)) {
-          return {
-            ...subject,
-            subtopics: subject.subtopics.map((st) =>
-              st.id === subtopicId ? { ...st, revised: newValue } : st
-            ),
-          };
+        if (!subject) {
+                return <div className="text-center mt-8">Subject not found</div>;
         }
-        return subject;
-      });
+        const userId = user?.id;
+        const subtopicId = selectedSubtopic?.id;
 
-      setUser({ ...user, subjects: updatedSubjects });
-    }
+        const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
+        
+        const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
+            const newValue = subtopic[type] === 1 ? 0 : 1;
+            try {
+              await addUserSubtopic(user.id, subtopic.id, { [type]: newValue });
+        
+              const updatedSubjects = user.subjects.map(subject => {
+                if (String(subject.id) === String(id)) {
+                  return {
+                    ...subject,
+                    subtopics: subject.subtopics.map(st =>
+                      st.id === subtopic.id ? { ...st, [type]: newValue } : st
+                    ),
+                  };
+                }
+                return subject;
+              });
+        
+              setUser({ ...user, subjects: updatedSubjects });
+        
               toast({
-      title: newValue === 1 ? "Marked as revised" : "Unmarked as revised",
-      description: `You have ${newValue === 1 ? "revised" : "unmarked"} the topic: "${subtopic?.name}"`,
-    });
-          // Start the timer when "Learnt" is clicked
-    if (newValue === 1) {
-      handleStartLearning(); // Start the learning timer
-    } else {
-      handleStopLearning(); // Stop the learning timer when unmarked as learnt
-    }
-  } catch (err) {
-    toast({ title: "Error", description: "Failed to update 'Revised' status." });
-  }
-};
-    const handleGenerateQuestion = async (subtopicName : string, subtopic : Subtopic) => {
+                title: newValue === 1 ? `Marked as ${type}` : `Unmarked as ${type}`,
+                description: `You have ${newValue === 1 ? `marked` : "unmarked"} the topic: "${subtopic.name}"`,
+              });
+        
+              newValue === 1 ? handleStartLearning() : handleStopLearning();
+            } catch (err) {
+              toast({ title: "Error", description: `Failed to update ${type} status.` });
+            }
+          };
+        const handleGenerateQuestion = async (subtopicName : string, subtopic : Subtopic) => {
         setIsGenerating(true);
         setSelectedSubtopic(subtopic);
         setAnswer('');
@@ -235,14 +126,17 @@ const handleAnswerSubmit = async () => {
     } finally {
         setIsEvaluating(false);
     
-}};const handleGenerateRandomQuestion = () => {
+}};
+        
+const handleGenerateRandomQuestion = () => {
 if (subtopics.length === 0) {
     toast({title: "No Subtopics", description: "No subtopics to generate questions from."});
     return;
 }
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
-handleGenerateQuestion(random.name, random);}
-        ;return (
+handleGenerateQuestion(random.name, random);
+};
+return (
         <div className="space-y-6"> 
         {/* Subject header */}
     <div className="flex items-center justify-between">
@@ -273,8 +167,7 @@ handleGenerateQuestion(random.name, random);}
     <SubtopicCard
             key={subtopic.id}
             subtopic={subtopic}
-            onLearntToggle={handleLearntToggle}
-            onRevisedToggle={handleRevisedToggle}
+            onToggle={handleToggle}
             onGenerateQuestion={handleGenerateQuestion}
           />
   ))}
@@ -342,10 +235,7 @@ handleGenerateQuestion(random.name, random);}
       ⏱ {formatTime(elapsedTime)}
     </div>
     <div className="flex justify-end mt-6">
-      <Button variant="destructive" onClick={() => {
-        setIsLearning(false);
-        setElapsedTime(0);
-      }}>
+      <Button variant="destructive" onClick={() => {handleStopLearning();}}>
         Stop Timer
       </Button>
     </div>
