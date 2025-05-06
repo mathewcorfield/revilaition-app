@@ -28,6 +28,7 @@ const SubjectPage: React.FC = () => {
         const [isEvaluating, setIsEvaluating] = useState(false);
         const [showDialog, setShowDialog] = useState(false);
         const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
+        const [isLearning, setIsLearning] = useState(false);
         
         const userId = user?.id;
         const subtopicId = selectedSubtopic?.id;
@@ -223,7 +224,7 @@ return (
   </DialogContent>
 </Dialog>
 
-<Dialog open={isLearning} onOpenChange={setIsLearning}>
+<Dialog open={isLearning} onOpenChange={() => {}}>
   <DialogContent className="max-w-sm">
     <DialogHeader>
       <DialogTitle>Learning Session</DialogTitle>
