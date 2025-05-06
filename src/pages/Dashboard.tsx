@@ -39,7 +39,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col ${isTrial ? 'bg-yellow-50' : 'bg-background'}`}>
+    <div className={"min-h-screen flex flex-col bg-background"}>
       <header className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -48,7 +48,11 @@ const Dashboard = () => {
           <span className="font-bold text-xl text-gray-900">Revilaition</span>
               </Link>
             <span className="text-muted-foreground">|</span>
-            <span>{user?.name ? `${user.name}'s` : "Your"} Dashboard</span>
+            <span>
+              {isTrial 
+                ? <strong>Verify your email and log in to unlock full feature!</strong>
+                : `${user?.name ? `${user.name}'s` : "Your"} Dashboard`}
+            </span>
           </div>
            {isTrial ? (
             <Button onClick={() => navigate("/login")}>Log in to Get Full Access</Button>
@@ -61,7 +65,7 @@ const Dashboard = () => {
         {isTrial && (
           <div className="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-900 border border-yellow-300">
             <strong>You're in Trial Mode:</strong> Welcome to Revilaition! You're currently exploring with limited features. 
-Verify your email and log in to unlock full AI-powered revision tools and insights.
+<strong>Verify your email and log in</strong> to unlock full AI-powered revision tools and insights.
           </div>
         )}
         <div className="mb-8">
