@@ -13,16 +13,21 @@ import useSubjects from "@/hooks/getSubjects";
 import useExamBoards from "@/hooks/getExamBoards";
 import useAuthRedirect from "@/hooks/useAuthRedirect";
 import useLogout from "@/hooks/useLogout";
-import useIsTrialMode from '@/hooks/useIsTrialMode';
 
 const Dashboard = () => {
-  const isTrial = useIsTrialMode();
+  const isTrial = sessionStorage.getItem("isTrial") === "true";
   
   const { allSubjects, loadingSubjects } = useSubjects();
   const { allExamBoards, loadingExamBoards } = useExamBoards();
   const { user, loading: userLoading } = useUser();
   const logout = useLogout();
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!loading && !user && !isTrial) {
+      navigate("/login"); // or homepage
+    }
+  }, [user, loading, isTrial, navigate]);
   
   if (loadingSubjects || loadingExamBoards || userLoading) {
     return (
