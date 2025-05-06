@@ -17,9 +17,19 @@ import CookiePolicy from './pages/CookiePolicy';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useTrackUserInteractions from "@/hooks/useTrackUserInteractions"; 
 import { UserProvider } from "@/context/UserContext";
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
 
 const queryClient = new QueryClient();
-
+const sentry_dsn = import.meta.env.VITE_SENTRY_DSN;
+// Initialize Sentry with your DSN (Data Source Name)
+Sentry.init({
+  dsn: sentry_dsn, // Replace with your actual DSN from Sentry
+  integrations: [
+    new Integrations.BrowserTracing(),
+  ],
+  tracesSampleRate: 1.0, // Adjust this value for performance monitoring
+});
 const App = () => {
   
  useTrackUserInteractions(); // Tracking user interactions
