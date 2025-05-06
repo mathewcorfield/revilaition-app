@@ -10,6 +10,7 @@ import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
 import {toast} from "@/components/ui/use-toast";
 import {Subtopic} from "@/types";
 import { addUserSubtopic, addEvent, getQuestionsForSubtopic } from "@/services/dataService";
+import { useSubjectData } from "@/hooks/useSubjectData";
         
 const SubjectPage: React.FC = () => {
         const location = useLocation();
@@ -17,8 +18,7 @@ const SubjectPage: React.FC = () => {
     const navigate = useNavigate();
     const {id} = useParams();
     const {user, loading, setUser} = useUser();
-    const [subject, setSubject] = useState < any | null > (null);
-    const [subtopics, setSubtopics] = useState < Subtopic[] > ([]);
+    const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
     const [selectedSubtopic, setSelectedSubtopic] = useState < Subtopic | null > (null);
     const [question, setQuestion] = useState < string | null > (null);
     const [answer, setAnswer] = useState < string > ('');
@@ -89,15 +89,6 @@ useEffect(() => {
     handleLogLearning(); // Log the learning event
   };
         
-    useEffect(() => {
-        if (!loading && user ?. subjects && id) {
-            const subject = user.subjects.find((s) => String(s.id) === String(id));
-            if (subject) {
-                setSubtopics(subject.subtopics);
-                setSubject(subject); // Use local subject state
-            }
-        }
-    }, [user, id, loading]);
     if (loading) {
         return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
     }
@@ -191,7 +182,7 @@ const handleRevisedToggle = async (subtopicId: string) => {
         setSelectedSubtopic(subtopic);
         setAnswer('');
         setQuestion(null);
-        setEvaluationFeedback(null); // clear previous feedback
+        setEvaluationFeedback(null);
         setShowDialog(true);
         try {
                 if (isTrial) {
