@@ -84,7 +84,7 @@ const Login = () => {
           navigate("/dashboard");
         }
       } else {
-        if (email && password && name) {
+        if (email && password ) {
           const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -101,21 +101,6 @@ const Login = () => {
             setLoading(false);
             return;
           }
-
-          const userId = data?.user?.id;
-
-          if (userId) {
-            const { error: insertError } = await supabase
-              .from("users")
-              .insert([{ id: userId, full_name: name }]);
-        
-            if (insertError) {
-              toast({
-                title: "Error",
-                description: insertError.message,
-              });
-            }
-          }
           
           toast({
             title: "Account Created",
@@ -129,14 +114,14 @@ const Login = () => {
       setLoading(false);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error.message,
       });
     }
   };
   
 // Onboarding logic - Save the user's answers
   const handleOnboardingSubmit = async () => {
-    if (!level || !country) {
+    if (!level || !country || !name) {
       toast({
         title: "Error",
         description: "Please complete the onboarding questions.",
@@ -234,19 +219,6 @@ try {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="John Doe"
-                    required={!isLogin}
-                  />
-                </div>
-              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -368,6 +340,7 @@ try {
             {/* Show onboarding modal if it's the user's first login */}
       {showOnboarding && (
         <OnboardingModal
+          setName={setName}
           setLevel={setLevel}
           setCountry={setCountry}
           onSubmit={handleOnboardingSubmit}
