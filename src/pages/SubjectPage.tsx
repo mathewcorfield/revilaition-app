@@ -46,8 +46,9 @@ const SubjectPage: React.FC = () => {
         const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
             const newValue = subtopic[type] === 1 ? 0 : 1;
             try {
+                    if (!isTrial) {
               await addUserSubtopic(user.id, subtopic.id, { [type]: newValue });
-        
+                    }
               const updatedSubjects = user.subjects.map(subject => {
                 if (String(subject.id) === String(id)) {
                   return {
