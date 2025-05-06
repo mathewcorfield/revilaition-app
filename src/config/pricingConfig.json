@@ -9,7 +9,7 @@
         "Up to 5 AI prompts a month",
         "Community Support"
       ],
-      "buttonText": "Sign Up",
+      "buttonText": "Sign up to get started for free",
       "priceId": "prod_SEpS8sUZPtBSkV",
       "checkoutUrl": "https://checkout.stripe.com/pay/your-checkout-session-id-for-free"
     },
@@ -22,7 +22,7 @@
         "Priority Support",
         "Personality tailored AI"
       ],
-      "buttonText": "Get Started",
+      "buttonText": "Sign up to purchase",
       "priceId": "price_1RKLnEHPSB8XYlbnvfQ9BHUM",
       "checkoutUrl": "https://checkout.stripe.com/pay/your-checkout-session-id-for-standard"
     },
@@ -35,7 +35,7 @@
         "Dedicated Support",
         "AI tuned to your desired outcomes"
       ],
-      "buttonText": "Subscribe Now",
+      "buttonText": "Sign up to purchase",
       "priceId": "price_1RKLnbHPSB8XYlbnzkwHSFpV",
       "checkoutUrl": "https://checkout.stripe.com/pay/your-checkout-session-id-for-premium"
     }
