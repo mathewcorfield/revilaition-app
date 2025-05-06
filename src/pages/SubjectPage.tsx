@@ -69,7 +69,7 @@ const SubjectPage: React.FC = () => {
               toast({ title: "Error", description: `Failed to update ${type} status.` });
             }
           };
-        const handleGenerateQuestion = async (subtopicName : string, subtopic : Subtopic) => {
+        const handleGenerateQuestion = async (subtopic : Subtopic) => {
         setIsGenerating(true);
         setSelectedSubtopic(subtopic);
         setAnswer('');
@@ -83,10 +83,10 @@ const SubjectPage: React.FC = () => {
                                 throw new Error("No trial questions available for this subtopic.");
                               }
                         const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-                         const response = `${randomQuestion.name} (${randomQuestion.marks} marks).\nExample mark scheme: ${randomQuestion.mark_scheme}`;
+                         const response = `${randomQuestion.name} (${randomQuestion.marks} marks).`;
                         setQuestion(response);
                 } else {
-            const response = await getRevisionQuestion(subtopicName, subject.examBoard, subject.level);
+            const response = await getRevisionQuestion(subtopic.name, subject.examBoard, subject.level);
                 setQuestion(response);
                 }
                 
