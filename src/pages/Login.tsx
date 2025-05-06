@@ -185,6 +185,10 @@ try {
             <CardTitle className="text-3xl font-bold text-primary">
               Revil
               <span className="text-yellow-400 font-extrabold">AI</span>
+              tion /n Revil
+              <span className="text-green-400 font-bold">AI</span>
+              tion /n Revil
+              <span className="text-cyan-300">AI</span>
               tion
             </CardTitle>
             <CardDescription>
