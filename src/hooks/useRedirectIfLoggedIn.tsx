@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
-import { handleCheckout } from "@/services/payments";
 
 const useRedirectIfLoggedIn = (isTrial: boolean) => {
   const navigate = useNavigate();
@@ -31,14 +30,6 @@ const useRedirectIfLoggedIn = (isTrial: boolean) => {
       }
       
       if (user) {
-          // Check if user was in the middle of a checkout flow
-          const pending = sessionStorage.getItem("pendingCheckout");
-          if (pending) {
-            const { priceId } = JSON.parse(pending);
-            sessionStorage.removeItem("pendingCheckout");
-            console.log("Resuming checkout for:", priceId);
-            handleCheckout(priceId, user.id);
-          } else {
             console.log("Valid user found. Redirecting to dashboard...");
             navigate("/dashboard");
           }
