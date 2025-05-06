@@ -85,43 +85,43 @@ export const mockUser: User = {
   ],
   subjects: [
     {
-      id: "s1",
+      id: "8",
       name: "Chemistry",
       examBoard: "AQA",
       iconColor: "#e74c3c",
       subtopics: [
         {
-          id: "st1",
+          id: "51",
           name: "Atomic Structure",
           description: "Electron configurations and orbital diagrams",
           learnt: 1,
           revised: 1
         },
         {
-          id: "st2",
+          id: "52",
           name: "Bonding",
           description: "Ionic, covalent and metallic bonding",
           learnt: 1,
           revised: 0
         },
         {
-          id: "st3",
+          id: "59",
           name: "Periodicity",
           description: "Trends in the periodic table",
           learnt: 0,
           revised: 0
         },
         {
-          id: "st4",
+          id: "54",
           name: "Reaction Kinetics",
           description: "Rates of reaction and factors affecting rates",
           learnt: 0,
           revised: 0
         },
         {
-          id: "st5",
-          name: "Organic Chemistry",
-          description: "Hydrocarbons, alcohols, carboxylic acids",
+          id: "63",
+          name: "Alkanes",
+          description: "",
           learnt: 0,
           revised: 0
         }
@@ -130,7 +130,7 @@ export const mockUser: User = {
   ],
   availableSubjects: [
     {
-      id: "s2",
+      id: "7",
       name: "Biology",
       iconColor: "#2ecc71",
       subtopics: [
