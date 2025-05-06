@@ -185,14 +185,23 @@ try {
             <CardTitle className="text-3xl font-bold text-primary">
               Revil
               <span className="text-yellow-400 font-extrabold">AI</span>
-              tion /n Revil
+              tion <br /> Revil
               <span className="text-green-400 font-bold">AI</span>
-              tion /n Revil
+              tion <br /> Revil
               <span className="text-cyan-300">AI</span>
               tion
             </CardTitle>
             <CardDescription>
-              {isLogin ? "Smarter Revision. Powered by AI. /n Clarity in Every Question. Progress in Every Session. /n The Future of Revision Is Personal. /n Revise with Confidence. Achieve with Ease." : "Create an account to start your learning journey"}
+              {isLogin ? (
+      <>
+        Smarter Revision. Powered by AI.<br />
+        Clarity in Every Question. Progress in Every Session.<br />
+        The Future of Revision Is Personal.<br />
+        Revise with Confidence. Achieve with Ease.
+      </>
+    ) : (
+      "Create an account to start your learning journey"
+    )}
             </CardDescription>
           </CardHeader>
           <CardContent>
