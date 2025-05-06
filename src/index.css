@@ -60,7 +60,7 @@
   }
 }
 
-@keyframes shimmer {
+@keyframes shimmer { 
   0% {
     background-position: -200% 0;
   }
@@ -70,6 +70,7 @@
 }
 
 .animate-shimmer {
-  background-size: 200% auto;
-  animation: shimmer 2s linear infinite;
+  background-size: 300% auto; /* Increase background size for more coverage */
+  animation: shimmer 5s linear infinite; /* Slow the shimmer effect by increasing duration */
+  background: linear-gradient(90deg, rgba(0, 255, 255, 0.8), rgba(255, 255, 255, 0.8), rgba(0, 255, 255, 0.8)); /* Make the gradient more pronounced */
 }
