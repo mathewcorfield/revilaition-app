@@ -1,3 +1,7 @@
+import {    Check,    Edit3,    HelpCircle} from "lucide-react";
+import {Card} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+
 interface Props {
   subtopic: Subtopic;
   onLearntToggle: (subtopicid: string) => void;
