@@ -25,7 +25,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    if (!loading && !user && !isTrial) {
+    if (!userLoading && !user && !isTrial) {
       navigate("/login"); // or homepage
     }
   }, [user, loading, isTrial, navigate]);
