@@ -21,7 +21,7 @@ export const SubtopicCard: React.FC<Props> = ({ subtopic, onToggle, onGenerateQu
       <Button variant={subtopic.revised ? "secondary" : "outline"} size="sm" onClick={() => onToggle(subtopic, "revised")}>
         <Edit3 size={16} /> {subtopic.revised ? "Revised" : "Mark as Revised"}
       </Button>
-      <Button variant="outline" size="sm" onClick={() => onGenerateQuestion(subtopic.name, subtopic)}>
+      <Button variant="outline" size="sm" onClick={() => onGenerateQuestion(subtopic)}>
         <HelpCircle size={16} />
         Generate Question
       </Button>
