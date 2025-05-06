@@ -104,6 +104,7 @@ const Login = () => {
             description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
           });
           sessionStorage.setItem("isTrial", "true");
+          const { user} = useUser();
           navigate('/dashboard');
         }
       }
