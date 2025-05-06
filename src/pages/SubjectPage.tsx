@@ -28,7 +28,6 @@ const SubjectPage: React.FC = () => {
         const [isEvaluating, setIsEvaluating] = useState(false);
         const [showDialog, setShowDialog] = useState(false);
         const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
-        const [isLearning, setIsLearning] = useState(false);
         
         const userId = user?.id;
         const subtopicId = selectedSubtopic?.id;
