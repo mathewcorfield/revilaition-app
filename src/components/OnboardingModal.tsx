@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { getAllLevels, getAllCountries } from "@/services/dataService";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-const OnboardingModal = ({ level, country, setLevel, setCountry, onSubmit }) => {
+const OnboardingModal = ({ name, level, country, setName, setLevel, setCountry, onSubmit }) => {
   const [allLevels, setAllLevels] = useState<any[]>([]);
   const [loadingLevels, setLoadingLevels] = useState(true);
   const [allCountries, setAllCountries] = useState<any[]>([]);
@@ -45,7 +47,16 @@ const OnboardingModal = ({ level, country, setLevel, setCountry, onSubmit }) => 
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold">Complete Your Onboarding</h2>
-
+        <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+            />
+          </div>
         {/* Level Selection */}
         <div className="mt-4">
           <label className="block mb-2">What level are you studying at?</label>
