@@ -11,6 +11,16 @@ import pricingData from "@/config/pricingConfig.json";
 import featureData from "@/config/featuresConfig.json";
 import testimonialData from "@/config/testimonialsConfig.json";
 
+const iconMapping: { [key: string]: JSX.Element } = {
+  Brain: <Brain />,
+  BookOpen: <BookOpen />,
+  PencilRuler: <PencilRuler />,
+  MessageSquareText: <MessageSquareText />,
+  LineChart: <LineChart />,
+  Sparkles: <Sparkles />,
+  BarChart3: <BarChart3 />
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const handleSelect = (priceId: string) => {
@@ -37,7 +47,7 @@ const Index = () => {
               {featureData.map((feature, index) => (
                 <FeatureCard 
                   key={index}
-                  icon={feature.icon}
+                  icon={iconMapping[feature.icon] || null}
                   title={feature.title}
                   description={feature.description}
                 />
