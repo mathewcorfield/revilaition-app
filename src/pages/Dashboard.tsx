@@ -28,7 +28,7 @@ const Dashboard = () => {
     if (!userLoading && !user && !isTrial) {
       navigate("/login"); // or homepage
     }
-  }, [user, loading, isTrial, navigate]);
+  }, [user, userLoading, isTrial, navigate]);
   
   if (loadingSubjects || loadingExamBoards || userLoading) {
     return (
