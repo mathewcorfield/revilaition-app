@@ -25,6 +25,7 @@ UserContext.displayName = "UserContext";
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const isTrial = sessionStorage.getItem("isTrial") === "true";
 
   const setUserAndCache = useCallback((newUserOrUpdater: User | null | ((prevUser: User | null) => User | null)) => {
     setUserState(prev => {
@@ -73,34 +74,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
           console.warn("[UserContext] No user found or error occurred:", error);
-          setUserAndCache(mockUser);
+          if (isTrial) {
+            console.info("[UserContext] Trial mode active. Using mock user.");
+            setUserAndCache(mockUser);
+          } else {
+            clearUser(); // Ensure no user is stored
+          }
           setLoading(false);
           return;
         }
 
         const fullData = await getUserData(data.user.id);
-        if (
-          !fullData.name ||
-          fullData.milestones.length === 0 ||
-          fullData.subjects.length === 0
-        ) {
-          console.warn("[UserContext] Incomplete user data, using mock...");
-          setUserAndCache(mockUser);
-          setLoading(false);
-          return;
-        }
-
         setUserAndCache(fullData);
       } catch (err) {
         console.error("[UserContext] Unexpected error:", err);
-        setUserAndCache(mockUser);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [setUserAndCache]);
+  }, [setUserAndCache, isTrial]);
 
   return (
     <UserContext.Provider
