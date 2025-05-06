@@ -4,7 +4,6 @@ import { getUserData } from "@/hooks/getUserData";
 import { User } from "@/types";
 import { mockUser } from "@/data/mockData"; 
 
-const CACHE_KEY = isTrial ? "user_trial" : "user";
 const CACHE_EXPIRY_MINUTES = 120; 
 
 type CachedUser = {
@@ -26,7 +25,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const isTrial = sessionStorage.getItem("isTrial") === "true";
-
+  const CACHE_KEY = isTrial ? "user_trial" : "user";
+  
   const setUserAndCache = useCallback((newUserOrUpdater: User | null | ((prevUser: User | null) => User | null)) => {
     setUserState(prev => {
       const newUser = typeof newUserOrUpdater === "function"
@@ -114,13 +114,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    console.error("useUser must be used within a UserProvider");
-    return {
-      user: null,
-      setUser: () => {},
-      clearUser: () => {},
-      loading: true,
-    };
+  throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };
