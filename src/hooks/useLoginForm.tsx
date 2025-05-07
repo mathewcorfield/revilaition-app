@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { supabase } from '../lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 import { logError } from '@/utils/logError';
+import { getUserData } from "@/hooks/getUserData";
+import { useUser } from "@/context/UserContext";
 
-export const useLoginForm = (isLogin: boolean, email: string, password: string, setUser: Function, navigate: Function,setShowOnboarding: Function) => {
+export const useLoginForm = (isLogin: boolean, email: string, password: string, setShowOnboarding: Function) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +68,7 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string, 
 
           toast({
             title: "Account Created",
-            description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
+            description: "Welcome to RevilAItion! Check your inbox and click the  to verify your email.",
           });
           sessionStorage.setItem("isTrial", "true");
           navigate('/dashboard');
