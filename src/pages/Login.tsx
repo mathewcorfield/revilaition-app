@@ -31,7 +31,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const { setUser } = useUser();
-  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, setShowOnboarding);
+  const navigate = useNavigate();
+  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, setShowOnboarding, navigate);
   const { handleGoogleSignIn, googleLoading } = useGoogleSignIn();
   const { passwordStrength, evaluateStrength } = usePasswordStrength();
   const { handleOnboardingSubmit } = useOnboarding(name, level, country, setUser, navigate);
