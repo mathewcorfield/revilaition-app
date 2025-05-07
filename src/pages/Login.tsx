@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { useUser } from "@/context/UserContext";
+import OnboardingModal from "@/components/OnboardingModal";
+import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { getUserData } from "@/hooks/getUserData";
 import useGoogleSignIn from "@/hooks/useGoogleSignIn";
-import OnboardingModal from "@/components/OnboardingModal";
+import { useLoginForm } from "@/hooks/useLoginForm";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { usePasswordStrength } from "@/hooks/usePasswordStrength";
 import { logError } from "@/utils/logError";
 
 const Login = () => {
@@ -19,185 +22,21 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [level, setLevel] = useState("");
   const [country, setCountry] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong" | "">("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setUser } = useUser();
 
- // Call the hook to check if the user is logged in
   useRedirectIfLoggedIn();
 
   const { loading: googleLoading, handleGoogleSignIn } = useGoogleSignIn();
+  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, navigate, setShowOnboardin);
+  const { passwordStrength, evaluateStrength } = usePasswordStrength();
+  const { handleOnboardingSubmit } = useOnboarding(name, level, country, setUser, navigate);
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        sessionStorage.removeItem("isTrial");
-        setLoading(false);
-
-        if (error) {
-          logError("[Login] SignIn Error", error);
-          toast({
-            title: "Error",
-            description: error.message,
-          });
-          setLoading(false)
-          return;
-        }
-
-      // Get the logged-in user's details
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-
-        if (userError || !userData?.user) {
-          logError("[Login] Fetching User Error", userError);
-          toast({
-            title: "Error",
-            description: error.message,
-          });
-          setLoading(false)
-          return;
-        }
-
-// Check if the user has a `userID` in the database (first login check)
-        const { data: userProfile, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', userData.user.id)
-          .single();
-
-        if (profileError || !userProfile) {
-          // If no profile found, show onboarding
-          setShowOnboarding(true);
-        } else {
-          // If user profile exists, proceed normally
-          const fullUserData = await getUserData(userData.user.id);
-          setUser(fullUserData);
-          toast({
-            title: "Login Successful",
-            description: "Welcome back to RevilAItion!",
-          });
-          navigate("/dashboard");
-        }
-      } else {
-        if (email && password ) {
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: "https://www.revilaition.com/redirect.html",
-            },
-          });
-
-          if (error) {
-            logError("[Login] SignUp Error", error);
-            toast({
-              title: "Error",
-              description: error.message,
-            });
-            setLoading(false);
-            return;
-          }
-          
-          toast({
-            title: "Account Created",
-            description: "Welcome to RevilAItion! Check your inbox and click the link to verify your email.",
-          });
-          sessionStorage.setItem("isTrial", "true");
-          navigate('/dashboard');
-        }
-      }
-    } catch (error) {
-      setLoading(false);
-      logError("[Login] Unexpected Error", error);
-      toast({
-        title: "Error",
-        description: error.message,
-      });
-    }
-  };
-  
-// Onboarding logic - Save the user's answers
-  const handleOnboardingSubmit = async () => {
-    if (!level || !country || !name) {
-      toast({
-        title: "Error",
-        description: "Please complete the onboarding questions.",
-      });
-      setLoading(false)
-      return;
-    }
-try {
-    const user = (await supabase.auth.getUser()).data?.user;
-    if (!user?.id) {
-      logError("[Onboarding] User not authenticated", new Error("User not authenticated"));
-      toast({
-        title: "Error",
-        description: "User not authenticated. Please log in again.",
-      });
-      setLoading(false)
-      return;
-    }
-
-    const userId = user.id;
-
-    // Check if the user already exists in the 'users' table
-    const { data: existingUserProfile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (profileError || !existingUserProfile) {
-      // If no user profile exists, insert a new record into the 'users' table
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert([{ id: userId, current_level: level, country_id: country, full_name: name }]);
-
-      if (insertError) {
-        logError("[Onboarding] Insert User Error", insertError);
-        toast({
-          title: "Error",
-          description: insertError.message,
-        });
-        setLoading(false)
-        return;
-      }
-
-      // Update user context with new information
-          const fullUserData = await getUserData(userId);
-          setUser(fullUserData);
-      setShowOnboarding(false);
-      toast({
-        title: "Onboarding Complete",
-        description: "Welcome to RevilAItion! Let's start learning.",
-      });
-      navigate("/dashboard");
-    }
-  } catch (error) {
-  logError("[Onboarding] Unexpected Error", error);
-    toast({
-      title: "Error",
-        description: "error.message",
-      });
-    }
-  };
-  const evaluateStrength = (password: string) => {
-  let strength: "Weak" | "Medium" | "Strong" | "" = "Weak";
-  if (password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password) && /[^A-Za-z0-9]/.test(password)) {
-    strength = "Strong";
-  } else if (password.length >= 6 && /[A-Z]/.test(password) && /\d/.test(password)) {
-    strength = "Medium";
-  }
-  setPasswordStrength(strength);
-};
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
       <div className="w-full max-w-md">
