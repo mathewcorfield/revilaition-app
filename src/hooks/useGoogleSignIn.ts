@@ -11,12 +11,15 @@ const useGoogleSignIn = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
 
-  const handleGoogleSignIn = async () => {
+  export const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { user, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-      });
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `${window.location.origin}/dashboard`, // or handle it via query params
+          },
+        });
 
       if (error) {
         toast({
@@ -71,5 +74,3 @@ const useGoogleSignIn = () => {
     handleGoogleSignIn,
   };
 };
-
-export default useGoogleSignIn;
