@@ -30,6 +30,15 @@ Sentry.init({
   ],
   tracesSampleRate: 1.0, // Adjust this value for performance monitoring
 });
+
+window.addEventListener("error", (event) => {
+  Sentry.captureException(event.error || event);
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  Sentry.captureException(event.reason || event);
+});
+
 const App = () => {
   
  useTrackUserInteractions(); // Tracking user interactions
