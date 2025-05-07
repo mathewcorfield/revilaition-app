@@ -12,6 +12,7 @@ import { useUser } from "@/context/UserContext";
 import { getUserData } from "@/hooks/getUserData";
 import useGoogleSignIn from "@/hooks/useGoogleSignIn";
 import OnboardingModal from "@/components/OnboardingModal";
+import { logError } from "@/utils/logError";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -43,6 +44,7 @@ const Login = () => {
         setLoading(false);
 
         if (error) {
+          logError("[Login] SignIn Error", error);
           toast({
             title: "Error",
             description: error.message,
@@ -55,9 +57,10 @@ const Login = () => {
         const { data: userData, error: userError } = await supabase.auth.getUser();
 
         if (userError || !userData?.user) {
+          logError("[Login] Fetching User Error", userError);
           toast({
             title: "Error",
-            description: "Unable to fetch user data. Please try again later.",
+            description: error.message,
           });
           setLoading(false)
           return;
@@ -94,6 +97,7 @@ const Login = () => {
           });
 
           if (error) {
+            logError("[Login] SignUp Error", error);
             toast({
               title: "Error",
               description: error.message,
@@ -112,6 +116,7 @@ const Login = () => {
       }
     } catch (error) {
       setLoading(false);
+      logError("[Login] Unexpected Error", error);
       toast({
         title: "Error",
         description: error.message,
@@ -132,6 +137,7 @@ const Login = () => {
 try {
     const user = (await supabase.auth.getUser()).data?.user;
     if (!user?.id) {
+      logError("[Onboarding] User not authenticated", new Error("User not authenticated"));
       toast({
         title: "Error",
         description: "User not authenticated. Please log in again.",
@@ -156,6 +162,7 @@ try {
         .insert([{ id: userId, current_level: level, country_id: country, full_name: name }]);
 
       if (insertError) {
+        logError("[Onboarding] Insert User Error", insertError);
         toast({
           title: "Error",
           description: insertError.message,
@@ -175,9 +182,10 @@ try {
       navigate("/dashboard");
     }
   } catch (error) {
+  logError("[Onboarding] Unexpected Error", error);
     toast({
       title: "Error",
-        description: "Something went wrong during onboarding. Please try again.",
+        description: "error.message",
       });
     }
   };
