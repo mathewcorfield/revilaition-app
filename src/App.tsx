@@ -43,19 +43,6 @@ window.addEventListener("unhandledrejection", (event) => {
 });
 
 function App() {
-  useEffect(() => {
-    const handleOAuthRedirect = async () => {
-      const { data, error } = await supabase.auth.getSessionFromUrl();
-      if (error) {
-        console.error("OAuth error:", error.message);
-      } else {
-        console.log("OAuth login success:", data.session);
-        // Optionally redirect to a dashboard or home
-      }
-    };
-
-    handleOAuthRedirect();
-  }, []);
   
  useTrackUserInteractions(); // Tracking user interactions
   
