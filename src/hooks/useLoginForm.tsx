@@ -6,7 +6,7 @@ import { logError } from '@/utils/logError';
 import { getUserData } from "@/hooks/getUserData";
 import { useUser } from "@/context/UserContext";
 
-export const useLoginForm = (isLogin: boolean, email: string, password: string, setShowOnboarding: Function) => {
+export const useLoginForm = (isLogin: boolean, email: string, password: string, setShowOnboarding: React.Dispatch<React.SetStateAction<boolean>>) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -44,6 +44,7 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string, 
           .single();
 
         if (profileError || !userProfile) {
+          logError("[Login] Get User Profile Error", profileError);
           setShowOnboarding(true);
         } else {
           const fullUserData = await getUserData(userData.user.id);
@@ -81,5 +82,5 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string, 
     }
   };
 
-  return { handleSubmit, loading };
+  return { handleSubmit, loading, showOnboarding };
 };
