@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabaseClient";
 import { Toaster } from "@/components/ui/toaster"; 
 import { Toaster as Sonner } from "@/components/ui/sonner"; 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ErrorFallback from "@/components/ErrorFallback";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -59,7 +60,7 @@ function App() {
  useTrackUserInteractions(); // Tracking user interactions
   
   return (
-    <Sentry.ErrorBoundary fallback={<p>Something went wrong.</p>}>
+    <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster /> {/* Make sure you only need this one */}
