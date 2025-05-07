@@ -17,7 +17,7 @@ const useGoogleSignIn = () => {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
           options: {
-            redirectTo: `${window.location.origin}/dashboard`, // or handle it via query params
+            redirectTo: "https://www.revilaition.com/redirect.html"
           },
         });
 
