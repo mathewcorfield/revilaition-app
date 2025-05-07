@@ -26,7 +26,7 @@ const LoginForm = ({
   loading: boolean;
   isLogin: boolean;
 }) => {
-  const passwordStrength = usePasswordStrength(password);
+  const { passwordStrength, evaluateStrength } = usePasswordStrength();
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -48,7 +48,11 @@ const LoginForm = ({
             id="password"
             type={showPassword ? "text" : "password"}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+             onChange={(e) => {
+                    const val = e.target.value;
+                    setPassword(val);
+                    evaluateStrength(val);
+                  }}
             required
             autoComplete="current-password"
           />
