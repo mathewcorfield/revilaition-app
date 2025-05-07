@@ -30,6 +30,8 @@ const Login = () => {
             <CardTitle className="text-3xl font-bold text-primary">
               Revil
               <span className="text-black">AI</span>
+              tion <br />  Revil
+              <span className="text-black font-bold animate-shimmer bg-gradient-to-r from-black via-white to-black bg-clip-text text-transparent">AI</span>
               tion <br /> Revil
               <span className="text-cyan-300 font-bold animate-shimmer bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">AI</span>
               tion <br /> Revil
@@ -39,10 +41,8 @@ const Login = () => {
             <CardDescription>
               {isLogin ? (
       <>
-        Smarter Revision. Powered by AI.<br />
         Clarity in Every Question. Progress in Every Session.<br />
-        The Future of Revision Is Personal.<br />
-        Revise with Confidence. Achieve with Ease.
+        The Future of Revision Is Personal.
       </>
     ) : (
       "Create an account to start your learning journey"
