@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { usePasswordStrength } from "@/hooks/usePasswordStrength";
+import { useLoginForm } from "@/hooks/useLoginForm";
 
 const LoginForm = ({
   email,
@@ -12,8 +13,6 @@ const LoginForm = ({
   setPassword,
   showPassword,
   setShowPassword,
-  handleSubmit,
-  loading,
   isLogin
 }: {
   email: string;
@@ -22,11 +21,10 @@ const LoginForm = ({
   setPassword: React.Dispatch<React.SetStateAction<string>>;
   showPassword: boolean;
   setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
-  handleSubmit: (e: React.FormEvent) => void;
-  loading: boolean;
   isLogin: boolean;
 }) => {
   const { passwordStrength, evaluateStrength } = usePasswordStrength();
+  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setShowOnboarding);
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
