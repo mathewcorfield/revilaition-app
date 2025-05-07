@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { supabase } from "./lib/supabaseClient";
 import { Toaster } from "@/components/ui/toaster"; 
 import { Toaster as Sonner } from "@/components/ui/sonner"; 
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -39,7 +41,20 @@ window.addEventListener("unhandledrejection", (event) => {
   Sentry.captureException(event.reason || event);
 });
 
-const App = () => {
+function App() {
+  useEffect(() => {
+    const handleOAuthRedirect = async () => {
+      const { data, error } = await supabase.auth.getSessionFromUrl();
+      if (error) {
+        console.error("OAuth error:", error.message);
+      } else {
+        console.log("OAuth login success:", data.session);
+        // Optionally redirect to a dashboard or home
+      }
+    };
+
+    handleOAuthRedirect();
+  }, []);
   
  useTrackUserInteractions(); // Tracking user interactions
   
