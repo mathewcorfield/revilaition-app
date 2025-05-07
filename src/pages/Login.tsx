@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { supabase } from "../lib/supabaseClient";
-import { Link , useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@/context/UserContext";
 import OnboardingModal from "@/components/login/OnboardingModal";
 import LoginForm from "@/components/login/LoginForm";
 import GoogleSignInButton from "@/components/login/GoogleSignInButton";
 import TermsAndPrivacy from "@/components/login/TermsAndPrivacy";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
-import { getUserData } from "@/hooks/getUserData";
-import { useLoginForm } from "@/hooks/useLoginForm";
-import { logError } from "@/utils/logError";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,9 +19,6 @@ const Login = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
-  const { setUser } = useUser();
-  const navigate = useNavigate();
-  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, setShowOnboarding, navigate);
 
   useRedirectIfLoggedIn();
   
@@ -65,8 +57,6 @@ const Login = () => {
               setPassword={setPassword}
               showPassword={showPassword}
               setShowPassword={setShowPassword}
-              handleSubmit={handleSubmit}
-              loading={loading}
               isLogin={isLogin}
             />
             <GoogleSignInButton />
