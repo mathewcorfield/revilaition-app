@@ -14,28 +14,19 @@ import GoogleSignInButton from "@/components/login/GoogleSignInButton";
 import TermsAndPrivacy from "@/components/login/TermsAndPrivacy";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { getUserData } from "@/hooks/getUserData";
-import useGoogleSignIn from "@/hooks/useGoogleSignIn";
 import { useLoginForm } from "@/hooks/useLoginForm";
-import { useOnboarding } from "@/hooks/useOnboarding";
-import { usePasswordStrength } from "@/hooks/usePasswordStrength";
 import { logError } from "@/utils/logError";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); //is this needed?
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [level, setLevel] = useState(""); //is this needed?
-  const [country, setCountry] = useState(""); //is this needed?
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const { setUser } = useUser();
   const navigate = useNavigate();
   const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, setShowOnboarding, navigate);
-  const { handleGoogleSignIn, googleLoading } = useGoogleSignIn();
-  const { passwordStrength, evaluateStrength } = usePasswordStrength();
-  const { handleOnboardingSubmit } = useOnboarding(name, level, country, setUser, navigate);
 
   useRedirectIfLoggedIn();
   
@@ -75,11 +66,10 @@ const Login = () => {
               showPassword={showPassword}
               setShowPassword={setShowPassword}
               handleSubmit={handleSubmit}
-              passwordStrength={passwordStrength}
               loading={loading}
               isLogin={isLogin}
             />
-            <GoogleSignInButton handleGoogleSignIn={handleGoogleSignIn} googleLoading={googleLoading} />
+            <GoogleSignInButton />
             <TermsAndPrivacy isLogin={isLogin} />
           </CardContent>
           <CardFooter className="flex justify-center">
@@ -91,12 +81,7 @@ const Login = () => {
       </div>
             {/* Show onboarding modal if it's the user's first login */}
       {showOnboarding && (
-        <OnboardingModal
-          setName={setName}
-          setLevel={setLevel}
-          setCountry={setCountry}
-          onSubmit={handleOnboardingSubmit}
-        />
+        <OnboardingModal />
       )}
     </div>
   );
