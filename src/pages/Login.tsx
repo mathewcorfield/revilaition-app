@@ -58,6 +58,7 @@ const Login = () => {
               showPassword={showPassword}
               setShowPassword={setShowPassword}
               isLogin={isLogin}
+              setShowOnboarding={setShowOnboarding}
             />
             <GoogleSignInButton />
             <TermsAndPrivacy isLogin={isLogin} />
