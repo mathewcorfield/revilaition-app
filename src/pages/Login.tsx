@@ -268,6 +268,12 @@ try {
                   >
                     Strength: {passwordStrength}
                   </p>
+                  <ul className="text-sm text-muted-foreground mt-1 ml-1 list-disc pl-4">
+                    <li>At least 8 characters</li>
+                    <li>One uppercase letter</li>
+                    <li>One number</li>
+                  </ul>
+                </>
                 )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Sign In" : "Sign Up"}
@@ -286,6 +292,7 @@ try {
                     email,
                     options: {
                       emailRedirectTo: "https://www.revilaition.com/#/dashboard",
+                      shouldCreateUser: false, 
                     },
                   });
                   setLoading(false);
