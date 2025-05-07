@@ -3,6 +3,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { getUserData } from "@/hooks/getUserData";
 import { User } from "@/types";
 import { mockUser } from "@/data/mockData"; 
+import * as Sentry from "@sentry/react";
+import { logError } from "@/utils/logError";
 
 const CACHE_EXPIRY_MINUTES = 120; 
 
@@ -39,8 +41,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           cachedAt: Date.now(),
         };
         sessionStorage.setItem(CACHE_KEY, JSON.stringify(cachedUser));
+        Sentry.setUser({
+        id: newUser.id,
+        email: newUser.email,
+      });
       } else {
         sessionStorage.removeItem(CACHE_KEY);
+        Sentry.setUser(null);
       }
   
       return newUser;
@@ -50,6 +57,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const clearUser = useCallback(() => {
     setUserState(null);
     sessionStorage.removeItem(CACHE_KEY);
+    Sentry.setUser(null);
   }, []);
 
   useEffect(() => {
@@ -66,19 +74,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             setLoading(false);
             return;
           } else {
-            console.info("[UserContext] Cache expired, refetching...");
             sessionStorage.removeItem(CACHE_KEY);
           }
         }
 
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
-          console.warn("[UserContext] No user found or error occurred:", error);
+          logError("[UserContext] No user found or error occurred:", error);
           if (isTrial) {
             console.info("[UserContext] Trial mode active. Using mock user.");
             setUserAndCache(mockUser);
           } else {
-            clearUser(); // Ensure no user is stored
+            clearUser();
           }
           setLoading(false);
           return;
@@ -86,26 +93,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
        try {
           const fullData = await getUserData(data.user.id);
-          if (!fullData) throw new Error("Failed to retrieve user data");
+          if (!fullData) {
+            const error = new Error("Failed to retrieve user data");
+            logError("Could not load full user data", error);
+            throw error;
+          }
           setUserAndCache(fullData);
         } catch (err) {
-          console.error("[UserContext] Failed to get full user data:", err);
+          logError("[UserContext] Failed to get full user data:", err);
           clearUser();
         }
       } catch (err) {
-        console.error("[UserContext] Unexpected error:", err);
+        logError("[UserContext] Unexpected error:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUser();
   }, [setUserAndCache, isTrial]);
 
   return (
-    <UserContext.Provider
-      value={{ user, setUser: setUserAndCache, clearUser, loading }}
-    >
+    <UserContext.Provider value={{ user, setUser: setUserAndCache, clearUser, loading }}    >
       {children}
     </UserContext.Provider>
   );
@@ -114,7 +122,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-  throw new Error("useUser must be used within a UserProvider");
+  const error = new Error("useUser must be used within a UserProvider");
+    logError("UserContext not found", error);
+    throw error;
   }
   return context;
 };
