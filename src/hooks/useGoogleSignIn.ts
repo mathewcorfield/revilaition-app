@@ -11,7 +11,7 @@ const useGoogleSignIn = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
 
-  export const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -74,3 +74,5 @@ const useGoogleSignIn = () => {
     handleGoogleSignIn,
   };
 };
+
+export default useGoogleSignIn;
