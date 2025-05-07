@@ -14,6 +14,7 @@ const LoginForm = ({
   showPassword,
   setShowPassword,
   isLogin
+  setShowOnboarding
 }: {
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -22,6 +23,7 @@ const LoginForm = ({
   showPassword: boolean;
   setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
   isLogin: boolean;
+  setShowOnboarding: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { passwordStrength, evaluateStrength } = usePasswordStrength();
   const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setShowOnboarding);
