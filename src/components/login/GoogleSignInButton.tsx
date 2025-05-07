@@ -1,8 +1,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { FaGoogle } from "react-icons/fa";
+import { useGoogleSignIn } from "@/hooks/useGoogleSignIn";
 
-const GoogleSignInButton = ({ handleGoogleSignIn, googleLoading }: { handleGoogleSignIn: () => void; googleLoading: boolean }) => {
+const GoogleSignInButton = () => {
+  const { handleGoogleSignIn, googleLoading } = useGoogleSignIn();
   return (
     <Button
       onClick={handleGoogleSignIn}
