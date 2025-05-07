@@ -13,7 +13,7 @@ const LoginForm = ({
   setPassword,
   showPassword,
   setShowPassword,
-  isLogin
+  isLogin,
   setShowOnboarding
 }: {
   email: string;
