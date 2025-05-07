@@ -8,7 +8,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
-import OnboardingModal from "@/components/OnboardingModal";
+import OnboardingModal from "@/components/login/OnboardingModal";
+import LoginForm from "@/components/login/LoginForm";
+import GoogleSignInButton from "@/components/login/GoogleSignInButton";
+import TermsAndPrivacy from "@/components/login/TermsAndPrivacy";
 import useRedirectIfLoggedIn from "@/hooks/useRedirectIfLoggedIn";
 import { getUserData } from "@/hooks/getUserData";
 import useGoogleSignIn from "@/hooks/useGoogleSignIn";
@@ -21,21 +24,19 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [name, setName] = useState(""); //is this needed?
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [level, setLevel] = useState("");
-  const [country, setCountry] = useState("");
+  const [level, setLevel] = useState(""); //is this needed?
+  const [country, setCountry] = useState(""); //is this needed?
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
   const { toast } = useToast();
   const { setUser } = useUser();
-
-  useRedirectIfLoggedIn();
-
-  const { loading: googleLoading, handleGoogleSignIn } = useGoogleSignIn();
-  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, navigate, setShowOnboardin);
+  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setUser, setShowOnboarding);
+  const { handleGoogleSignIn, googleLoading } = useGoogleSignIn();
   const { passwordStrength, evaluateStrength } = usePasswordStrength();
   const { handleOnboardingSubmit } = useOnboarding(name, level, country, setUser, navigate);
+
+  useRedirectIfLoggedIn();
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
@@ -65,125 +66,20 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john@example.com"
-                  required
-                  autoComplete="email" // Adding autocomplete for email
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setPassword(val);
-                    evaluateStrength(val);
-                  }}
-                  required
-                  autoComplete="current-password" // Adding autocomplete for password
-                />
-                <button
-                  type="button"
-                  className="absolute right-2 top-2 text-sm text-muted-foreground"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-                </div>
-              </div>
-              {password && (
-                <>
-                  <p
-                    className={`text-sm ${
-                      passwordStrength === "Strong"
-                        ? "text-green-600"
-                        : passwordStrength === "Medium"
-                        ? "text-yellow-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    Strength: {passwordStrength}
-                  </p>
-                  <ul className="text-sm text-muted-foreground mt-1 ml-1 list-disc pl-4">
-                    <li>At least 8 characters</li>
-                    <li>One uppercase letter</li>
-                    <li>One number</li>
-                  </ul>
-                </>
-                )}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Sign In" : "Sign Up"}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full mt-2 text-sm text-blue-500"
-                onClick={async () => {
-                  if (!email) {
-                    toast({ title: "Email Required", description: "Enter your email to receive a login link." });
-                    return;
-                  }
-                  setLoading(true);
-                  const { error } = await supabase.auth.signInWithOtp({
-                    email,
-                    options: {
-                      emailRedirectTo: "https://www.revilaition.com/#/dashboard",
-                      shouldCreateUser: false, 
-                    },
-                  });
-                  setLoading(false);
-              
-                  if (error) {
-                    toast({ title: "Error", description: error.message });
-                  } else {
-                    toast({
-                      title: "Check your inbox",
-                      description: "We've sent you a magic link to log in.",
-                    });
-                  }
-                }}
-              >
-                Send Magic Link Instead
-              </Button>
-            </form>
-                        <Button 
-              onClick={handleGoogleSignIn} 
-              className="w-full mt-4 flex items-center justify-center"
-              disabled={googleLoading}
-            >
-              <img src="/google.webp" alt="Google Logo" className="w-6 h-6 mr-2" />
-              {googleLoading ? "Signing in with Google..." : "Sign in with Google"}
-            </Button>
-            {/* Add Terms and Privacy Policy message here */}
-        {!isLogin && (
-          <div className="mt-4 text-sm text-center text-muted-foreground">
-            <p>
-              By signing up you agree to our
-            </p>
-            <div className="mt-2 text-center">
-              <Link to="/terms-of-service" className="text-blue-500 hover:underline">
-                Terms of Service
-              </Link>
-            </div>
-            <div className="mt-2 text-center">
-              <Link to="/privacy-policy" className="text-blue-500 hover:underline">
-                Privacy Policy
-              </Link>
-            </div>
-          </div>
-        )}
+            <LoginForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+              handleSubmit={handleSubmit}
+              passwordStrength={passwordStrength}
+              loading={loading}
+              isLogin={isLogin}
+            />
+            <GoogleSignInButton handleGoogleSignIn={handleGoogleSignIn} googleLoading={googleLoading} />
+            <TermsAndPrivacy isLogin={isLogin} />
           </CardContent>
           <CardFooter className="flex justify-center">
             <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
