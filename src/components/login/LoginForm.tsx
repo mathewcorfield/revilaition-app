@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { usePasswordStrength } from "@/hooks/usePasswordStrength";
 
 const LoginForm = ({
   email,
@@ -12,7 +13,6 @@ const LoginForm = ({
   showPassword,
   setShowPassword,
   handleSubmit,
-  passwordStrength,
   loading,
   isLogin
 }: {
@@ -23,10 +23,10 @@ const LoginForm = ({
   showPassword: boolean;
   setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
   handleSubmit: (e: React.FormEvent) => void;
-  passwordStrength: string;
   loading: boolean;
   isLogin: boolean;
 }) => {
+  const passwordStrength = usePasswordStrength(password);
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
