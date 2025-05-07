@@ -60,7 +60,9 @@ const Login = () => {
               isLogin={isLogin}
               setShowOnboarding={setShowOnboarding}
             />
-            <GoogleSignInButton />
+            <GoogleSignInButton 
+              setShowOnboarding={setShowOnboarding}
+              />
             <TermsAndPrivacy isLogin={isLogin} />
           </CardContent>
           <CardFooter className="flex justify-center">
