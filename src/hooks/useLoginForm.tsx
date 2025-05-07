@@ -82,5 +82,5 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string, 
     }
   };
 
-  return { handleSubmit, loading, showOnboarding };
+  return { handleSubmit, loading };
 };
