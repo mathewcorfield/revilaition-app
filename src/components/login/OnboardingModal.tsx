@@ -1,27 +1,37 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { getAllLevels, getAllCountries } from "@/services/dataService";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useUser } from "@/context/UserContext";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
-const OnboardingModal = ({ name, level, country, setName, setLevel, setCountry, onSubmit }) => {
+const OnboardingModal = () => {
   const [allLevels, setAllLevels] = useState<any[]>([]);
   const [loadingLevels, setLoadingLevels] = useState(true);
   const [allCountries, setAllCountries] = useState<any[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(true);
+  const [name, setName] = useState("");
+  const [level, setLevel] = useState("");
+  const [country, setCountry] = useState("");
+  const navigate = useNavigate();
+  const { setUser } = useUser();
+  const { handleOnboardingSubmit } = useOnboarding(name, level, country, setUser, navigate);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
     const levelcached = sessionStorage.getItem("allLevels");
     if (levelcached) {
       setAllLevels(JSON.parse(levelcached));
       setLoadingLevels(false);
     } else {
-      getAllLevels().then((data) => {
-        setAllLevels(data);
-        sessionStorage.setItem("allLevels", JSON.stringify(data));
+        const levelsData = await getAllLevels();
+        setAllLevels(levelsData);
+        sessionStorage.setItem("allLevels", JSON.stringify(levelsData));
         setLoadingLevels(false);
-      });
     }
 
     const countrycached = sessionStorage.getItem("allCountries");
@@ -29,19 +39,18 @@ const OnboardingModal = ({ name, level, country, setName, setLevel, setCountry, 
       setAllCountries(JSON.parse(countrycached));
       setLoadingCountries(false);
     } else {
-      (async () => {
-        try {
-          const data = await getAllCountries();
-          setAllCountries(data);
-          sessionStorage.setItem("allCountries", JSON.stringify(data));
-        } catch (err) {
-          console.error("Error fetching countries:", err);
-        } finally {
-          setLoadingCountries(false);
-        }
-      })();
+        const countriesData = await getAllCountries();
+        setAllCountries(countriesData);
+        sessionStorage.setItem("allCountries", JSON.stringify(countriesData));
+        setLoadingCountries(false);
     }
-  }, []);
+  } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  };
+
+  fetchData();
+}, []);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black">
@@ -105,7 +114,7 @@ const OnboardingModal = ({ name, level, country, setName, setLevel, setCountry, 
           )}
         </div>
 
-        <Button className="mt-4 w-full" onClick={onSubmit}>
+        <Button className="mt-4 w-full" onClick={handleOnboardingSubmit}>
           Submit
         </Button>
       </div>
