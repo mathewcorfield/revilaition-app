@@ -10,7 +10,7 @@ const ErrorFallback = () => {
         <AlertTitle>Something went wrong.</AlertTitle>
         <AlertDescription>
           An unexpected error occurred. We are still building our application so please be patient.
-          If you need urgent support, please contact us at <a href="mailto:support@revilaition.com" className="text-blue-500">support@example.com</a>.
+          If you need urgent support, please contact us at <a href="mailto:support@revilaition.com" className="text-blue-500">support@revilaition.com</a>.
         </AlertDescription>
         <div className="mt-4">
           <Button onClick={() => window.location.reload()}>Refresh Page</Button>
