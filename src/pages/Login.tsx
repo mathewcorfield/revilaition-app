@@ -257,6 +257,7 @@ try {
                 </div>
               </div>
               {password && (
+                <>
                   <p
                     className={`text-sm ${
                       passwordStrength === "Strong"
