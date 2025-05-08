@@ -8,6 +8,7 @@ import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import { enGB } from "date-fns/locale";
+import { logError } from '@/utils/logError';
 
 // Configure the localizer
 const locales = {
@@ -72,7 +73,7 @@ function getFreeTimeSlots(busySlots: Event[]) {
     const revisionEvents = [];
     const today = new Date();
     const endDate = new Date(resultsDay);
-    
+    try {
     for (const subject of subjects) {
       let remaining = minutesPerSubject;
       let current = new Date(today);
@@ -93,6 +94,11 @@ function getFreeTimeSlots(busySlots: Event[]) {
   
             const endDate = new Date(startDate);
             endDate.setMinutes(startDate.getMinutes() + duration);
+
+          if (!isValidDate(startDate) || !isValidDate(endDate)) {
+            console.warn(`Invalid event date generated for ${subject.name} on ${day}:`, startDate, endDate);
+            continue;
+          }
   
             revisionEvents.push({
               title: `Revise: ${subject.name}`,
@@ -109,7 +115,9 @@ function getFreeTimeSlots(busySlots: Event[]) {
         current.setDate(current.getDate() + 1); // Move to next day
       }
     }
-  
+} catch (error) {
+    logError("Error generating revision events:", error);
+  }
     return revisionEvents;
   }
   
@@ -203,6 +211,7 @@ const resultsDay = "2024-08-01";
       const minutesPerSubject = useMemo(() => {
         return Math.floor((totalRevisionMinutes * 0.9) / sortedSubjects.length);
       }, [totalRevisionMinutes, sortedSubjects]);
+console.log(sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay)
   const revisionEvents = useMemo(() => {
     return generateMultiWeekRevisionEvents(sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay);
   }, [sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay]);
@@ -225,7 +234,7 @@ const resultsDay = "2024-08-01";
 
       <div>
         <h3 className="font-semibold">Busy Sections</h3>
-        {allBusySlots.map((slot, idx) => (
+        {customBusySlots.map((slot, idx) => (
           <div key={idx} className="flex gap-2 mb-2">
             <select
               value={slot.day}
