@@ -44,14 +44,20 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featureData.map((feature, index) => (
+              {featureData.map((feature, index) => {
+                  const icon = iconMapping[feature.icon];
+                  if (!icon) {
+                    console.warn(`Unknown icon key: ${feature.icon}`);
+                  }
+              return (
                 <FeatureCard 
                   key={index}
-                  icon={iconMapping[feature.icon] || null}
+                  icon={icon ?? <Sparkles />}
                   title={feature.title}
                   description={feature.description}
                 />
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
