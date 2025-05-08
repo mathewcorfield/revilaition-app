@@ -13,14 +13,32 @@ const RedirectHandler = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleRedirect = async () => {
-        const { data, error } = await supabase.auth.getSession();
+   const handleRedirect = async () => {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
 
-        if (error || !data?.session) {
+      const access_token = params.get("access_token");
+      const refresh_token = params.get("refresh_token");
+
+      if (!access_token || !refresh_token) {
         logError("[RedirectHandler] Failed to get session", error);
         toast({
           title: "Login Error",
           description: "Could not complete login. Please try again.",
+        });
+        navigate("/login");
+        return;
+      }
+     const { data, error } = await supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      });
+
+      if (error || !data.session) {
+        logError("[RedirectHandler] Failed to set session", error);
+        toast({
+          title: "Login failed",
+          description: "Could not set your session. Please try again.",
         });
         navigate("/login");
         return;
