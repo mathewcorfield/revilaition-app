@@ -14,6 +14,7 @@ import {addUserSubtopic, getQuestionsForSubtopic, addQuestion} from "@/services/
 import {useSubjectData } from "@/hooks/useSubjectData";
 import {useLearningTimer } from "@/hooks/useLearningTimer";
 import {parseQuestion } from "@/utils/parseQuestion";
+import { logError } from '@/utils/logError';
         
 const SubjectPage: React.FC = () => {
         const isTrial = sessionStorage.getItem("isTrial") === "true";
@@ -94,10 +95,12 @@ const SubjectPage: React.FC = () => {
             const response = await getRevisionQuestion(subtopic.name, subject.examBoard, subject.level);
                 setQuestion(response);
                 }
-            if (userId && subtopicId) {
+            try {
               const parsed = parseQuestion(question); 
               await addQuestion(userId, parsed.questionName, parsed.marks, subtopicId);
-            }    
+            } catch (error) {
+              logError("[SubjectPage] Error adding Question to database:", error);
+            }   
             toast({title: "Question Generated", description: "Here is your question!"});
         } catch {
             toast(
