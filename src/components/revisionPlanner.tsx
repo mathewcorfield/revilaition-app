@@ -109,7 +109,7 @@ function getFreeTimeSlots(busySlots: Event[]) {
           const slotDuration = endMin - startMin;
   
           if (slotDuration >= 15) {
-            const duration = Math.min(slotDuration, remaining);
+            const duration = Math.min(slotDuration, remaining,30);
             const startDate = new Date(current);
             startDate.setHours(Math.floor(startMin / 60), startMin % 60);
   
@@ -246,9 +246,22 @@ export default function RevisionPlanner({
       </div>
 
       <div>
-        <h3 className="font-semibold">Busy Sections</h3>
+        <h3 className="font-semibold">Busy Sections e.g. friends, clubs, work</h3>
         {customBusySlots.map((slot, idx) => (
           <div key={idx} className="flex gap-2 mb-2">
+            <input
+            type="text"
+            id="busyTitle"
+            value={slot.title}
+            onChange={(e) =>
+                setCustomBusySlots((prev) => {
+                  const copy = [...prev];
+                  copy[idx].title = e.target.value;
+                  return copy;
+                })
+              }
+            placeholder="e.g., work, club"
+            />
             <select
               value={slot.day}
               onChange={(e) =>
