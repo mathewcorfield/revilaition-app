@@ -83,25 +83,25 @@ const SubjectPage: React.FC = () => {
         setEvaluationFeedback(null);
         setShowDialog(true);
         try {
-                if (isTrial) {
-                        const questions = await getQuestionsForSubtopic(subtopic.id);
-                        if (questions.length === 0) {
-                                throw new Error("No trial questions available for this subtopic.");
-                              }
-                        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-                         const response = `${randomQuestion.name} (${randomQuestion.marks} marks).`;
-                        setQuestion(response);
-                } else {
+          let response: string;
+          if (isTrial) {
+            const questions = await getQuestionsForSubtopic(subtopic.id);
+            if (questions.length === 0) {
+              throw new Error("No trial questions available for this subtopic.");
+            }
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            const response = `${randomQuestion.name} (${randomQuestion.marks} marks).`;
+            } else {
             const response = await getRevisionQuestion(subtopic.name, subject.examBoard, subject.level);
-                setQuestion(response);
-                }
-            try {
-              const parsed = parseQuestion(question); 
-              await addQuestion(userId, parsed.questionName, parsed.marks, subtopicId);
-            } catch (error) {
-              logError("[SubjectPage] Error adding Question to database:", error);
-            }   
-            toast({title: "Question Generated", description: "Here is your question!"});
+            }
+          setQuestion(response);
+          try {
+            const parsed = parseQuestion(response); 
+            await addQuestion(userId, parsed.questionName, parsed.marks, subtopicId);
+          } catch (error) {
+            logError("[SubjectPage] Error adding Question to database:", error);
+          }
+          toast({title: "Question Generated", description: "Here is your question!"});
         } catch {
             toast(
                 {title: "Error", description: "Failed to generate question."}
@@ -145,7 +145,7 @@ if (subtopics.length === 0) {
     return;
 }
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
-handleGenerateQuestion(random.name, random);
+handleGenerateQuestion(random);
 };
 return (
         <div className="space-y-6"> 
