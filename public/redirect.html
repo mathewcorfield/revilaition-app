@@ -5,8 +5,8 @@
     <title>Redirecting...</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      // Redirect to the dashboard route using HashRouter
-      window.location.replace("/#/redirect");
+      const hash = window.location.hash;
+      window.location.replace(`/#/redirect${hash}`);
     </script>
     <style>
       body {
