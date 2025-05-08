@@ -14,6 +14,7 @@ import SubscriptionPage from "@/pages/SubscriptionPage";
 import SuccessPage from "@/pages/SuccessPage";
 import SubjectPage from "@/pages/SubjectPage";
 import VerifyEmailPage from "@/pages/VerifyEmailPage";
+import RedirectHandler from "@/pages/RedirectHandler";
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
@@ -61,6 +62,7 @@ function App() {
                 <Route path="/subscription" element={<SubscriptionPage />} />
                 <Route path="/success" element={<SuccessPage />} />
                 <Route path="/subject/:id" element={<SubjectPage />} />
+                <Route path="/redirect" element={<RedirectHandler />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/cookie-policy" element={<CookiePolicy />} />
