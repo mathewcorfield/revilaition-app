@@ -10,7 +10,7 @@ import {toast} from "@/components/ui/use-toast";
 import { SubtopicCard } from "@/components/SubtopicCard";
 import {Subtopic} from "@/types";
 import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
-import {addUserSubtopic, getQuestionsForSubtopic, addQuestion} from "@/services/dataService";
+import {addUserSubtopic, getQuestionsForSubtopic, addQuestion, addUserAnswer, updateUserAnswer} from "@/services/dataService";
 import {useSubjectData } from "@/hooks/useSubjectData";
 import {useLearningTimer } from "@/hooks/useLearningTimer";
 import {parseQuestion } from "@/utils/parseQuestion";
@@ -24,6 +24,7 @@ const SubjectPage: React.FC = () => {
   const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
   const [selectedSubtopic, setSelectedSubtopic] = useState <Subtopic | null >(null);
   const [question, setQuestion] = useState <string | null >(null);
+  const [questionId, setQuestionId] = useState<string | null>(null);
   const [answer, setAnswer] = useState <string >('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -102,7 +103,8 @@ const handleGenerateQuestion = async (subtopic : Subtopic) => {
       setQuestion(response);
       try {
         const parsed = parseQuestion(response); 
-        await addQuestion(userId, parsed.questionName, parsed.marks, subtopic.id);
+        const id = await addQuestion(userId, parsed.questionName, parsed.marks, subtopic.id);
+        setQuestionId(id);
       } catch (error) {
         logError("[SubjectPage] Error adding Question to database:", error);
       }
@@ -121,26 +123,27 @@ const handleAnswerSubmit = async () => {
         toast({title: "Error", description: "Please provide an answer."});
         return;
     }
-        if (isTrial) {
+    if (isTrial) {
       toast({
         title: "Action Required",
         description: "Please verify your email and log in to receive AI feedback.",
       });
       return;
     }
+    const id = await addUserAnswer(userId, questionId , answer);
     setIsEvaluating(true);
     setEvaluationFeedback(null);
     try {
-        const evaluation = await evaluateAnswer(answer, question || "", subject.examBoard, subject.level);
-        setEvaluationFeedback(evaluation); // show in dialog
+        const evaluation = await evaluateAnswer(answer, question, subject.examBoard, subject.level);
+        setEvaluationFeedback(evaluation); 
+        const parsed = parseQuestion(evaluation); 
+        await updateUserAnswer(id, parsed.questionName, parsed.marks);
         toast({title: "Answer Evaluated", description: "Check the feedback below."});
-    } catch {
-        toast(
-            {title: "Error", description: "Failed to evaluate answer."}
-        );
+    } catch (error) {
+      logError("[SubjectPage] Error evaluating answer", error);
+      toast({title: "Error", description: "Failed to evaluate answer."});
     } finally {
-        setIsEvaluating(false);
-    
+      setIsEvaluating(false);
 }};
         
 const handleGenerateRandomQuestion = () => {

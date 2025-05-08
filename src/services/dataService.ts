@@ -2,36 +2,30 @@ import { supabase } from "@/lib/supabaseClient";
 import { User } from "@/types";
 import { logError } from '@/utils/logError';
 
-// Function to insert user interaction data into a 'user_interactions' table
-export const insertInteraction = async (
-  action: string,
-  element: string,
-  timestamp: string,
-  userID: string | null // Adding userID as a parameter
-) => {
-  try {
-    // Insert the interaction data into Supabase
-    const { data, error } = await supabase
-      .from("user_interactions")
-      .insert([
-        {
-          action, // e.g., "click"
-          element, // e.g., "button"
-          timestamp, // e.g., Date.now() or ISO 8601 format
-          user_id: userID, // Storing the user ID from the logged-in session
-        },
-      ]);
-
-    // If an error occurs, throw it
-    if (error) throw error;
-
-    // Return the inserted data
-    return data;
-  } catch (error) {
-    // Log and rethrow error for debugging
-    console.error("Error inserting interaction:", error);
+const handleSupabaseError = (error: any, context: string) => {
+  if (error) {
+    logError(`[${context}] Supabase Error:`, error);
     throw error;
   }
+};
+
+// Helper function to handle insert operations
+const insertData = async (table: string, data: object[]) => {
+  const { data: insertedData, error } = await supabase
+    .from(table)
+    .insert(data)
+    .select("id"); 
+
+  handleSupabaseError(error, `Insert into ${table}`);
+  return insertedData?.[0];
+};
+
+// Function to insert user interaction data into a 'user_interactions' table
+export const insertInteraction = async (action: string, element: string, timestamp: string, user_id: string | null) => {
+  const insertedData = await insertData("user_interactions", [
+    {      action,      element,      timestamp,      user_id,    },
+  ]);
+  return insertedData;
 };
 
 export const getUserInfo = async (userId: string) => {
@@ -51,33 +45,11 @@ const { data, error } = await supabase
     return null;
   }
 
-  if (!data) {
-    console.warn("No user found with ID:", userId);
-
-    // Fallback to localStorage for name and email if present
-    const name = localStorage.getItem("name");
-    const email = localStorage.getItem("email");
-
-    // If no name or email are stored in localStorage, return default user info
-    if (!name || !email) {
-      console.warn("No name or email found in localStorage.");
-      return { id: userId, name: "", email: "", level: "" };
-    }
-
-    // Return the fallback data from localStorage
-    return {
-      id: userId,
-      name: name,
-      email: email,
-      level: "", // Level is not available from localStorage, so set it as empty
-    };
-  }
-
   return {
-    id: data.id,
-    name: data.full_name,
-    email: data.email,
-    level: data.level?.name || "",
+    id: userId,
+    name: data?.full_name || "",
+    email: data?.email || "",
+    level: data?.level?.name || "",
   };
 };
 
@@ -87,10 +59,7 @@ export const getUserEvents = async (userId: string) => {
     .select("event_id, event_date, events(title, description, type)")
     .eq("user_id", userId);
   
-  if (error) {
-    console.error("Failed to fetch events:", error);
-    return [];
-  }
+    handleSupabaseError(error, "Fetch user events");
 
     if (!data) {
     console.warn("No events found with ID:", userId);
@@ -121,10 +90,7 @@ export const getUserSubjects = async (userId: string) => {
     `)
     .eq("user_id", userId);
 
-  if (error) {
-    console.error("Failed to fetch subjects:", error);
-    return [];
-  }
+    handleSupabaseError(error, "Fetch user subjects");
 
   if (!data) {
     console.warn("No subjects found for user:", userId);
@@ -184,10 +150,7 @@ export const getAllSubjectNames = async () => {
     .order('launched', { ascending: false }) // Launched first
     .order('name', { ascending: true }); // Then alphabetical
 
-  if (error) {
-    console.error("Failed to fetch subjects:", error);
-    return [];
-  }
+    handleSupabaseError(error, "Fetch subjects");
 
   return data.map((subject) => ({
     id: subject.id,
@@ -205,10 +168,7 @@ export const getAllExamBoards = async () => {
     .order('launched', { ascending: false }) // Launched first
     .order('name', { ascending: true }); // Then alphabetical
 
-  if (error) {
-    console.error("❌ Failed to fetch exam boards:", error);
-    throw error; // Let the caller handle this
-  }
+  handleSupabaseError(error, "Fetch examboards");
 
   return (data ?? []).map((board) => ({
     id: board.id,
@@ -218,20 +178,9 @@ export const getAllExamBoards = async () => {
 };
 
 
-export const addUserSubject = async (
-  userId: string,
-  subjectId: string
-): Promise<any> => { // You can replace `any` with a more specific type if possible
-  const { data, error } = await supabase
-    .from("user_subjects")
-    .insert([{ user_id: userId, subject_id: subjectId}]);
-
-  if (error) {
-    console.error("Failed to add user subject:", error);
-    throw error; // Propagate the error for handling at a higher level
-  }
-
-  return data; // Return the data after inserting the subject
+export const addUserSubject = async (  userId: string,  subjectId: string): Promise<any> => { 
+  const insertedData = await insertData("user_subjects", [{ user_id: userId, subject_id: subjectId}]);
+  return insertedData;
 };
  
 export const removeUserSubject = async (
@@ -300,16 +249,8 @@ if (!existingEvent) {
   }
 
   // Insert the event into the "user_events" table
-  const { data: userEventData, error: userEventError } = await supabase
-    .from("user_events")
-    .insert([{ event_id: eventId, user_id: userId, event_date: eventdate }]);
-
-  if (userEventError) {
-    console.error("Failed to add user event:", userEventError);
-    throw userEventError; // Propagate the error for handling at a higher level
-  }
-
-  return {  }; 
+  const insertedData = await insertData("user_events",[{ event_id: eventId, user_id: userId, event_date: eventdate }]);
+  return insertedData;
 };
 
 export const removeEvent = async (
@@ -333,10 +274,7 @@ export const getAllLevels = async () => {
     .from("level")
     .select("id, name, launched");
 
-  if (error) {
-    console.error("❌ Failed to fetch exam boards:", error);
-    throw error; // Let the caller handle this
-  }
+  handleSupabaseError(error, "Fetch levels");
 
   return (data ?? []).map((level) => ({
     id: level.id,
@@ -347,13 +285,10 @@ export const getAllLevels = async () => {
 
 export const getAllCountries = async () => {
   const { data, error } = await supabase
-    .from("raw_country")
+    .from("country")
     .select("id, name, launched");
 
-  if (error) {
-    console.error("❌ Failed to fetch exam boards:", error);
-    throw error; // Let the caller handle this
-  }
+  handleSupabaseError(error, "Fetch countries");
 
   return (data ?? []).map((country) => ({
     id: country.id,
@@ -382,15 +317,12 @@ export const getQuestionsForSubtopic = async (subtopicId: string) => {
     .select("id, name, marks, mark_scheme, past")
     .eq("subtopic_id", subtopicId);
 
-  if (error) {
-    console.error("[getQuestionsForSubtopic] Supabase error:", error);
-    throw new Error("Failed to fetch questions.");
-  }
+    handleSupabaseError(error, "Fetch quesstions for subtopic");  
 
   return data ?? [];
 };
 
-export const addQuestion = async (userId: string, name: string, marks: number, subtopic_id: string) => {
+export async function  addQuestion(userId: string, name: string, marks: number, subtopic_id: string): Promise<string> {
   // Check if a question with the same name already exists
 const { data: existingQuestion, error: fetchError } = await supabase
   .from("questions")
@@ -436,5 +368,31 @@ if (!existingQuestion) {
     throw userQuestionError; 
   }
 
-  return {question_id }; 
+  return question_id; 
+};
+
+export const addUserAnswer = async (  user_id: string,  question_id: string, name:string): Promise<string> => { 
+  const { data: answerData, error: answerError } = await supabase
+    .from("user_answers")
+    .insert([{ user_id, question_id, name}])
+    .select("id") 
+
+  if (answerError) {
+    logError("Failed to add user answer:", answerError);
+    throw answerError; 
+  }
+  const answer_id  = answerData?.[0]?.id;
+  if (!answer_id) {
+    throw new Error("No answer ID returned.");
+  }
+  return answer_id; 
+};
+
+export const updateUserAnswer = async (  answer_id: string,  evaluation: string, marks: number): Promise<void> => {
+  const { error } = await supabase
+    .from("user_answers")
+    .update({ evaluation, marks})
+    .eq("id", answer_id);
+
+    handleSupabaseError(error, "Update user answers");
 };

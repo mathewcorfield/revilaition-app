@@ -10,8 +10,6 @@ export const getUserData = async (userId: string): Promise<User | null> => {
     getUserSubjects(userId),
   ]);
 
-  if (!info) return null;
-
   return {
     ...info,
     milestones: events.filter(e => e.type === "Milestone"),
