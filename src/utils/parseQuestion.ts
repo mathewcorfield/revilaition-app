@@ -1,6 +1,9 @@
 export const parseQuestion = (questionText: string) => {
+    if (!questionText || typeof questionText !== "string") {
+        throw new Error("Invalid question text");
+      }
     // Regex to extract question name and marks
-    const regex = /^(.*?)(?: \((\d+)\s*marks\))?$/;
+    const regex = /^(.*?)(?:\s*\((\d+)\s*marks?\))?$/;
   
     // Match the question with regex
     const match = questionText.match(regex);
