@@ -10,9 +10,10 @@ import {toast} from "@/components/ui/use-toast";
 import { SubtopicCard } from "@/components/SubtopicCard";
 import {Subtopic} from "@/types";
 import {getRevisionQuestion, evaluateAnswer} from "@/services/openaiService";
-import {addUserSubtopic, getQuestionsForSubtopic } from "@/services/dataService";
+import {addUserSubtopic, getQuestionsForSubtopic, addQuestion} from "@/services/dataService";
 import {useSubjectData } from "@/hooks/useSubjectData";
 import {useLearningTimer } from "@/hooks/useLearningTimer";
+import {parseQuestion } from "@/utils/parseQuestion";
         
 const SubjectPage: React.FC = () => {
         const isTrial = sessionStorage.getItem("isTrial") === "true";
@@ -93,7 +94,10 @@ const SubjectPage: React.FC = () => {
             const response = await getRevisionQuestion(subtopic.name, subject.examBoard, subject.level);
                 setQuestion(response);
                 }
-                
+            if (userId && subtopicId) {
+              const parsed = parseQuestion(question); 
+              await addQuestion(userId, parsed.questionName, parsed.marks, subtopicId);
+            }    
             toast({title: "Question Generated", description: "Here is your question!"});
         } catch {
             toast(

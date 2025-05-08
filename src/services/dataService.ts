@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { User } from "@/types";
+import { logError } from '@/utils/logError';
 
 // Function to insert user interaction data into a 'user_interactions' table
 export const insertInteraction = async (
@@ -387,4 +388,58 @@ export const getQuestionsForSubtopic = async (subtopicId: string) => {
   }
 
   return data ?? [];
+};
+
+export const addQuestion = async (userId: string, name: string, marks: number, subtopic_id: string) => {
+  try {
+  // Check if a question with the same name already exists
+const { data: existingQuestion, error: fetchError } = await supabase
+  .from("questions")
+  .select("id")
+  .eq("name", name) // Match on question name
+  .maybeSingle(); // Get a single row if exists
+
+if (fetchError) {
+  // Handle any error that occurred during the fetch operation
+  logError("Error fetching Question:", fetchError);
+  throw fetchError;
+}
+let question_id : string | undefined;
+// If an Question with the same name doesn't exist, insert a new one
+if (!existingQuestion) {
+ // Insert the Question into the "Questions" table
+  const { data: QuestionData, error: QuestionError } = await supabase
+    .from("questions")
+    .insert([{ name, marks, subtopic_id }])
+    .select("id")  // Return the Question_id after insertion
+
+  if (QuestionError) {
+    logError("Failed to add Question:", QuestionError);
+    throw QuestionError; 
+  }
+
+  // Extract the Question_id from the inserted Question data
+  question_id  = QuestionData?.[0]?.id;
+}
+  else { question_id  = existingQuestion.id}
+  if (!question_id ) {
+    logError("Failed to retrieve Question_id from the inserted Question.","no Question_id returned.");
+    throw new Error("Question insertion failed. No Question_id returned.");
+  }
+
+  // Insert the Question into the "user_Questions" table
+  const { error: userQuestionError } = await supabase
+    .from("user_questions")
+    .insert([{ Question_id: question_id , user_id: userId }]);
+
+  if (userQuestionError) {
+    logError("Failed to add user Question:", userQuestionError);
+    throw userQuestionError; 
+  }
+
+  return {question_id }; 
+} catch (error) {
+  logError("Error in addQuestion:", error);
+  throw error;
+}
 };
