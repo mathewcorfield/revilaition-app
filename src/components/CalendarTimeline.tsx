@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { Event, Subject } from "@/types";
-import RevisionPlanner from "@/components/RevisionPlanner";
+import RevisionPlanner from "@/components/revisionPlanner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface CalendarTimelineProps {
