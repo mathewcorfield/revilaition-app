@@ -35,7 +35,91 @@ function timeStringToMinutes(time: string) {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
 }
-
+function getFreeTimeSlots(busySlots: Event[]) {
+    const freeTime: Record<string, { start: string; end: string }[]> = {};
+  
+    for (const day of daysOfWeek) {
+      const dailyBusy = busySlots
+        .filter((slot) => slot.day === day)
+        .sort((a, b) => timeStringToMinutes(a.start) - timeStringToMinutes(b.start));
+  
+      const dailyFree: { start: string; end: string }[] = [];
+  
+      let current = 0;
+      for (const slot of dailyBusy) {
+        const startMin = timeStringToMinutes(slot.start);
+        if (startMin > current) {
+          dailyFree.push({ start: minutesToTimeString(current), end: slot.start });
+        }
+        current = Math.max(current, timeStringToMinutes(slot.end));
+      }
+  
+      if (current < 24 * 60) {
+        dailyFree.push({ start: minutesToTimeString(current), end: "23:59" });
+      }
+  
+      freeTime[day] = dailyFree;
+    }
+  
+    return freeTime;
+  }
+  function generateMultiWeekRevisionEvents(
+    subjects: Subject[],
+    minutesPerSubject: number,
+    freeTimeMap: Record<string, { start: string; end: string }[]>,
+    resultsDay: string
+  ) {
+    const revisionEvents = [];
+    const today = new Date();
+    const endDate = new Date(resultsDay);
+    
+    for (const subject of subjects) {
+      let remaining = minutesPerSubject;
+      let current = new Date(today);
+  
+      while (remaining > 0 && current <= endDate) {
+        const day = daysOfWeek[current.getDay() === 0 ? 6 : current.getDay() - 1]; // Convert JS Sunday (0) to 6
+        
+        const freeSlots = freeTimeMap[day] || [];
+        for (const slot of freeSlots) {
+          const startMin = timeStringToMinutes(slot.start);
+          const endMin = timeStringToMinutes(slot.end);
+          const slotDuration = endMin - startMin;
+  
+          if (slotDuration >= 15) {
+            const duration = Math.min(slotDuration, remaining);
+            const startDate = new Date(current);
+            startDate.setHours(Math.floor(startMin / 60), startMin % 60);
+  
+            const endDate = new Date(startDate);
+            endDate.setMinutes(startDate.getMinutes() + duration);
+  
+            revisionEvents.push({
+              title: `Revise: ${subject.name}`,
+              start: startDate,
+              end: endDate,
+              allDay: false,
+            });
+  
+            remaining -= duration;
+            if (remaining <= 0) break;
+          }
+        }
+  
+        current.setDate(current.getDate() + 1); // Move to next day
+      }
+    }
+  
+    return revisionEvents;
+  }
+  
+  function minutesToTimeString(mins: number) {
+    const h = Math.floor(mins / 60)
+      .toString()
+      .padStart(2, "0");
+    const m = (mins % 60).toString().padStart(2, "0");
+    return `${h}:${m}`;
+  }
 function isValidDate(d: Date) {
     return d instanceof Date && !isNaN(d.getTime());
 }
@@ -69,31 +153,33 @@ const resultsDay = "2024-08-01";
       return total + (timeStringToMinutes(slot.end) - timeStringToMinutes(slot.start));
     }, 0);
   };
-const calendarEvents = allBusySlots.map((slot, idx) => {
-  const dayIndex = daysOfWeek.indexOf(slot.day); // 0 = Monday
-  const today = new Date();
-  const startOfWeek = startOfWeek(today, { weekStartsOn: 1 });
-
-  const date = new Date(startOfWeek);
-  date.setDate(date.getDate() + dayIndex);
-
-  const [startHour, startMin] = slot.start.split(":").map(Number);
-  const [endHour, endMin] = slot.end.split(":").map(Number);
-
-  const startDate = new Date(date);
-  startDate.setHours(startHour, startMin);
-
-  const endDate = new Date(date);
-  endDate.setHours(endHour, endMin);
-
-  return {
-    id: idx,
-    title: "Busy",
-    start: startDate,
-    end: endDate,
-    allDay: false,
-  };
-});
+  const calendarEvents = useMemo(() => {
+    return allBusySlots.map((slot, idx) => {
+      const dayIndex = daysOfWeek.indexOf(slot.day);
+      const today = new Date();
+      const startOfW = startOfWeek(today, { weekStartsOn: 1 });
+      const date = new Date(startOfW);
+      date.setDate(date.getDate() + dayIndex);
+  
+      const [startHour, startMin] = slot.start.split(":").map(Number);
+      const [endHour, endMin] = slot.end.split(":").map(Number);
+  
+      const startDate = new Date(date);
+      startDate.setHours(startHour, startMin);
+  
+      const endDate = new Date(date);
+      endDate.setHours(endHour, endMin);
+  
+      return {
+        id: idx,
+        title: "Busy",
+        start: startDate,
+        end: endDate,
+        allDay: false,
+      };
+    });
+  }, [allBusySlots]);
+  const freeTimeSlots = useMemo(() => getFreeTimeSlots(allBusySlots), [allBusySlots]);
   const adjustedMinutesPerWeek = (dailyMinutes * 7) - calculateBusyMinutesPerWeek();
   const adjustedMinutesPerDay = Math.floor(adjustedMinutesPerWeek / 7);
 
@@ -103,11 +189,27 @@ const calendarEvents = allBusySlots.map((slot, idx) => {
       new Date(current.date) < new Date(earliest.date) ? current : earliest
     );
   
-  const sortedSubjects = [...subjects].sort(
-    (a, b) => new Date(getSoonestExamDate(a).date).getTime() - new Date(getSoonestExamDate(b).date).getTime()
-  );
+    const sortedSubjects = useMemo(() => {
+        const getSoonestExamDate = (subject: Subject) =>
+          subject.examDates.reduce((earliest, current) =>
+            new Date(current.date) < new Date(earliest.date) ? current : earliest
+          );
+          
+        return [...subjects].sort(
+          (a, b) => new Date(getSoonestExamDate(a).date).getTime() - new Date(getSoonestExamDate(b).date).getTime()
+        );
+      }, [subjects]);
 
-  const minutesPerSubject = Math.floor((totalRevisionMinutes * 0.9) / sortedSubjects.length); // 90% time for subjects
+      const minutesPerSubject = useMemo(() => {
+        return Math.floor((totalRevisionMinutes * 0.9) / sortedSubjects.length);
+      }, [totalRevisionMinutes, sortedSubjects]);
+  const revisionEvents = useMemo(() => {
+    return generateMultiWeekRevisionEvents(sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay);
+  }, [sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay]);
+  
+  const allEvents = useMemo(() => [...calendarEvents, ...revisionEvents], [calendarEvents, revisionEvents]);
+
+  
 
   return (
     <div className="space-y-4">
@@ -169,14 +271,16 @@ const calendarEvents = allBusySlots.map((slot, idx) => {
         </button>
       </div>
       <div className="h-[600px] mt-4">
-        <Calendar
-            localizer={localizer}
-            events={calendarEvents}
-            startAccessor="start"
-            endAccessor="end"
-            defaultView="week"
-            views={["week"]}
-            style={{ height: "100%" }}
+      <Calendar
+        localizer={localizer}
+        events={allEvents}
+        startAccessor="start"
+        endAccessor="end"
+        defaultView="week"
+        views={["week", "day"]}
+        step={30}
+        timeslots={2}
+        style={{ height: "100%" }}
         />
         </div>
       <div>
