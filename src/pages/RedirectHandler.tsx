@@ -14,34 +14,26 @@ const RedirectHandler = () => {
 
   useEffect(() => {
     const handleRedirect = async () => {
-      try {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const { data, error } = await supabase.auth.getSession();
 
-        if (userError || !userData?.user) {
-          logError("[RedirectHandler] Failed to get user", userError);
-          toast({
-            title: "Error",
-            description: "Could not retrieve user after sign-in.",
-          });
-          navigate("/login");
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", userData.user.id)
-          .single();
-
-        if (profileError || !profile) {
+        if (error || !data?.session) {
+        logError("[RedirectHandler] Failed to get session", error);
+        toast({
+          title: "Login Error",
+          description: "Could not complete login. Please try again.",
+        });
+        navigate("/login");
+        return;
+      }
+  try {
+        const userId = data.session.user.id;
+        const userProfile = await getUserData(userId);
+        if (!userProfile) {
           logError("[RedirectHandler] No profile found, redirecting to onboarding", profileError);
           navigate("/onboarding");
           return;
         }
-
-        const fullUserData = await getUserData(userData.user.id);
-        setUser(fullUserData);
-
+        setUser(userProfile);
         toast({
           title: "Welcome back!",
           description: "You've successfully signed in.",
