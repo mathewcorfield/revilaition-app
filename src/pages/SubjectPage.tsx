@@ -17,99 +17,103 @@ import {parseQuestion } from "@/utils/parseQuestion";
 import { logError } from '@/utils/logError';
         
 const SubjectPage: React.FC = () => {
-        const isTrial = sessionStorage.getItem("isTrial") === "true";
-        const navigate = useNavigate();
-        const {id} = useParams();
-        const {user, loading, setUser} = useUser();
-        const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
-        const [selectedSubtopic, setSelectedSubtopic] = useState <Subtopic | null >(null);
-        const [question, setQuestion] = useState <string | null >(null);
-        const [answer, setAnswer] = useState <string >('');
-        const [isGenerating, setIsGenerating] = useState(false);
-        const [isEvaluating, setIsEvaluating] = useState(false);
-        const [showDialog, setShowDialog] = useState(false);
-        const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
-        
-        const userId = user?.id;
-        const subtopicId = selectedSubtopic?.id;
-        const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
-        useEffect(() => {
-            if (!loading && !user && !isTrial) {
-              navigate("/login"); // or homepage
+  const isTrial = sessionStorage.getItem("isTrial") === "true";
+  const navigate = useNavigate();
+  const {id} = useParams();
+  const {user, loading, setUser} = useUser();
+  const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
+  const [selectedSubtopic, setSelectedSubtopic] = useState <Subtopic | null >(null);
+  const [question, setQuestion] = useState <string | null >(null);
+  const [answer, setAnswer] = useState <string >('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
+  
+  const userId = user?.id;
+  const subtopicId = selectedSubtopic?.id;
+  const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
+  useEffect(() => {
+      if (!loading && !user && !isTrial) {
+        navigate("/login"); // or homepage
+      }
+    }, [user, loading, isTrial, navigate]);
+  if (loading) {
+          return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+  if (!subject) {
+          return <div className="text-center mt-8">Subject not found</div>;
+  }
+  
+  const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
+    const newValue = subtopic[type] === 1 ? 0 : 1;
+    try {
+            if (!isTrial) {
+      await addUserSubtopic(user.id, subtopic.id, { [type]: newValue });
             }
-          }, [user, loading, isTrial, navigate]);
-        if (loading) {
-                return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-        }
-        if (!subject) {
-                return <div className="text-center mt-8">Subject not found</div>;
-        }
-        
-        const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
-            const newValue = subtopic[type] === 1 ? 0 : 1;
-            try {
-                    if (!isTrial) {
-              await addUserSubtopic(user.id, subtopic.id, { [type]: newValue });
-                    }
-              const updatedSubjects = user.subjects.map(subject => {
-                if (String(subject.id) === String(id)) {
-                  return {
-                    ...subject,
-                    subtopics: subject.subtopics.map(st =>
-                      st.id === subtopic.id ? { ...st, [type]: newValue } : st
-                    ),
-                  };
-                }
-                return subject;
-              });
-        
-              setUser({ ...user, subjects: updatedSubjects });
-        
-              toast({
-                title: newValue === 1 ? `Marked as ${type}` : `Unmarked as ${type}`,
-                description: `You have ${newValue === 1 ? `marked` : "unmarked"} the topic: "${subtopic.name}"`,
-              });
-        
-              newValue === 1 ? handleStartLearning() : handleStopLearning();
-            } catch (err) {
-              toast({ title: "Error", description: `Failed to update ${type} status.` });
-            }
+      const updatedSubjects = user.subjects.map(subject => {
+        if (String(subject.id) === String(id)) {
+          return {
+            ...subject,
+            subtopics: subject.subtopics.map(st =>
+              st.id === subtopic.id ? { ...st, [type]: newValue } : st
+            ),
           };
-        const handleGenerateQuestion = async (subtopic : Subtopic) => {
-        setIsGenerating(true);
-        setSelectedSubtopic(subtopic);
-        setAnswer('');
-        setQuestion(null);
-        setEvaluationFeedback(null);
-        setShowDialog(true);
-        try {
-          let response: string;
-          if (isTrial) {
-            const questions = await getQuestionsForSubtopic(subtopic.id);
-            if (questions.length === 0) {
-              throw new Error("No trial questions available for this subtopic.");
-            }
-            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-            const response = `${randomQuestion.name} (${randomQuestion.marks} marks).`;
-            } else {
-            const response = await getRevisionQuestion(subtopic.name, subject.examBoard, subject.level);
-            }
-          setQuestion(response);
-          try {
-            const parsed = parseQuestion(response); 
-            await addQuestion(userId, parsed.questionName, parsed.marks, subtopicId);
-          } catch (error) {
-            logError("[SubjectPage] Error adding Question to database:", error);
-          }
-          toast({title: "Question Generated", description: "Here is your question!"});
-        } catch {
-            toast(
-                {title: "Error", description: "Failed to generate question."}
-            );
-        } finally {
-            setIsGenerating(false);
-        
+        }
+        return subject;
+      });
+
+      setUser({ ...user, subjects: updatedSubjects });
+
+      toast({
+        title: newValue === 1 ? `Marked as ${type}` : `Unmarked as ${type}`,
+        description: `You have ${newValue === 1 ? `marked` : "unmarked"} the topic: "${subtopic.name}"`,
+      });
+
+      newValue === 1 ? handleStartLearning() : handleStopLearning();
+    } catch (err) {
+      logError("[SubjectPage] Error handling toggle:", err);
+      toast({ title: "Error", description: `Failed to update ${type} status.` });
     }
+  };
+const handleGenerateQuestion = async (subtopic : Subtopic) => {
+  if (!subtopic) {
+    logError("[SubjectPage] Invalid subtopic.", "Invalid subtopic.");
+    toast({ title: "Error", description: "Invalid subtopic." });
+    return;
+  }
+  setIsGenerating(true);
+  setSelectedSubtopic(subtopic);
+  setAnswer('');
+  setQuestion(null);
+  setEvaluationFeedback(null);
+  setShowDialog(true);
+  try {
+    if (isTrial) {
+      const questions = await getQuestionsForSubtopic(subtopic.id);
+      if (questions.length === 0) {
+        throw new Error("No trial questions available for this subtopic.");
+      }
+      const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+      const response = `${randomQuestion.name} (${randomQuestion.marks} marks).`;
+      setQuestion(response);
+      } else {
+      const response = await getRevisionQuestion(subtopic.name, subject.examBoard, subject.level);
+      setQuestion(response);
+      try {
+        const parsed = parseQuestion(response); 
+        await addQuestion(userId, parsed.questionName, parsed.marks, subtopic.id);
+      } catch (error) {
+        logError("[SubjectPage] Error adding Question to database:", error);
+      }
+      }
+    toast({title: "Question Generated", description: "Here is your question!"});
+  } catch (error) {
+    logError("[SubjectPage] Failed to generate question.", error);
+    toast({title: "Error", description: "Failed to generate question."});
+  } finally {
+      setIsGenerating(false);
+  }
 };
     
 const handleAnswerSubmit = async () => {
@@ -193,7 +197,6 @@ return (
         <div className="text-center text-muted-foreground mt-10">Generating question...</div>
       ) : (
         selectedSubtopic && question && (
-          <>
             <div className="flex flex-col gap-4">
               {/* AI asks a question */}
               <div className="self-start max-w-[75%] bg-accent p-3 rounded-xl">
@@ -216,7 +219,7 @@ return (
                 placeholder="Type your answer here..."
                 disabled={isEvaluating}
               />
-              <Button onClick={handleAnswerSubmit} disabled={isEvaluating || !answer}>
+              <Button onClick={handleAnswerSubmit} disabled={isEvaluating || !answer || !question}>
                 {isEvaluating ? "Evaluating..." : "Submit Answer"}
               </Button>
 
@@ -227,7 +230,6 @@ return (
                 </div>
               )}
             </div>
-          </>
         )
       )}
     </div>
