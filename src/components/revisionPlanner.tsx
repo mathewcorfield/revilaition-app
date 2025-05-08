@@ -68,6 +68,14 @@ function getFreeTimeSlots(busySlots: Event[]) {
   
     return freeTime;
   }
+  function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
   function generateMultiWeekRevisionEvents(
     subjects: Subject[],
     dailyMinutes: number,
@@ -75,6 +83,7 @@ function getFreeTimeSlots(busySlots: Event[]) {
   ) {
     const revisionEvents = [];
     const today = new Date();
+    const occupiedSlots: Set<string> = new Set();
     try {
         
     for (const subject of subjects) {
@@ -88,7 +97,8 @@ function getFreeTimeSlots(busySlots: Event[]) {
       const minutesPerSubject = Math.floor((totalRevisionMinutes * 0.9) / subjects.length);
       let remaining = minutesPerSubject;
       let current = new Date(today);
-  
+      const shuffledSubtopics = shuffleArray(subject.subtopics);
+      let subtopicIndex = 0;
       while (remaining > 0 && current <= examDate) {
         const day = daysOfWeek[current.getDay() === 0 ? 6 : current.getDay() - 1]; // Convert JS Sunday (0) to 6
         
@@ -106,19 +116,26 @@ function getFreeTimeSlots(busySlots: Event[]) {
             const endDate = new Date(startDate);
             endDate.setMinutes(startDate.getMinutes() + duration);
 
+            const slotKey = `${startDate.toISOString()}-${endDate.toISOString()}`;
+            if (occupiedSlots.has(slotKey)) {
+              continue; // Skip if this slot is already occupied
+            }
+
           if (!isValidDate(startDate) || !isValidDate(endDate)) {
             console.warn(`Invalid event date generated for ${subject.name} on ${day}:`, startDate, endDate);
             continue;
           }
-  
+          const subtopic = shuffledSubtopics[subtopicIndex % shuffledSubtopics.length];
             revisionEvents.push({
-              title: `Revise: ${subject.name}`,
+                title: `Revise: ${subject.name} - ${subtopic.name}`,
               start: startDate,
               end: endDate,
               allDay: false,
             });
+            occupiedSlots.add(slotKey);
   
             remaining -= duration;
+            subtopicIndex++;
             if (remaining <= 0) break;
           }
         }
@@ -288,20 +305,6 @@ export default function RevisionPlanner({
         style={{ height: "100%" }}
         />
         </div>
-      <div>
-        <h3 className="font-semibold">Suggested Revision Plan</h3>
-        <p>Total days left: {totalDays > 0 ? totalDays : "Exam date not set or invalid"}</p>
-        <p>Adjusted daily minutes: {adjustedMinutesPerDay} min</p>
-
-        <ul className="mt-2 space-y-1">
-          {sortedSubjects.map((subject, i) => (
-            <li key={i} className="border p-2 rounded">
-              <strong>{subject.name}</strong> — min total before{" "}
-              {new Date(subject.examDates[0].date).toLocaleDateString()}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }
