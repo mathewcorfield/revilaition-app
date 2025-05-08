@@ -9,8 +9,3 @@ if (!supabaseUrl || !supabaseAnonKey ) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey )
-
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log("[Supabase] Auth event:", event);
-  console.log("[Supabase] Session:", session);
-});
