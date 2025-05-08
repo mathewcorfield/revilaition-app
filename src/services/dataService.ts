@@ -118,14 +118,7 @@ export const getUserSubjects = async (userId: string) => {
       };
     }
 
-    console.log("Fetching exam dates for:", {
-      level_id: record.level_id,
-      examboard_id: record.examboard_id,
-      subjectId,
-    });
-
     examDatePromises[subjectId] = getExamDates(record.level_id, record.examboard_id, subjectId);
-    console.log("Exam dates received for", subjectId, ":", examDatePromises);
 
     // Only push subtopics if present
 if (record.subtopic_id) {
@@ -156,7 +149,6 @@ if (record.subtopic_id) {
   const examDateEntries = await Promise.all(
     Object.entries(examDatePromises).map(async ([subjectId, promise]) => {
       const dates = await promise;
-      console.log("Exam dates received for", subjectId, ":", dates);
       return [subjectId, dates];
     })
   );
