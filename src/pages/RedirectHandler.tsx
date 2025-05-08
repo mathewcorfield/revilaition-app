@@ -14,8 +14,8 @@ const RedirectHandler = () => {
 
   useEffect(() => {
    const handleRedirect = async () => {
-       console.log("[RedirectHandler] Mounted. Attempting to get session");
-      const hash = window.location.hash.substring(1);
+      const savedHash = sessionStorage.getItem("oauth_hash");
+      const hash = savedHash.startsWith("#") ? savedHash.substring(1) : savedHash;
       const params = new URLSearchParams(hash);
 
       const access_token = params.get("access_token");
