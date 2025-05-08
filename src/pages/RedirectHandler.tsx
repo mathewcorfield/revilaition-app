@@ -14,6 +14,7 @@ const RedirectHandler = () => {
 
   useEffect(() => {
    const handleRedirect = async () => {
+       console.log("[RedirectHandler] Mounted. Attempting to get session");
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(hash);
 
