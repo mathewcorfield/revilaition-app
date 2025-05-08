@@ -9,7 +9,10 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  date: string; // ISO date string
+  date: string;
+  day: string;
+  start: string;
+  end: string;
 }
 
 export interface Subtopic {
@@ -27,6 +30,7 @@ export interface Subject {
   level: string;
   iconColor: string;
   subtopics: Subtopic[];
+  examDates: Event[];
 }
 
 export interface AvailableSubject {

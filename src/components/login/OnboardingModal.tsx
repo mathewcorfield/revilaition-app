@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { getAllLevels, getAllCountries } from "@/services/dataService";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useUser } from "@/context/UserContext";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
 const OnboardingModal = () => {
@@ -16,9 +14,8 @@ const OnboardingModal = () => {
   const [name, setName] = useState("");
   const [level, setLevel] = useState("");
   const [country, setCountry] = useState("");
-  const navigate = useNavigate();
-  const { setUser } = useUser();
-  const { handleOnboardingSubmit } = useOnboarding(name, level, country, setUser, navigate);
+  
+  const { handleOnboardingSubmit } = useOnboarding(name, level, country);
 
   useEffect(() => {
     const fetchData = async () => {

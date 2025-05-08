@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { logError } from "@/utils/logError";
 import { getUserData } from "@/hooks/getUserData";
+import { useUser } from "@/context/UserContext";
 
-export const useOnboarding = (name: string, level: string, country: string, setUser: Function, navigate: Function) => {
+export const useOnboarding = (name: string, level: string, country: string) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { setUser } = useUser();
+  const navigate = useNavigate();
 
   const handleOnboardingSubmit = async () => {
     if (!level || !country || !name) {

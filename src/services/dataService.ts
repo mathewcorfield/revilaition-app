@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
-import { User } from "@/types";
+import { User, Subject } from "@/types";
 import { logError } from '@/utils/logError';
 
 const handleSupabaseError = (error: any, context: string) => {
@@ -33,7 +33,7 @@ const { data, error } = await supabase
     id, 
     full_name, 
     email, 
-    level:current_level(name)  // Join on the 'current_level' column to get the 'name' of the level
+    current_level(name) 
   `)
   .eq("id", userId)
   .maybeSingle();
@@ -47,7 +47,7 @@ const { data, error } = await supabase
     id: userId,
     name: data?.full_name || "",
     email: data?.email || "",
-    level: data?.level?.name || "",
+    level: data?.current_level?.name || "",
   };
 };
 
@@ -80,6 +80,7 @@ export const getUserSubjects = async (userId: string) => {
       subject_id,
       subject_name,
       icon_color,
+      level,
       examboard_name,
       subtopic_id,
       subtopic_name,
@@ -91,25 +92,31 @@ export const getUserSubjects = async (userId: string) => {
     handleSupabaseError(error, "Fetch user subjects");
 
   if (!data) {
-    console.warn("No subjects found for user:", userId);
+    logError(userId, "No user subjects found");
     return null;
   }
 
   const subjectMap: Record<string, any> = {};
+  const examDatePromises: Record<string, Promise<any>> = {};
 
   for (const record of data) {
     const subjectId = record.subject_id;
+    const level = record.level ?? "Unknown";
+    const examBoard = record.examboard_name ?? "Unknown";
 
     if (!subjectMap[subjectId]) {
       subjectMap[subjectId] = {
         id: subjectId,
         name: record.subject_name,
         iconColor: record.icon_color,
-        examBoard: record.examboard_name ?? "Unknown",
+        level,
+        examBoard,
         subtopics: [],
+        examDates: [],
       };
     }
-
+    examDatePromises[subjectId] = getExamDates(level, examBoard, subjectId);
+  
     // Only push subtopics if present
 if (record.subtopic_id) {
   // Initialize both states to 0
@@ -135,6 +142,16 @@ if (record.subtopic_id) {
     revised: revised,
   });
     }
+  }
+  const examDateEntries = await Promise.all(
+    Object.entries(examDatePromises).map(async ([subjectId, promise]) => {
+      const dates = await promise;
+      return [subjectId, dates];
+    })
+  );
+
+  for (const [subjectId, dates] of examDateEntries) {
+    subjectMap[subjectId].examDates = dates;
   }
 
   return Object.values(subjectMap);
@@ -247,7 +264,7 @@ if (!existingEvent) {
   }
 
   // Insert the event into the "user_events" table
-  const insertedData = await insertData("user_events",[{ event_id: eventId, user_id: userId, event_date: eventdate }]);
+  const insertedData = await insertData("user_events",[{ event_id: eventId, user_id: userId, event_date: eventdate.toISOString() }]);
   return insertedData;
 };
 
@@ -394,3 +411,22 @@ export const updateUserAnswer = async (  answer_id: string,  evaluation: string,
 
     handleSupabaseError(error, "Update user answers");
 };
+
+export const getExamDates = async (level: string, examBoard: string, subjectId: string): Promise<Event[]>  => {
+  const { data, error } = await supabase
+    .from("exam_dates")
+    .select("id, exam_name, exam_timestamp")
+    .eq("level_id", level)
+    .eq("examboard_id", examBoard)
+    .eq("subject_id", subjectId);
+
+    handleSupabaseError(error, "Get exam dates");
+
+    if (!data) return [];
+
+    return data.map((row) => ({
+      id: row.id,
+      title: row.exam_name,
+      date: row.exam_timestamp,
+    }));
+  };
