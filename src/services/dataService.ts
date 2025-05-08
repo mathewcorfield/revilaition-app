@@ -391,7 +391,6 @@ export const getQuestionsForSubtopic = async (subtopicId: string) => {
 };
 
 export const addQuestion = async (userId: string, name: string, marks: number, subtopic_id: string) => {
-  try {
   // Check if a question with the same name already exists
 const { data: existingQuestion, error: fetchError } = await supabase
   .from("questions")
@@ -430,7 +429,7 @@ if (!existingQuestion) {
   // Insert the Question into the "user_Questions" table
   const { error: userQuestionError } = await supabase
     .from("user_questions")
-    .insert([{ Question_id: question_id , user_id: userId }]);
+    .insert([{ question_id: question_id , user_id: userId }]);
 
   if (userQuestionError) {
     logError("Failed to add user Question:", userQuestionError);
@@ -438,8 +437,4 @@ if (!existingQuestion) {
   }
 
   return {question_id }; 
-} catch (error) {
-  logError("Error in addQuestion:", error);
-  throw error;
-}
 };
