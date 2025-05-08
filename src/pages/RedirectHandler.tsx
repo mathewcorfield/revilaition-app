@@ -21,7 +21,7 @@ const RedirectHandler = () => {
       const refresh_token = params.get("refresh_token");
 
       if (!access_token || !refresh_token) {
-        logError("[RedirectHandler] Failed to get session", error);
+        logError("[RedirectHandler] Missing tokens in URL", { access_token, refresh_token });
         toast({
           title: "Login Error",
           description: "Could not complete login. Please try again.",
