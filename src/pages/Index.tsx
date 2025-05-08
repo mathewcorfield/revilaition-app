@@ -6,19 +6,18 @@ import FeatureCard from '@/components/FeatureCard';
 import PricingCard from '@/components/PricingCard';
 import TestimonialCard from '@/components/TestimonialCard';
 import Footer from '@/components/Footer';
-import {   Brain,   BookOpen,   PencilRuler,   LineChart,   Sparkles,   MessageSquareText,   BarChart3} from 'lucide-react';
+import {   Brain,   BookOpen,   PencilRuler,   LineChart,   Sparkles,   MessageSquareText} from 'lucide-react';
 import pricingData from "@/config/pricingConfig.json";
 import featureData from "@/config/featuresConfig.json";
 import testimonialData from "@/config/testimonialsConfig.json";
 
-const iconMapping: { [key: string]: JSX.Element } = {
-  Brain: <Brain />,
-  BookOpen: <BookOpen />,
-  PencilRuler: <PencilRuler />,
-  MessageSquareText: <MessageSquareText />,
-  LineChart: <LineChart />,
-  Sparkles: <Sparkles />,
-  BarChart3: <BarChart3 />
+const iconMapping: { [key: string]: React.ComponentType<any> } = {
+  Brain,
+  BookOpen,
+  PencilRuler,
+  MessageSquareText,
+  LineChart,
+  Sparkles,
 };
 
 const Index = () => {
@@ -45,14 +44,11 @@ const Index = () => {
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featureData.map((feature, index) => {
-                  const icon = iconMapping[feature.icon];
-                  if (!icon) {
-                    console.warn(`Unknown icon key: ${feature.icon}`);
-                  }
+              const Icon = iconMapping[feature.icon];
               return (
                 <FeatureCard 
                   key={index}
-                  icon={icon ?? <Sparkles />}
+                  icon={Icon}
                   title={feature.title}
                   description={feature.description}
                 />
