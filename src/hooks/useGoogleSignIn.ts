@@ -14,6 +14,7 @@ const useGoogleSignIn = (setShowOnboarding: React.Dispatch<React.SetStateAction<
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    console.log("[GoogleSignIn] Starting sign-in flow");
     try {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
@@ -31,7 +32,7 @@ const useGoogleSignIn = (setShowOnboarding: React.Dispatch<React.SetStateAction<
         setLoading(false);
         return;
       }
-
+      console.log("[GoogleSignIn] OAuth redirect initiated successfully");
       // Assuming that Google Sign In is successful, you can fetch user profile
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData?.user) {
