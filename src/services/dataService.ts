@@ -80,7 +80,9 @@ export const getUserSubjects = async (userId: string) => {
       subject_id,
       subject_name,
       icon_color,
+      level_id,
       level,
+      examboard_id,
       examboard_name,
       subtopic_id,
       subtopic_name,
@@ -115,7 +117,7 @@ export const getUserSubjects = async (userId: string) => {
         examDates: [],
       };
     }
-    examDatePromises[subjectId] = getExamDates(level, examBoard, subjectId);
+    examDatePromises[subjectId] = getExamDates(record.level_id, record.examboard_id, subjectId);
   
     // Only push subtopics if present
 if (record.subtopic_id) {
