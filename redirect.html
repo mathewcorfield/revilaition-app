@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       const hash = window.location.hash;
+      console.log("[Redirect] Full URL:", window.location.href);
+      console.log("[Redirect] Hash fragment:", hash);
       window.location.replace(`/#/redirect${hash}`);
     </script>
     <style>
