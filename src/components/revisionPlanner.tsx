@@ -1,6 +1,26 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Subject, Event } from "@/types";
 import useSubjectExamDates from "@/hooks/useSubjectExamDates";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import format from "date-fns/format";
+import parse from "date-fns/parse";
+import startOfWeek from "date-fns/startOfWeek";
+import getDay from "date-fns/getDay";
+import { enGB } from "date-fns/locale";
+
+// Configure the localizer
+const locales = {
+    "en-GB": enGB,
+  };
+
+  const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+    getDay,
+    locales,
+  });
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -20,28 +40,60 @@ function isValidDate(d: Date) {
     return d instanceof Date && !isNaN(d.getTime());
 }
 
+const defaultBusySlots: Event[] = daysOfWeek.flatMap((day) => [
+    { title:"School", day, start: "08:30", end: "15:30" }, 
+    { title:"Sleep 2", day, start: "22:00", end: "23:59" },
+    { title:"Sleep 1", day, start: "00:00", end: "07:00" }, 
+  ]);
+
 export default function RevisionPlanner({
   subjects,
 }: {
   subjects: Subject[];
 }) {
   const [dailyMinutes, setDailyMinutes] = useState(120);
-  const [busySlots, setBusySlots] = useState<Event[]>([]);
+  const [customBusySlots, setCustomBusySlots] = useState<Event[]>([]);
 const resultsDay = "2024-08-01"; 
 
   const totalDays = getDaysUntil(resultsDay);
   const totalRevisionMinutes = totalDays * dailyMinutes;
 
+  const allBusySlots = useMemo(() => [...defaultBusySlots, ...customBusySlots], [customBusySlots]);
+
   const handleAddBusySlot = () => {
-    setBusySlots((prev) => [...prev, { day: "Monday", start: "16:00", end: "18:00" }]);
+    setCustomBusySlots((prev) => [...prev, { day: "Monday", start: "16:00", end: "18:00" }]);
   };
 
   const calculateBusyMinutesPerWeek = () => {
-    return busySlots.reduce((total, slot) => {
+    return allBusySlots.reduce((total, slot) => {
       return total + (timeStringToMinutes(slot.end) - timeStringToMinutes(slot.start));
     }, 0);
   };
+const calendarEvents = allBusySlots.map((slot, idx) => {
+  const dayIndex = daysOfWeek.indexOf(slot.day); // 0 = Monday
+  const today = new Date();
+  const startOfWeek = startOfWeek(today, { weekStartsOn: 1 });
 
+  const date = new Date(startOfWeek);
+  date.setDate(date.getDate() + dayIndex);
+
+  const [startHour, startMin] = slot.start.split(":").map(Number);
+  const [endHour, endMin] = slot.end.split(":").map(Number);
+
+  const startDate = new Date(date);
+  startDate.setHours(startHour, startMin);
+
+  const endDate = new Date(date);
+  endDate.setHours(endHour, endMin);
+
+  return {
+    id: idx,
+    title: "Busy",
+    start: startDate,
+    end: endDate,
+    allDay: false,
+  };
+});
   const adjustedMinutesPerWeek = (dailyMinutes * 7) - calculateBusyMinutesPerWeek();
   const adjustedMinutesPerDay = Math.floor(adjustedMinutesPerWeek / 7);
 
@@ -59,8 +111,6 @@ const resultsDay = "2024-08-01";
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Revision Planner</h2>
-
       <div>
         <label>How many minutes per day do you want to revise?</label>
         <input
@@ -73,12 +123,12 @@ const resultsDay = "2024-08-01";
 
       <div>
         <h3 className="font-semibold">Busy Sections</h3>
-        {busySlots.map((slot, idx) => (
+        {allBusySlots.map((slot, idx) => (
           <div key={idx} className="flex gap-2 mb-2">
             <select
               value={slot.day}
               onChange={(e) =>
-                setBusySlots((prev) => {
+                setCustomBusySlots((prev) => {
                   const copy = [...prev];
                   copy[idx].day = e.target.value;
                   return copy;
@@ -94,7 +144,7 @@ const resultsDay = "2024-08-01";
               type="time"
               value={slot.start}
               onChange={(e) =>
-                setBusySlots((prev) => {
+                setCustomBusySlots((prev) => {
                   const copy = [...prev];
                   copy[idx].start = e.target.value;
                   return copy;
@@ -105,7 +155,7 @@ const resultsDay = "2024-08-01";
               type="time"
               value={slot.end}
               onChange={(e) =>
-                setBusySlots((prev) => {
+                setCustomBusySlots((prev) => {
                   const copy = [...prev];
                   copy[idx].end = e.target.value;
                   return copy;
@@ -118,7 +168,17 @@ const resultsDay = "2024-08-01";
           + Add Busy Time
         </button>
       </div>
-
+      <div className="h-[600px] mt-4">
+        <Calendar
+            localizer={localizer}
+            events={calendarEvents}
+            startAccessor="start"
+            endAccessor="end"
+            defaultView="week"
+            views={["week"]}
+            style={{ height: "100%" }}
+        />
+        </div>
       <div>
         <h3 className="font-semibold">Suggested Revision Plan</h3>
         <p>Total days left: {totalDays}</p>
