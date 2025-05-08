@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Subject, Event } from "@/types";
-import useSubjectExamDates from "@/hooks/useSubjectExamDates";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import format from "date-fns/format";
@@ -24,6 +23,11 @@ const locales = {
   });
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  // Prioritize revision by soonest exams
+  const getSoonestExamDate = (subject: Subject) =>
+    subject.examDates.reduce((earliest, current) =>
+      new Date(current.date) < new Date(earliest.date) ? current : earliest
+    );
 
 function getDaysUntil(dateStr: string) {
   const now = new Date();
@@ -66,19 +70,26 @@ function getFreeTimeSlots(busySlots: Event[]) {
   }
   function generateMultiWeekRevisionEvents(
     subjects: Subject[],
-    minutesPerSubject: number,
+    dailyMinutes: number,
     freeTimeMap: Record<string, { start: string; end: string }[]>,
-    resultsDay: string
   ) {
     const revisionEvents = [];
     const today = new Date();
-    const endDate = new Date(resultsDay);
     try {
+        
     for (const subject of subjects) {
+        const examDate = new Date(getSoonestExamDate(subject).date);
+      if (isNaN(examDate.getTime())) {
+        console.warn(`Invalid or missing exam date for ${subject.name}`);
+        continue; // Skip this subject if examDate is invalid
+      }
+      const totalDays = getDaysUntil(getSoonestExamDate(subject).date);
+      const totalRevisionMinutes = totalDays * dailyMinutes;
+      const minutesPerSubject = Math.floor((totalRevisionMinutes * 0.9) / subjects.length);
       let remaining = minutesPerSubject;
       let current = new Date(today);
   
-      while (remaining > 0 && current <= endDate) {
+      while (remaining > 0 && current <= examDate) {
         const day = daysOfWeek[current.getDay() === 0 ? 6 : current.getDay() - 1]; // Convert JS Sunday (0) to 6
         
         const freeSlots = freeTimeMap[day] || [];
@@ -145,10 +156,8 @@ export default function RevisionPlanner({
 }) {
   const [dailyMinutes, setDailyMinutes] = useState(120);
   const [customBusySlots, setCustomBusySlots] = useState<Event[]>([]);
-const resultsDay = "2024-08-01"; 
 
-  const totalDays = getDaysUntil(resultsDay);
-  const totalRevisionMinutes = totalDays * dailyMinutes;
+
 
   const allBusySlots = useMemo(() => [...defaultBusySlots, ...customBusySlots], [customBusySlots]);
 
@@ -191,34 +200,21 @@ const resultsDay = "2024-08-01";
   const adjustedMinutesPerWeek = (dailyMinutes * 7) - calculateBusyMinutesPerWeek();
   const adjustedMinutesPerDay = Math.floor(adjustedMinutesPerWeek / 7);
 
-  // Prioritize revision by soonest exams
-  const getSoonestExamDate = (subject: Subject) =>
-    subject.examDates.reduce((earliest, current) =>
-      new Date(current.date) < new Date(earliest.date) ? current : earliest
-    );
+
   
     const sortedSubjects = useMemo(() => {
-        const getSoonestExamDate = (subject: Subject) =>
-          subject.examDates.reduce((earliest, current) =>
-            new Date(current.date) < new Date(earliest.date) ? current : earliest
-          );
-          
         return [...subjects].sort(
           (a, b) => new Date(getSoonestExamDate(a).date).getTime() - new Date(getSoonestExamDate(b).date).getTime()
         );
       }, [subjects]);
 
-      const minutesPerSubject = useMemo(() => {
-        return Math.floor((totalRevisionMinutes * 0.9) / sortedSubjects.length);
-      }, [totalRevisionMinutes, sortedSubjects]);
-console.log(sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay)
   const revisionEvents = useMemo(() => {
-    return generateMultiWeekRevisionEvents(sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay);
-  }, [sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay]);
+    return generateMultiWeekRevisionEvents(sortedSubjects, dailyMinutes, freeTimeSlots);
+  }, [sortedSubjects, dailyMinutes, freeTimeSlots]);
   
   const allEvents = useMemo(() => [...calendarEvents, ...revisionEvents], [calendarEvents, revisionEvents]);
 
-  
+  const totalDays = getDaysUntil(getSoonestExamDate(subjects[0]).date);
 
   return (
     <div className="space-y-4">
@@ -294,13 +290,13 @@ console.log(sortedSubjects, minutesPerSubject, freeTimeSlots, resultsDay)
         </div>
       <div>
         <h3 className="font-semibold">Suggested Revision Plan</h3>
-        <p>Total days left: {totalDays}</p>
+        <p>Total days left: {totalDays > 0 ? totalDays : "Exam date not set or invalid"}</p>
         <p>Adjusted daily minutes: {adjustedMinutesPerDay} min</p>
 
         <ul className="mt-2 space-y-1">
           {sortedSubjects.map((subject, i) => (
             <li key={i} className="border p-2 rounded">
-              <strong>{subject.name}</strong> — {minutesPerSubject} min total before{" "}
+              <strong>{subject.name}</strong> — min total before{" "}
               {new Date(subject.examDates[0].date).toLocaleDateString()}
             </li>
           ))}
