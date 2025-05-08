@@ -37,7 +37,7 @@ export const evaluateAnswer = async (answer: string, question: string, examboard
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        prompt: `Evaluate and provide a mark for the answer "${answer}" at ${level} standard for ${examboard} exam board against the mark scheme. This was the exam question: "${question}". Include feedback on where the answer could be improved, factoring in that I need to use good exam techniques.`,
+        prompt: `Evaluate and always provide a mark in the format {X marks} for the answer "${answer}" at ${level} standard for ${examboard} exam board against the mark scheme. This was the exam question: "${question}". Include feedback on where the answer could be improved, factoring in that I need to use good exam techniques.`,
       }),
     });
 

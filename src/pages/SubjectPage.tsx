@@ -137,7 +137,7 @@ const handleAnswerSubmit = async () => {
         const evaluation = await evaluateAnswer(answer, question, subject.examBoard, subject.level);
         setEvaluationFeedback(evaluation); 
         const parsed = parseQuestion(evaluation); 
-        await updateUserAnswer(id, parsed.questionName, parsed.marks);
+        await updateUserAnswer(id, evaluation, parsed.marks);
         toast({title: "Answer Evaluated", description: "Check the feedback below."});
     } catch (error) {
       logError("[SubjectPage] Error evaluating answer", error);
