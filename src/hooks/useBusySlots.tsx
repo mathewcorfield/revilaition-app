@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Event } from "@/types";
-import { daysOfWeek, getFreeTimeSlots } from "@/utils/revisionUtils";
+import { daysOfWeek, getFreeTimeSlots } from "@/utils/revision";
 
 type UseBusySlotsResult = {
   busySlots: Event[];
