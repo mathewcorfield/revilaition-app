@@ -31,21 +31,29 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events, subjects, u
   return (
     <div className="space-y-6">
       {/* Planner Button and Modal */}
-      <div className="text-center">
-        <Dialog open={showPlanner} onOpenChange={setShowPlanner}>
-          <DialogTrigger asChild>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-              Generate Revision Plan
-            </button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Revision Planner</DialogTitle>
-            </DialogHeader>
-            <RevisionPlanner subjects={subjects} userId={userId} isOpen={showPlanner}/>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <>
+  <button
+    onClick={() => setShowPlanner(true)}
+    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+  >
+    Generate Revision Plan
+  </button>
+
+  <Dialog open={showPlanner} onOpenChange={setShowPlanner}>
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>Revision Planner</DialogTitle>
+      </DialogHeader>
+      {showPlanner && (
+    <RevisionPlanner
+      subjects={subjects}
+      userId={userId}
+      isOpen={showPlanner}
+    />
+  )}
+    </DialogContent>
+  </Dialog>
+</>
 
       {/* If no events, show message */}
       {sortedEvents.length === 0 ? (
