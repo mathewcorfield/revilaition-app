@@ -123,6 +123,7 @@ export default function RevisionPlanner({
             if (!isPlanSaved) {
           const userEvents = await getUserEvents(userId); 
           setRevisionEvents(userEvents); // use this to initialize the calendar
+          isOpen = false
         }
         };
       
