@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Subject, Event } from "@/types";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -8,6 +8,9 @@ import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import { enGB } from "date-fns/locale";
 import { logError } from '@/utils/logError';
+import { addEvent, getUserEvents } from "@/services/dataService";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/context/UserContext";
 
 // Configure the localizer
 const locales = {
@@ -23,6 +26,15 @@ const locales = {
   });
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const [selectedDays, setSelectedDays] = useState<string[]>([]);
+const [isPlanSaved, setIsPlanSaved] = useState(false);
+const [revisionEvents, setRevisionEvents] = useState([]);
+
+const toggleDay = (day: string) => {
+  setSelectedDays(prev =>
+    prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+  );
+};
   // Prioritize revision by soonest exams
   const getSoonestExamDate = (subject: Subject) =>
     subject.examDates.reduce((earliest, current) =>
@@ -81,7 +93,7 @@ function getFreeTimeSlots(busySlots: Event[]) {
     dailyMinutes: number,
     freeTimeMap: Record<string, { start: string; end: string }[]>,
   ) {
-    const revisionEvents = [];
+    
     const today = new Date();
     const occupiedSlots: Set<string> = new Set();
     try {
@@ -89,7 +101,7 @@ function getFreeTimeSlots(busySlots: Event[]) {
     for (const subject of subjects) {
         const examDate = new Date(getSoonestExamDate(subject).date);
       if (isNaN(examDate.getTime())) {
-        console.warn(`Invalid or missing exam date for ${subject.name}`);
+        logError(`Invalid or missing exam date for ${subject.name}`,"Error");
         continue; // Skip this subject if examDate is invalid
       }
       const totalDays = getDaysUntil(getSoonestExamDate(subject).date);
@@ -104,17 +116,17 @@ function getFreeTimeSlots(busySlots: Event[]) {
         
         const freeSlots = freeTimeMap[day] || [];
         for (const slot of freeSlots) {
-          const startMin = timeStringToMinutes(slot.start);
-          const endMin = timeStringToMinutes(slot.end);
-          const slotDuration = endMin - startMin;
-  
-          if (slotDuration >= 15) {
-            const duration = Math.min(slotDuration, remaining,30);
+            let  slotStartMin  = timeStringToMinutes(slot.start);
+            const slotEndMin  = timeStringToMinutes(slot.end);
+            while (slotStartMin + 15 <= slotEndMin && remaining > 0) {
+                const sessionDuration = Math.min(30, remaining, slotEndMin - slotStartMin);
+                if (sessionDuration < 15) break;
+            
             const startDate = new Date(current);
-            startDate.setHours(Math.floor(startMin / 60), startMin % 60);
+            startDate.setHours(Math.floor(slotStartMin / 60), slotStartMin % 60);
   
             const endDate = new Date(startDate);
-            endDate.setMinutes(startDate.getMinutes() + duration);
+            endDate.setMinutes(startDate.getMinutes() + sessionDuration);
 
             const slotKey = `${startDate.toISOString()}-${endDate.toISOString()}`;
             if (occupiedSlots.has(slotKey)) {
@@ -133,9 +145,9 @@ function getFreeTimeSlots(busySlots: Event[]) {
               allDay: false,
             });
             occupiedSlots.add(slotKey);
-  
-            remaining -= duration;
+            remaining -= sessionDuration;
             subtopicIndex++;
+            slotStartMin += sessionDuration;
             if (remaining <= 0) break;
           }
         }
@@ -168,13 +180,32 @@ const defaultBusySlots: Event[] = daysOfWeek.flatMap((day) => [
 
 export default function RevisionPlanner({
   subjects,
+  userId,
+  isOpen,
 }: {
   subjects: Subject[];
+  userId: string;
+  isOpen: boolean;
 }) {
+    const { toast } = useToast();
+    const { setUser } = useUser();
+
+    useEffect(() => {
+        const loadSavedEvents = async () => {
+            if (!isPlanSaved) {
+          const userEvents = await getUserEvents(userId); 
+          setRevisionEvents(userEvents); // use this to initialize the calendar
+        }
+        };
+      
+        if (isOpen) {
+          loadSavedEvents();
+        }
+      }, [isOpen]);
+
   const [dailyMinutes, setDailyMinutes] = useState(120);
   const [customBusySlots, setCustomBusySlots] = useState<Event[]>([]);
-
-
+  const [busySlots, setBusySlots] = useState<Event[]>([...defaultBusySlots, ...customBusySlots]);
 
   const allBusySlots = useMemo(() => [...defaultBusySlots, ...customBusySlots], [customBusySlots]);
 
@@ -206,7 +237,7 @@ export default function RevisionPlanner({
   
       return {
         id: idx,
-        title: "Busy",
+        title: slot.title || "Busy",
         start: startDate,
         end: endDate,
         allDay: false,
@@ -235,23 +266,37 @@ export default function RevisionPlanner({
 
   return (
     <div className="space-y-4">
-      <div>
+    <div>
         <label>How many minutes per day do you want to revise?</label>
         <input
-          type="number"
-          value={dailyMinutes}
-          onChange={(e) => setDailyMinutes(Number(e.target.value))}
-          className="ml-2 p-1 border rounded"
+        type="number"
+        value={dailyMinutes}
+        onChange={(e) => setDailyMinutes(Number(e.target.value))}
+        className="ml-2 p-1 border rounded"
         />
-      </div>
+        <button
+        onClick={async () => {
+            for (const event of revisionEvents) {
+            await addEvent(userId, event.title, "Event", "Revision Plan Generated", event.start);
+            }
+            setIsPlanSaved(true);
+            toast("Revision plan saved!");
+        }}
+        disabled={isPlanSaved}
+        className={`ml-4 px-4 py-2 rounded text-white ${
+            isPlanSaved ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+        }`}
+        >
+        {isPlanSaved ? "Plan Saved" : "Save Plan"}
+        </button>
+    </div>
 
-      <div>
-        <h3 className="font-semibold">Busy Sections e.g. friends, clubs, work</h3>
-        {customBusySlots.map((slot, idx) => (
-          <div key={idx} className="flex gap-2 mb-2">
+    <div>
+        <h3 className="font-semibold">Busy Sections (e.g. friends, clubs, work)</h3>
+        {allBusySlots.map((slot, idx) => (
+        <div key={idx} className="flex flex-col gap-2 mb-4 border p-2 rounded">
             <input
             type="text"
-            id="busyTitle"
             value={slot.title}
             onChange={(e) =>
                 setCustomBusySlots((prev) => {
@@ -261,52 +306,69 @@ export default function RevisionPlanner({
                 })
               }
             placeholder="e.g., work, club"
+            className="p-1 border rounded"
             />
-            <select
-              value={slot.day}
-              onChange={(e) =>
-                setCustomBusySlots((prev) => {
-                  const copy = [...prev];
-                  copy[idx].day = e.target.value;
-                  return copy;
-                })
-              }
-              className="p-1 border rounded"
-            >
-              {daysOfWeek.map((day) => (
-                <option key={day}>{day}</option>
-              ))}
-            </select>
+            <div className="flex flex-wrap gap-2">
+            {daysOfWeek.map((day) => (
+                <label key={day} className="flex items-center gap-1">
+                <input
+                    type="checkbox"
+                    checked={slot.days?.includes(day)}
+                    onChange={() =>
+                    setBusySlots((prev) => {
+                        const copy = [...prev];
+                        const days = copy[idx].days || [];
+                        if (days.includes(day)) {
+                        copy[idx].days = days.filter((d) => d !== day);
+                        } else {
+                        copy[idx].days = [...days, day];
+                        }
+                        return copy;
+                    })
+                    }
+                />
+                {day}
+                </label>
+            ))}
+            </div>
+            <div className="flex gap-2">
             <input
-              type="time"
-              value={slot.start}
-              onChange={(e) =>
-                setCustomBusySlots((prev) => {
-                  const copy = [...prev];
-                  copy[idx].start = e.target.value;
-                  return copy;
+                type="time"
+                value={slot.start}
+                onChange={(e) =>
+                setBusySlots((prev) => {
+                    const copy = [...prev];
+                    copy[idx].start = e.target.value;
+                    return copy;
                 })
-              }
+                }
+                className="p-1 border rounded"
             />
             <input
-              type="time"
-              value={slot.end}
-              onChange={(e) =>
-                setCustomBusySlots((prev) => {
-                  const copy = [...prev];
-                  copy[idx].end = e.target.value;
-                  return copy;
+                type="time"
+                value={slot.end}
+                onChange={(e) =>
+                setBusySlots((prev) => {
+                    const copy = [...prev];
+                    copy[idx].end = e.target.value;
+                    return copy;
                 })
-              }
+                }
+                className="p-1 border rounded"
             />
-          </div>
+            </div>
+        </div>
         ))}
-        <button onClick={handleAddBusySlot} className="mt-2 px-2 py-1 bg-blue-600 text-white rounded">
-          + Add Busy Time
+        <button
+        onClick={handleAddBusySlot}
+        className="mt-2 px-2 py-1 bg-blue-600 text-white rounded"
+        >
+        + Add Busy Time
         </button>
-      </div>
-      <div className="h-[600px] mt-4">
-      <Calendar
+    </div>
+
+    <div className="h-[600px] mt-4">
+        <Calendar
         localizer={localizer}
         events={allEvents}
         startAccessor="start"
@@ -317,7 +379,7 @@ export default function RevisionPlanner({
         timeslots={2}
         style={{ height: "100%" }}
         />
-        </div>
+    </div>
     </div>
   );
 }

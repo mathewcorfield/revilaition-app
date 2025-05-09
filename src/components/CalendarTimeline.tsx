@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 interface CalendarTimelineProps {
   events: Event[];
   subjects: Subject[];
+  userId: string;
 }
 
-const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events, subjects }) => {
+const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events, subjects, userId }) => {
   const sortedEvents = [...events].sort((a, b) =>
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
@@ -41,7 +42,7 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events, subjects })
             <DialogHeader>
               <DialogTitle>Revision Planner</DialogTitle>
             </DialogHeader>
-            <RevisionPlanner subjects={subjects} />
+            <RevisionPlanner subjects={subjects} userId={userId} isOpen={showPlanner}/>
           </DialogContent>
         </Dialog>
       </div>
