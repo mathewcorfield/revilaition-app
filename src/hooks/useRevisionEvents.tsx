@@ -10,11 +10,18 @@ export function useRevisionEvents(userId: string, isOpen: boolean, subjects: Sub
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    console.log("Hook called with:", { userId, isOpen, subjects, dailyMinutes, freeTimeSlots });
+
     if (isOpen && !saved) {
       setLoading(true);
+      if (!userId) {
+        setEvents([]);
+        return;
+      }
       getUserEvents(userId)
         .then(setEvents)
-        .catch((err) => logError("Failed to fetch revision events", err))
+        .catch((err) => {logError("Failed to fetch revision events", err);
+        setEvents([]);})
         .finally(() => setLoading(false));
     }
   }, [isOpen]);

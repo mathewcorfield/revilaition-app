@@ -76,6 +76,7 @@ const locales = {
         toggleBusySlot,
     } = useBusySlots();
 
+    console.log("Hook given:", { userId, isOpen, subjects, dailyMinutes, freeTimeSlots });
     const {events, loading, saved, generateEvents, saveEvents} = useRevisionEvents(userId, isOpen, subjects, dailyMinutes, freeTimeSlots);
 
     

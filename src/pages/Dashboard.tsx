@@ -73,7 +73,7 @@ const Dashboard = () => {
           <MilestoneTimeline milestones={user?.milestones || []} isTrial={isTrial} />
         </div>
         <div className="mb-8">
-          <CalendarTimeline events={user?.events || []} subjects={user?.subjects || []}  />
+          <CalendarTimeline events={user?.events || []} subjects={user?.subjects || []} userId={user.id} />
         </div>
         <div className="border rounded-lg shadow-sm bg-white p-4">
           <Tabs defaultValue="subjects" className="w-full">
