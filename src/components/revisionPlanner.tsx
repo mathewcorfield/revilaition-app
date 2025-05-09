@@ -11,7 +11,7 @@ import { logError } from '@/utils/logError';
 import { addEvent, getUserEvents } from "@/services/dataService";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
-import { daysOfWeek , formatTimeToDate } from "@/utils/revisionUtils";
+import { daysOfWeek } from "@/utils/revision";
 import { useRevisionEvents } from "@/hooks/useRevisionEvents";
 import { useBusySlots } from "@/hooks/useBusySlots";
 
@@ -28,7 +28,34 @@ const locales = {
     locales,
   });
 
+  import { addDays, nextDay, setHours, setMinutes, setSeconds } from "date-fns";
 
+  export function formatTimeToDate(time: string, day: string): Date {
+    const [hours, minutes] = time.split(":").map(Number);
+  
+    const daysMap: Record<string, number> = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+    };
+  
+    const targetDay = daysMap[day];
+    if (targetDay === undefined) {
+      throw new Error(`Invalid day: ${day}`);
+    }
+  
+    let base = new Date();
+    base = nextDay(base, targetDay); // gets next occurrence of the day
+    base = setHours(base, hours);
+    base = setMinutes(base, minutes);
+    base = setSeconds(base, 0);
+  
+    return base;
+  }
 
   export default function RevisionPlanner({ subjects, userId, isOpen }: { subjects: Subject[]; userId: string; isOpen: boolean }) {
     if (!isOpen) return null;
