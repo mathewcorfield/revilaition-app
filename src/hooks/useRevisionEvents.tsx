@@ -20,6 +20,7 @@ export function useRevisionEvents(userId: string, isOpen: boolean, subjects: Sub
   }, [isOpen]);
 
   const generateEvents = () => {
+    try {
     const revisionEvents: Event[] = [];
     const today = new Date();
     const occupiedSlots = new Set<string>();
@@ -80,14 +81,21 @@ export function useRevisionEvents(userId: string, isOpen: boolean, subjects: Sub
     }
 
     setEvents(revisionEvents);
+} catch (error) {
+    logError("Error generating revision events", error);
+  }
   };
 
   const saveEvents = async (events) => {
+    try {
     for (const event of events) {
       await addEvent(userId, event.title, "Event", "Revision Plan Generated", event.start);
     }
     setSaved(true);
-  };
-
+  
+    } catch (error) {
+        logError("Error generating revision events", error);
+    }
+};
   return { events, loading, saved, generateEvents, saveEvents };
 }

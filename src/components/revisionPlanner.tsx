@@ -76,9 +76,7 @@ const locales = {
         toggleBusySlot,
     } = useBusySlots();
 
-    const {
-        events, loading, saved, generateEvents, saveEvents
-    } = useRevisionEvents(userId, isOpen, subjects, dailyMinutes, freeTimeSlots);
+    const {events, loading, saved, generateEvents, saveEvents} = useRevisionEvents(userId, isOpen, subjects, dailyMinutes, freeTimeSlots);
 
     
     const allEvents = useMemo(() => [
