@@ -6,9 +6,10 @@ type UseBusySlotsResult = {
   busySlots: Event[];
   freeTimeSlots: Record<string, { start: string; end: string }[]>;
   setBusySlots: React.Dispatch<React.SetStateAction<Event[]>>;
-  toggleBusySlot: (day: string, index: number, field: "title" | "start" | "end", value: string) => void;
-  addBusySlot: (day: string) => void;
-  removeBusySlot: (day: string, index: number) => void;
+  toggleBusySlot: ( index: number, field: "title" | "start" | "end", value: string) => void;
+  addBusySlot: (days: string[]) => void;
+  removeBusySlot: (index: number) => void;
+  calendarEvents: Event[];
 };
 
 export const useBusySlots = (): UseBusySlotsResult => {
@@ -16,11 +17,32 @@ export const useBusySlots = (): UseBusySlotsResult => {
   const [freeTimeSlots, setFreeTimeSlots] = useState<Record<string, { start: string; end: string }[]>>({});
   
   useEffect(() => {
-    const defaultBusySlots: Event[] = daysOfWeek.flatMap((day) => [
-      { title: "School", day, start: "08:30", end: "15:30" },
-      { title: "Sleep 1", day, start: "00:00", end: "07:00" },
-      { title: "Sleep 2", day, start: "22:00", end: "23:59" },
-    ]);
+    const defaultBusySlots: Event[] = [
+      {
+        title: "Sleep 1",
+        start: "00:00",
+        end: "06:00",
+        days: [...daysOfWeek],
+      },
+      {
+        title: "Sleep 2",
+        start: "22:00",
+        end: "23:59",
+        days: [...daysOfWeek],
+      },
+      {
+        title: "School",
+        start: "08:30",
+        end: "15:30",
+        days: [...daysOfWeek],
+      },
+      {
+        title: "Meals",
+        start: "12:30",
+        end: "13:30",
+        days: [...daysOfWeek],
+      },
+    ];
     setBusySlots(defaultBusySlots);
   }, []);
 
@@ -30,30 +52,37 @@ export const useBusySlots = (): UseBusySlotsResult => {
     setFreeTimeSlots(free);
   }, [busySlots]);
 
-  const toggleBusySlot = (day: string, index: number, field: "title" | "start" | "end", value: string) => {
+  const toggleBusySlot = (
+    index: number,
+    field: "title" | "start" | "end",
+    value: string
+  ) => {
     setBusySlots((prev) =>
       prev.map((slot, i) =>
-        slot.day === day && index === prev.filter((s) => s.day === day).indexOf(slot)
-          ? { ...slot, [field]: value }
-          : slot
+        i === index ? { ...slot, [field]: value } : slot
       )
     );
   };
 
-  const addBusySlot = (day: string) => {
+  const addBusySlot = (days: string[]) => {
     setBusySlots((prev) => [
       ...prev,
-      { title: "Busy", start: "17:00", end: "18:00", day },
+      { title: "Busy", start: "17:00", end: "18:00", days },
     ]);
   };
 
-  const removeBusySlot = (day: string, index: number) => {
-    setBusySlots((prev) => {
-      const filtered = prev.filter((slot) => slot.day === day);
-      const toRemove = filtered[index];
-      return prev.filter((slot) => slot !== toRemove);
-    });
+  const removeBusySlot = (index: number) => {
+    setBusySlots((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const calendarEvents: Event[] = busySlots.flatMap((slot) =>
+    slot.days.map((day) => ({
+      title: slot.title,
+      start: slot.start,
+      end: slot.end,
+      day,
+    }))
+  );
 
   return {
     busySlots,
@@ -62,5 +91,6 @@ export const useBusySlots = (): UseBusySlotsResult => {
     toggleBusySlot,
     addBusySlot,
     removeBusySlot,
+    calendarEvents,
   };
 };

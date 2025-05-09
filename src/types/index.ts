@@ -10,7 +10,7 @@ export interface Event {
   title: string;
   description: string;
   date: string;
-  day: string;
+  days: string[];
   start: string;
   end: string;
 }

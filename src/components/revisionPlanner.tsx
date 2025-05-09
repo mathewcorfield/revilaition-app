@@ -135,54 +135,70 @@ const locales = {
     </div>
 
     <div>
-        <h3 className="font-semibold">Busy Sections (e.g. clubs, work)</h3>
-        {daysOfWeek.map((day) => {
-          const daySlots = busySlots.filter((slot) => slot.day === day);
-          return (
-            <div key={day} className="mb-4">
-              <h4 className="text-md font-semibold">{day}</h4>
-              {daySlots.map((slot, idx) => (
-                <div key={idx} className="flex flex-col gap-2 mb-2 border p-2 rounded">
-                  <input
-                    type="text"
-                    value={slot.title}
-                    onChange={(e) => toggleBusySlot(day, idx, "title", e.target.value)}
-                    className="p-1 border rounded"
-                  />
-                  <div className="flex gap-2">
-                    <input
-                      type="time"
-                      value={slot.start}
-                      onChange={(e) => toggleBusySlot(day, idx, "start", e.target.value)}
-                      className="p-1 border rounded"
-                    />
-                    <input
-                      type="time"
-                      value={slot.end}
-                      onChange={(e) => toggleBusySlot(day, idx, "end", e.target.value)}
-                      className="p-1 border rounded"
-                    />
-                    {slot.title !== "School" && slot.title !== "Sleep 1" && slot.title !== "Sleep 2" && (
-                      <button
-                        onClick={() => removeBusySlot(day, idx)}
-                        className="text-red-600 ml-2"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <button
-                onClick={() => addBusySlot(day)}
-                className="text-blue-600 text-sm"
-              >
-                + Add Busy Time on {day}
-              </button>
-            </div>
-          );
-        })}
+  <h3 className="font-semibold mb-2">Busy Sections (e.g. school, sleep, meals)</h3>
+
+  {busySlots.map((slot, idx) => (
+    <div key={idx} className="flex flex-col gap-2 mb-4 border p-3 rounded">
+      <input
+        type="text"
+        value={slot.title}
+        onChange={(e) => toggleBusySlot(null, idx, "title", e.target.value)}
+        className="p-1 border rounded"
+      />
+
+      <div className="flex gap-2 items-center">
+        <label className="text-sm">Start:</label>
+        <input
+          type="time"
+          value={slot.start}
+          onChange={(e) => toggleBusySlot(null, idx, "start", e.target.value)}
+          className="p-1 border rounded"
+        />
+        <label className="text-sm">End:</label>
+        <input
+          type="time"
+          value={slot.end}
+          onChange={(e) => toggleBusySlot(null, idx, "end", e.target.value)}
+          className="p-1 border rounded"
+        />
       </div>
+
+      <div className="flex gap-2 flex-wrap">
+        {daysOfWeek.map((day) => (
+          <label key={day} className="text-sm flex items-center gap-1">
+            <input
+              type="checkbox"
+              checked={slot.days?.includes(day)}
+              onChange={(e) => {
+                const updatedDays = e.target.checked
+                  ? [...(slot.days || []), day]
+                  : (slot.days || []).filter((d) => d !== day);
+                toggleBusySlot(null, idx, "days", updatedDays);
+              }}
+            />
+            {day}
+          </label>
+        ))}
+      </div>
+
+      {!["School", "Sleep 1", "Sleep 2", "Meals"].includes(slot.title) && (
+        <button
+          onClick={() => removeBusySlot(null, idx)}
+          className="text-red-600 text-sm mt-1"
+        >
+          Remove
+        </button>
+      )}
+    </div>
+  ))}
+
+  <button
+    onClick={() => addBusySlot(null)}
+    className="text-blue-600 text-sm mt-2"
+  >
+    + Add Busy Time
+  </button>
+</div>
 
     <div className="h-[600px] mt-4">
         <Calendar
