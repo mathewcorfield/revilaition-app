@@ -65,9 +65,8 @@ export function useRevisionEvents(userId: string, isOpen: boolean, subjects: Sub
             const subtopic = shuffledSubtopics[subtopicIndex % shuffledSubtopics.length];
             revisionEvents.push({
               title: `Revise: ${subject.name} - ${subtopic.name}`,
-              start: startDate,
-              end: endDate,
-              allDay: false,
+              start: startDate.toISOString(),
+              end: endDate.toISOString(),
             });
 
             occupiedSlots.add(slotKey);

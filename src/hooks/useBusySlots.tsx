@@ -6,10 +6,9 @@ type UseBusySlotsResult = {
   busySlots: Event[];
   freeTimeSlots: Record<string, { start: string; end: string }[]>;
   setBusySlots: React.Dispatch<React.SetStateAction<Event[]>>;
-  toggleBusySlot: ( index: number, field: "title" | "start" | "end", value: string) => void;
+  toggleBusySlot: ( index: number, field: "title" | "start" | "end"| "days", value: string | string[]) => void;
   addBusySlot: (days: string[]) => void;
   removeBusySlot: (index: number) => void;
-  calendarEvents: Event[];
 };
 
 export const useBusySlots = (): UseBusySlotsResult => {
@@ -34,7 +33,7 @@ export const useBusySlots = (): UseBusySlotsResult => {
         title: "School",
         start: "08:30",
         end: "15:30",
-        days: [...daysOfWeek],
+        days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
       },
       {
         title: "Meals",
@@ -54,8 +53,8 @@ export const useBusySlots = (): UseBusySlotsResult => {
 
   const toggleBusySlot = (
     index: number,
-    field: "title" | "start" | "end",
-    value: string
+    field: "title" | "start" | "end" | "days",
+    value: string | string[]
   ) => {
     setBusySlots((prev) =>
       prev.map((slot, i) =>
@@ -64,7 +63,7 @@ export const useBusySlots = (): UseBusySlotsResult => {
     );
   };
 
-  const addBusySlot = (days: string[]) => {
+  const addBusySlot = (days: string[] = ["Monday"]) => {
     setBusySlots((prev) => [
       ...prev,
       { title: "Busy", start: "17:00", end: "18:00", days },
@@ -75,15 +74,6 @@ export const useBusySlots = (): UseBusySlotsResult => {
     setBusySlots((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const calendarEvents: Event[] = busySlots.flatMap((slot) =>
-    slot.days.map((day) => ({
-      title: slot.title,
-      start: slot.start,
-      end: slot.end,
-      day,
-    }))
-  );
-
   return {
     busySlots,
     freeTimeSlots,
@@ -91,6 +81,5 @@ export const useBusySlots = (): UseBusySlotsResult => {
     toggleBusySlot,
     addBusySlot,
     removeBusySlot,
-    calendarEvents,
   };
 };

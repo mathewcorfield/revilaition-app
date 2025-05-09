@@ -81,12 +81,17 @@ const locales = {
     } = useRevisionEvents(userId, isOpen, subjects, dailyMinutes, freeTimeSlots);
 
     
-    const allEvents = useMemo(() => [...events, ...busySlots.map((slot) => ({
-        title: slot.title,
-        start: formatTimeToDate(slot.start, slot.day),
-        end: formatTimeToDate(slot.end, slot.day),
-        allDay: false,
-      }))], [events, busySlots]);
+    const allEvents = useMemo(() => [
+        ...events,
+        ...busySlots.flatMap((slot) =>
+          slot.days.map((day) => ({
+            title: slot.title,
+            start: formatTimeToDate(slot.start, day),
+            end: formatTimeToDate(slot.end, day),
+            allDay: false,
+          }))
+        )
+      ], [events, busySlots]);
     
     const handleSave = async () => {
     setIsSaving(true);
@@ -142,7 +147,7 @@ const locales = {
       <input
         type="text"
         value={slot.title}
-        onChange={(e) => toggleBusySlot(null, idx, "title", e.target.value)}
+        onChange={(e) => toggleBusySlot(idx, "title", e.target.value)}
         className="p-1 border rounded"
       />
 
@@ -151,14 +156,14 @@ const locales = {
         <input
           type="time"
           value={slot.start}
-          onChange={(e) => toggleBusySlot(null, idx, "start", e.target.value)}
+          onChange={(e) => toggleBusySlot(idx, "start", e.target.value)}
           className="p-1 border rounded"
         />
         <label className="text-sm">End:</label>
         <input
           type="time"
           value={slot.end}
-          onChange={(e) => toggleBusySlot(null, idx, "end", e.target.value)}
+          onChange={(e) => toggleBusySlot(idx, "end", e.target.value)}
           className="p-1 border rounded"
         />
       </div>
@@ -173,7 +178,7 @@ const locales = {
                 const updatedDays = e.target.checked
                   ? [...(slot.days || []), day]
                   : (slot.days || []).filter((d) => d !== day);
-                toggleBusySlot(null, idx, "days", updatedDays);
+                toggleBusySlot(idx, "days", updatedDays);
               }}
             />
             {day}
@@ -183,7 +188,7 @@ const locales = {
 
       {!["School", "Sleep 1", "Sleep 2", "Meals"].includes(slot.title) && (
         <button
-          onClick={() => removeBusySlot(null, idx)}
+          onClick={() => removeBusySlot(idx)}
           className="text-red-600 text-sm mt-1"
         >
           Remove
@@ -193,7 +198,7 @@ const locales = {
   ))}
 
   <button
-    onClick={() => addBusySlot(null)}
+    onClick={() => addBusySlot()}
     className="text-blue-600 text-sm mt-2"
   >
     + Add Busy Time
