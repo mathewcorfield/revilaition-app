@@ -26,15 +26,8 @@ const locales = {
   });
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const [selectedDays, setSelectedDays] = useState<string[]>([]);
-const [isPlanSaved, setIsPlanSaved] = useState(false);
-const [revisionEvents, setRevisionEvents] = useState([]);
 
-const toggleDay = (day: string) => {
-  setSelectedDays(prev =>
-    prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
-  );
-};
+
   // Prioritize revision by soonest exams
   const getSoonestExamDate = (subject: Subject) =>
     subject.examDates.reduce((earliest, current) =>
@@ -88,78 +81,7 @@ function getFreeTimeSlots(busySlots: Event[]) {
     }
     return shuffled;
   }
-  function generateMultiWeekRevisionEvents(
-    subjects: Subject[],
-    dailyMinutes: number,
-    freeTimeMap: Record<string, { start: string; end: string }[]>,
-  ) {
-    
-    const today = new Date();
-    const occupiedSlots: Set<string> = new Set();
-    try {
-        
-    for (const subject of subjects) {
-        const examDate = new Date(getSoonestExamDate(subject).date);
-      if (isNaN(examDate.getTime())) {
-        logError(`Invalid or missing exam date for ${subject.name}`,"Error");
-        continue; // Skip this subject if examDate is invalid
-      }
-      const totalDays = getDaysUntil(getSoonestExamDate(subject).date);
-      const totalRevisionMinutes = totalDays * dailyMinutes;
-      const minutesPerSubject = Math.floor((totalRevisionMinutes * 0.9) / subjects.length);
-      let remaining = minutesPerSubject;
-      let current = new Date(today);
-      const shuffledSubtopics = shuffleArray(subject.subtopics);
-      let subtopicIndex = 0;
-      while (remaining > 0 && current <= examDate) {
-        const day = daysOfWeek[current.getDay() === 0 ? 6 : current.getDay() - 1]; // Convert JS Sunday (0) to 6
-        
-        const freeSlots = freeTimeMap[day] || [];
-        for (const slot of freeSlots) {
-            let  slotStartMin  = timeStringToMinutes(slot.start);
-            const slotEndMin  = timeStringToMinutes(slot.end);
-            while (slotStartMin + 15 <= slotEndMin && remaining > 0) {
-                const sessionDuration = Math.min(30, remaining, slotEndMin - slotStartMin);
-                if (sessionDuration < 15) break;
-            
-            const startDate = new Date(current);
-            startDate.setHours(Math.floor(slotStartMin / 60), slotStartMin % 60);
   
-            const endDate = new Date(startDate);
-            endDate.setMinutes(startDate.getMinutes() + sessionDuration);
-
-            const slotKey = `${startDate.toISOString()}-${endDate.toISOString()}`;
-            if (occupiedSlots.has(slotKey)) {
-              continue; // Skip if this slot is already occupied
-            }
-
-          if (!isValidDate(startDate) || !isValidDate(endDate)) {
-            console.warn(`Invalid event date generated for ${subject.name} on ${day}:`, startDate, endDate);
-            continue;
-          }
-          const subtopic = shuffledSubtopics[subtopicIndex % shuffledSubtopics.length];
-            revisionEvents.push({
-                title: `Revise: ${subject.name} - ${subtopic.name}`,
-              start: startDate,
-              end: endDate,
-              allDay: false,
-            });
-            occupiedSlots.add(slotKey);
-            remaining -= sessionDuration;
-            subtopicIndex++;
-            slotStartMin += sessionDuration;
-            if (remaining <= 0) break;
-          }
-        }
-  
-        current.setDate(current.getDate() + 1); // Move to next day
-      }
-    }
-} catch (error) {
-    logError("Error generating revision events:", error);
-  }
-    return revisionEvents;
-  }
   
   function minutesToTimeString(mins: number) {
     const h = Math.floor(mins / 60)
@@ -189,6 +111,12 @@ export default function RevisionPlanner({
 }) {
     const { toast } = useToast();
     const { setUser } = useUser();
+    const [dailyMinutes, setDailyMinutes] = useState(120);
+    const [customBusySlots, setCustomBusySlots] = useState<Event[]>([]);
+    const [busySlots, setBusySlots] = useState<Event[]>([...defaultBusySlots, ...customBusySlots]);
+    const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [isPlanSaved, setIsPlanSaved] = useState(false);
+  const [revisionEvents, setRevisionEvents] = useState([]);
 
     useEffect(() => {
         const loadSavedEvents = async () => {
@@ -203,9 +131,13 @@ export default function RevisionPlanner({
         }
       }, [isOpen]);
 
-  const [dailyMinutes, setDailyMinutes] = useState(120);
-  const [customBusySlots, setCustomBusySlots] = useState<Event[]>([]);
-  const [busySlots, setBusySlots] = useState<Event[]>([...defaultBusySlots, ...customBusySlots]);
+
+
+const toggleDay = (day: string) => {
+    setSelectedDays(prev =>
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    );
+  };
 
   const allBusySlots = useMemo(() => [...defaultBusySlots, ...customBusySlots], [customBusySlots]);
 
@@ -255,10 +187,80 @@ export default function RevisionPlanner({
           (a, b) => new Date(getSoonestExamDate(a).date).getTime() - new Date(getSoonestExamDate(b).date).getTime()
         );
       }, [subjects]);
+      function generateMultiWeekRevisionEvents(
+        subjects: Subject[],
+        dailyMinutes: number,
+        freeTimeMap: Record<string, { start: string; end: string }[]>,
+      ) {
+        
+        const today = new Date();
+        const occupiedSlots: Set<string> = new Set();
+        try {
+            
+        for (const subject of subjects) {
+            const examDate = new Date(getSoonestExamDate(subject).date);
+          if (isNaN(examDate.getTime())) {
+            logError(`Invalid or missing exam date for ${subject.name}`,"Error");
+            continue; // Skip this subject if examDate is invalid
+          }
+          const totalDays = getDaysUntil(getSoonestExamDate(subject).date);
+          const totalRevisionMinutes = totalDays * dailyMinutes;
+          const minutesPerSubject = Math.floor((totalRevisionMinutes * 0.9) / subjects.length);
+          let remaining = minutesPerSubject;
+          let current = new Date(today);
+          const shuffledSubtopics = shuffleArray(subject.subtopics);
+          let subtopicIndex = 0;
+          while (remaining > 0 && current <= examDate) {
+            const day = daysOfWeek[current.getDay() === 0 ? 6 : current.getDay() - 1]; // Convert JS Sunday (0) to 6
+            
+            const freeSlots = freeTimeMap[day] || [];
+            for (const slot of freeSlots) {
+                let  slotStartMin  = timeStringToMinutes(slot.start);
+                const slotEndMin  = timeStringToMinutes(slot.end);
+                while (slotStartMin + 15 <= slotEndMin && remaining > 0) {
+                    const sessionDuration = Math.min(30, remaining, slotEndMin - slotStartMin);
+                    if (sessionDuration < 15) break;
+                
+                const startDate = new Date(current);
+                startDate.setHours(Math.floor(slotStartMin / 60), slotStartMin % 60);
+      
+                const endDate = new Date(startDate);
+                endDate.setMinutes(startDate.getMinutes() + sessionDuration);
+    
+                const slotKey = `${startDate.toISOString()}-${endDate.toISOString()}`;
+                if (occupiedSlots.has(slotKey)) {
+                  continue; // Skip if this slot is already occupied
+                }
+    
+              if (!isValidDate(startDate) || !isValidDate(endDate)) {
+                console.warn(`Invalid event date generated for ${subject.name} on ${day}:`, startDate, endDate);
+                continue;
+              }
+              const subtopic = shuffledSubtopics[subtopicIndex % shuffledSubtopics.length];
+                revisionEvents.push({
+                    title: `Revise: ${subject.name} - ${subtopic.name}`,
+                  start: startDate,
+                  end: endDate,
+                  allDay: false,
+                });
+                occupiedSlots.add(slotKey);
+                remaining -= sessionDuration;
+                subtopicIndex++;
+                slotStartMin += sessionDuration;
+                if (remaining <= 0) break;
+              }
+            }
+      
+            current.setDate(current.getDate() + 1); // Move to next day
+          }
+        }
+    } catch (error) {
+        logError("Error generating revision events:", error);
+      }
+        return revisionEvents;
+      }
+      setRevisionEvents(generateMultiWeekRevisionEvents(sortedSubjects, dailyMinutes, freeTimeSlots))
 
-  const revisionEvents = useMemo(() => {
-    return generateMultiWeekRevisionEvents(sortedSubjects, dailyMinutes, freeTimeSlots);
-  }, [sortedSubjects, dailyMinutes, freeTimeSlots]);
   
   const allEvents = useMemo(() => [...calendarEvents, ...revisionEvents], [calendarEvents, revisionEvents]);
 
