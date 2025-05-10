@@ -58,8 +58,9 @@ const RedirectHandler = () => {
         const fullUserData = await getUserData(userId);
           setUser(fullUserData);
           toast({ title: "Login Successful", description: "Welcome back to RevilAItion!" });
-        navigate("/dashboard");
         }
+        sessionStorage.removeItem("oauth_hash");
+        navigate("/dashboard");
       } catch (err) {
         logError("[RedirectHandler] Unexpected error", err);
         navigate("/login");
