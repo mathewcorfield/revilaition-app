@@ -6,6 +6,7 @@ import CalendarTimeline from "@/components/CalendarTimeline";
 import SubjectTab from "@/components/SubjectTab";
 import PersonalityTab from "@/components/PersonalityTab";
 import MotivationTab from "@/components/MotivationTab";
+import {PageHeader} from "@/components/PageHeader";
 import PageFooter from '@/components/PageFooter';
 import OnboardingModal from "@/components/login/OnboardingModal";
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
@@ -47,32 +48,20 @@ const Dashboard = () => {
 const handleOnboardingComplete = () => {
   setShowOnboarding(false);
 };
+const actions = isTrial ? (
+  <>
+    <Button onClick={() => navigate("/subscription")}>Subscribe for Full Access</Button>
+    <Button onClick={() => navigate("/login")}>Verify & Login to end trial mode</Button>
+  </>
+) : (
+  <>
+    <Button onClick={() => navigate("/subscription")}>Subscription</Button>
+    <Button variant="outline" onClick={logout}>Log Out</Button>
+  </>
+);
   return (
     <div className={"min-h-screen flex flex-col bg-background"}>
-      <header className="border-b bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="h-8 w-8 text-brand-purple" />
-          <span className="font-bold text-xl text-gray-900"><RevilAItionText /></span>
-              </Link>
-            <span className="text-muted-foreground">|</span>
-            <span>
-              {isTrial 
-                ? <strong>Verify your email and log in to unlock full feature!</strong>
-                : `${user?.name ? `${user.name}'s` : "Your"} Dashboard`}
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button onClick={() => navigate("/subscription")}>Subscribe for Full Access</Button>
-            {isTrial ? (
-              <Button onClick={() => navigate("/login")}>Verify & Login to end trial mode</Button>
-            ) : (
-            <Button variant="outline" onClick={logout}>Log Out</Button>
-            )}
-          </div>
-        </div>
-      </header>
+      <PageHeader isTrial={isTrial} actions={actions}/>
       <main className="container mx-auto p-4 flex-grow">
         {isTrial && (
           <div className="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-900 border border-yellow-300">
@@ -81,7 +70,7 @@ const handleOnboardingComplete = () => {
           </div>
         )}
         {showOnboarding && (
-        <OnboardingModal usedId = {user.id} onComplete={handleOnboardingComplete}/>
+        <OnboardingModal userId = {user.id} onComplete={handleOnboardingComplete}/>
       )}
         <div className="mb-8">
           <MilestoneTimeline milestones={user?.milestones || []} isTrial={isTrial} />

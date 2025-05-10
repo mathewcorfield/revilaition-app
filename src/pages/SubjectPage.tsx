@@ -16,6 +16,7 @@ import {useLearningTimer } from "@/hooks/useLearningTimer";
 import {parseQuestion } from "@/utils/parseQuestion";
 import { logError } from '@/utils/logError';
 import PageFooter from '@/components/PageFooter';
+import {PageHeader} from "@/components/PageHeader";
         
 const SubjectPage: React.FC = () => {
   const isTrial = sessionStorage.getItem("isTrial") === "true";

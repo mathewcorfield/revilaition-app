@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
-const OnboardingModal = ({ usedId, onComplete }) => {
+const OnboardingModal = ({ userId, onComplete }) => {
   const [allLevels, setAllLevels] = useState<any[]>([]);
   const [loadingLevels, setLoadingLevels] = useState(true);
   const [allCountries, setAllCountries] = useState<any[]>([]);
@@ -15,7 +15,7 @@ const OnboardingModal = ({ usedId, onComplete }) => {
   const [level, setLevel] = useState("");
   const [country, setCountry] = useState("");
   
-  const { handleOnboardingSubmit } = useOnboarding(usedId, name, level, country);
+  const { handleOnboardingSubmit } = useOnboarding(userId, name, level, country);
 
   useEffect(() => {
     const fetchData = async () => {

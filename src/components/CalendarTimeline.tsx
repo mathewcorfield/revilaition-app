@@ -51,9 +51,9 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ events, subjects, u
 
   {/* If no events, show message */}
   {sortedEvents.length === 0 ? (
-    <div className="text-center text-gray-600 p-6">
-      <p className="mb-2">You can start planning your revision above!</p>
-        <Button    onClick={() => setShowPlanner(true)}    size="sm" className="flex items-center gap-1">
+    <div className="flex justify-center text-gray-600 p-6">
+      <Button    onClick={() => setShowPlanner(true)}    size="sm" className="flex items-center gap-1">
+        <PlusCircle size={16} />
         Generate Revision Plan
       </Button>
     </div>

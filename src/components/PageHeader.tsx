@@ -1,17 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { RevilAItionText } from "@/components/RevilAItionText";
-import useLogout from "@/hooks/useLogout";
+import { useUser } from "@/context/UserContext";
 
 interface PageHeaderProps {
-  UserName?: string;
+    title?: string;
   isTrial?: boolean;
+  actions?: React.ReactNode;
 }
 
-export const PageHeader = ({ UserName, isTrial }: PageHeaderProps) => {
-    const navigate = useNavigate()
-    const logout = useLogout();
+export const PageHeader = ({ title, isTrial,actions }: PageHeaderProps) => {
+    const { user } = useUser();
   return (
 <header className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -24,16 +23,11 @@ export const PageHeader = ({ UserName, isTrial }: PageHeaderProps) => {
             <span>
               {isTrial 
                 ? <strong>Verify your email and log in to unlock full feature!</strong>
-                : `${UserName ? `${UserName}'s` : "Your"} Dashboard`}
+                : title || `${user?.name ? `${user.name}'s` : "Your"} Dashboard`}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Button onClick={() => navigate("/subscription")}>Subscribe for Full Access</Button>
-            {isTrial ? (
-              <Button onClick={() => navigate("/login")}>Verify & Login to end trial mode</Button>
-            ) : (
-            <Button variant="outline" onClick={logout}>Log Out</Button>
-            )}
+            {actions}            
           </div>
         </div>
       </header>
