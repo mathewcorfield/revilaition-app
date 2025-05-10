@@ -47,24 +47,7 @@ const SubjectPage: React.FC = () => {
   const userId = user?.id;
   const subtopicId = selectedSubtopic?.id;
   const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
-  const actions = (
-    <>
-      <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
-      <span className="text-lg font-medium">{subtopics.length} subtopics</span>
-      <Button 
-        variant="outline" 
-        onClick={handleGenerateRandomQuestion} 
-        className="flex items-center gap-2"
-        disabled={isGenerating}
-      >
-        <Shuffle size={16} className="mr-2" />
-        Random Question
-      </Button>
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-                <ArrowLeft size={18} />
-          </Button>
-    </>
-  );
+  
   const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
     const newValue = subtopic[type] === 1 ? 0 : 1;
     try {
@@ -168,6 +151,24 @@ if (subtopics.length === 0) {
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
 handleGenerateQuestion(random);
 };
+const actions = (
+    <>
+      <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
+      <span className="text-lg font-medium">{subtopics.length} subtopics</span>
+      <Button 
+        variant="outline" 
+        onClick={handleGenerateRandomQuestion} 
+        className="flex items-center gap-2"
+        disabled={isGenerating}
+      >
+        <Shuffle size={16} className="mr-2" />
+        Random Question
+      </Button>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+                <ArrowLeft size={18} />
+          </Button>
+    </>
+  );
 return (
   <div key={id} className="min-h-screen flex flex-col">
     <PageHeader isTrial={isTrial} actions={actions} title={subject.name}/>
