@@ -34,6 +34,7 @@ const SubjectPage: React.FC = () => {
   const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
 
     const actions = (
+    <>
       <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
       <span className="text-lg font-medium">{subtopics.length} subtopics</span>
       <Button 
@@ -48,6 +49,7 @@ const SubjectPage: React.FC = () => {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                 <ArrowLeft size={18} />
           </Button>
+    </>
   );
   const userId = user?.id;
   const subtopicId = selectedSubtopic?.id;
