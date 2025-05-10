@@ -21,9 +21,9 @@ import {PageHeader} from "@/components/PageHeader";
 const SubjectPage: React.FC = () => {
   const isTrial = sessionStorage.getItem("isTrial") === "true";
   const navigate = useNavigate();
-  const {subjectID} = useParams();
+  const {id} = useParams();
   const {user, loading, setUser} = useUser();
-  const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, subjectID, loading);
+  const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
   const [selectedSubtopic, setSelectedSubtopic] = useState <Subtopic | null >(null);
   const [question, setQuestion] = useState <string | null >(null);
   const [questionId, setQuestionId] = useState<string | null>(null);
@@ -157,7 +157,7 @@ const random = subtopics[Math.floor(Math.random() * subtopics.length)];
 handleGenerateQuestion(random);
 };
 return (
-  <div key={subjectID} className="min-h-screen flex flex-col">
+  <div key={id} className="min-h-screen flex flex-col">
     <PageHeader isTrial={isTrial} actions={actions} title="Reviewing Subject"/>
     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
       <h3 className="text-lg font-medium">{subject.name}</h3>
