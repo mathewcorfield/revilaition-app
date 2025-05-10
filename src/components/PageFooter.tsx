@@ -5,9 +5,9 @@ import { RevilAItionText } from "@/components/RevilAItionText";
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
   return (
-    <footer className="bg-gray-50 border-t border-gray-200 py-12">
+    <footer className="bg-gray-50 border-t border-gray-200 py-6">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Logo and Description */}
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
             </div>
         </div>
         </div>
-        <div className="border-t border-gray-200 mt-10 pt-6 text-center text-sm text-gray-600">
+        <div className="border-t border-gray-200 mt-6 pt-4 text-center text-sm text-gray-600">
           <p>© {year} RevilAItion. All rights reserved.</p>
         </div>
       </div>

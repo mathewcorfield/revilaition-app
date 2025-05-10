@@ -31,7 +31,7 @@ const Dashboard = () => {
       return; 
   }
   const shouldShow = sessionStorage.getItem("showOnboarding");
-  if (shouldShow === "true" || !user?.level || !user?.name) {
+  if (shouldShow === "true") {
     setShowOnboarding(true);
     sessionStorage.removeItem("showOnboarding");
   }
