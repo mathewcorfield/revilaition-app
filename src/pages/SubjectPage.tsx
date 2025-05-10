@@ -36,7 +36,7 @@ const SubjectPage: React.FC = () => {
   const userId = user?.id;
   const subtopicId = selectedSubtopic?.id;
   const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
-  
+
   useEffect(() => {
       if (!loading && !user && !isTrial) {
         navigate("/login"); // or homepage
@@ -173,7 +173,7 @@ const actions = (
   );
 return (
   <div key={id} className="min-h-screen flex flex-col">
-    
+    <PageHeader isTrial={isTrial} actions={actions} title={subject.name}/>
     <div className="grid gap-4 grid-cols-1">
       {subtopics.map((subtopic) => (
         <SubtopicCard
