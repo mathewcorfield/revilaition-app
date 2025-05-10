@@ -46,25 +46,22 @@ const RedirectHandler = () => {
       }
   try {
         const userId = data.session.user.id;
-        const userProfile = await getUserData(userId);
-        if (!userProfile) {
-          logError("[RedirectHandler] No profile found, redirecting to onboarding", profileError);
-          navigate("/onboarding");
-          return;
-        }
-        setUser(userProfile);
-        toast({
-          title: "Welcome back!",
-          description: "You've successfully signed in.",
-        });
+        const { data: userProfile, error: profileError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
 
+        if (!userProfile) {
+          sessionStorage.setItem("showOnboarding", "true");
+        } else {
+        const fullUserData = await getUserData(userId);
+          setUser(fullUserData);
+          toast({ title: "Login Successful", description: "Welcome back to RevilAItion!" });
         navigate("/dashboard");
+        }
       } catch (err) {
         logError("[RedirectHandler] Unexpected error", err);
-        toast({
-          title: "Error",
-          description: "Something went wrong after sign-in.",
-        });
         navigate("/login");
       } finally {
         setLoading(false);

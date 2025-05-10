@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { FaGoogle } from "react-icons/fa";
 import useGoogleSignIn from "@/hooks/useGoogleSignIn";
 
-const GoogleSignInButton = ({setShowOnboarding}: {setShowOnboarding: React.Dispatch<React.SetStateAction<boolean>>;}) => {
-  const { handleGoogleSignIn, loading } = useGoogleSignIn(setShowOnboarding);
+const GoogleSignInButton = () => {
+  const { handleGoogleSignIn, loading } = useGoogleSignIn();
   return (
     <Button
       onClick={handleGoogleSignIn}

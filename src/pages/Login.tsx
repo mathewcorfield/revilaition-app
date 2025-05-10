@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import OnboardingModal from "@/components/login/OnboardingModal";
 import LoginForm from "@/components/login/LoginForm";
 import GoogleSignInButton from "@/components/login/GoogleSignInButton";
 import TermsAndPrivacy from "@/components/login/TermsAndPrivacy";
@@ -16,7 +15,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
@@ -54,7 +53,6 @@ const Login = () => {
               setShowOnboarding={setShowOnboarding}
             />
             <GoogleSignInButton 
-              setShowOnboarding={setShowOnboarding}
               />
             <TermsAndPrivacy isLogin={isLogin} />
           </CardContent>

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MilestoneTimeline from "@/components/MilestoneTimeline";
 import CalendarTimeline from "@/components/CalendarTimeline";
@@ -7,6 +7,7 @@ import SubjectTab from "@/components/SubjectTab";
 import PersonalityTab from "@/components/PersonalityTab";
 import MotivationTab from "@/components/MotivationTab";
 import Footer from '@/components/Footer';
+import OnboardingModal from "@/components/login/OnboardingModal";
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
@@ -17,7 +18,7 @@ import useLogout from "@/hooks/useLogout";
 
 const Dashboard = () => {
   const isTrial = sessionStorage.getItem("isTrial") === "true";
-  
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { allSubjects, loadingSubjects } = useSubjects();
   const { allExamBoards, loadingExamBoards } = useExamBoards();
   const { user, loading: userLoading } = useUser();
@@ -26,9 +27,14 @@ const Dashboard = () => {
   
   useEffect(() => {
     if (!userLoading && !user && !isTrial) {
-      navigate("/login"); // or homepage
-    }
-  }, [user, userLoading, isTrial, navigate]);
+      navigate("/login"); 
+  }
+  const shouldShow = sessionStorage.getItem("showOnboarding");
+  if (shouldShow === "true") {
+    setShowOnboarding(true);
+    sessionStorage.removeItem("showOnboarding");
+  }
+}, [user, userLoading, isTrial, navigate]);
   
   if (loadingSubjects || loadingExamBoards || userLoading) {
     return (
@@ -54,12 +60,14 @@ const Dashboard = () => {
                 : `${user?.name ? `${user.name}'s` : "Your"} Dashboard`}
             </span>
           </div>
-          <Button onClick={() => navigate("/subscription")}>Subscribe for Full Access</Button>
-           {isTrial ? (
-            <Button onClick={() => navigate("/login")}>Verify & Login to end trial mode</Button>
-          ) : (
-          <Button variant="outline" onClick={logout}>Log Out</Button>
-      )}
+          <div className="flex items-center gap-4">
+            <Button onClick={() => navigate("/subscription")}>Subscribe for Full Access</Button>
+            {isTrial ? (
+              <Button onClick={() => navigate("/login")}>Verify & Login to end trial mode</Button>
+            ) : (
+            <Button variant="outline" onClick={logout}>Log Out</Button>
+            )}
+          </div>
         </div>
       </header>
       <main className="container mx-auto p-4 flex-grow">
@@ -69,6 +77,9 @@ const Dashboard = () => {
 <strong>Verify your email and log in</strong> to unlock full AI-powered revision tools and insights.
           </div>
         )}
+        {showOnboarding && (
+        <OnboardingModal />
+      )}
         <div className="mb-8">
           <MilestoneTimeline milestones={user?.milestones || []} isTrial={isTrial} />
         </div>
