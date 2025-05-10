@@ -311,8 +311,9 @@ export const getAllLevels = async () => {
 export const getAllCountries = async () => {
   const { data, error } = await supabase
     .from("country")
-    .select("id, name, launched");
-
+    .select("id, name, launched")
+    .eq("launched", true);
+    
   handleSupabaseError(error, "Fetch countries");
 
   return (data ?? []).map((country) => ({
