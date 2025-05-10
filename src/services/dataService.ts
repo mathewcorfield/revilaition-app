@@ -21,8 +21,9 @@ const insertData = async (table: string, data: object[]) => {
 };
 
 // Function to insert user interaction data into a 'user_interactions' table
-export const insertInteraction = async (action: string, element: string, timestamp: string, user_id: string | null) => {
-  const insertedData = await insertData("user_interactions", [    {      action,      element,      timestamp,      user_id    }  ]);
+export const insertInteraction = async (action: string, element: string, timestamp: string, user_id?: string) => {
+  const actualUserId = user_id || "8179c018-a27a-40a8-bbfb-25d929b82272";
+  const insertedData = await insertData("user_interactions", [    {      action,      element,      timestamp,      user_id: actualUserId,    }  ]);
   return insertedData;
 };
 

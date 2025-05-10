@@ -29,20 +29,13 @@ const Login = () => {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-3xl font-bold text-primary">
               Revil
-              <span className="text-black">AI</span>
-              tion <br />  Revil
               <span className="text-black font-bold animate-shimmer bg-gradient-to-r from-black via-white to-black bg-clip-text text-transparent">AI</span>
-              tion <br /> Revil
-              <span className="text-cyan-300 font-bold animate-shimmer bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">AI</span>
-              tion <br /> Revil
-              <span className="text-cyan-300">AI</span>
-              tion
+              tion 
             </CardTitle>
             <CardDescription>
               {isLogin ? (
       <>
-        Clarity in Every Question. Progress in Every Session.<br />
-        The Future of Revision Is Personal.
+        The Future of Revision.
       </>
     ) : (
       "Create an account to start your learning journey"
