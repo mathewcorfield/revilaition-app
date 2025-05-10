@@ -152,13 +152,26 @@ const random = subtopics[Math.floor(Math.random() * subtopics.length)];
 handleGenerateQuestion(random);
 };
 const actions = (
-  <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+    <>
+      <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
+      <span className="text-lg font-medium">{subtopics.length} subtopics</span>
+      <Button 
+        variant="outline" 
+        onClick={handleGenerateRandomQuestion} 
+        className="flex items-center gap-2"
+        disabled={isGenerating}
+      >
+        <Shuffle size={16} className="mr-2" />
+        Random Question
+      </Button>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                 <ArrowLeft size={18} />
-  </Button>
+          </Button>
+    </>
   );
 return (
   <div key={id} className="min-h-screen flex flex-col">
-    <PageHeader isTrial={isTrial} actions={actions} title={subject.name}/>
+    
     <div className="grid gap-4 grid-cols-1">
       {subtopics.map((subtopic) => (
         <SubtopicCard
