@@ -179,7 +179,7 @@ export const getAllSubjectNames = async () => {
     id: subject.id,
     name: subject.name,
     category: subject.category,
-    launched: subject.launched,
+    launched: subject.launched === true,
     iconColor: subject.icon_color,
   }));
 };
@@ -196,7 +196,7 @@ export const getAllExamBoards = async () => {
   return (data ?? []).map((board) => ({
     id: board.id,
     name: board.name,
-    launched: board.launched,
+    launched: board.launched === true,
   }));
 };
 
