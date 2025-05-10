@@ -295,7 +295,9 @@ export const removeEvent = async (
 export const getAllLevels = async () => {
   const { data, error } = await supabase
     .from("level")
-    .select("id, name, launched");
+    .select("id, name, launched")
+    .eq("launched", true)
+    .order("name", { ascending: true });;
 
   handleSupabaseError(error, "Fetch levels");
 
