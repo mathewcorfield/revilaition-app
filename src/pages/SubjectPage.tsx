@@ -33,7 +33,21 @@ const SubjectPage: React.FC = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
 
-    const actions = (
+  useEffect(() => {
+      if (!loading && !user && !isTrial) {
+        navigate("/login"); // or homepage
+      }
+    }, [user, loading, isTrial, navigate]);
+  if (loading) {
+          return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+  if (!subject) {
+          return <div className="text-center mt-8">Subject not found</div>;
+  }
+  const userId = user?.id;
+  const subtopicId = selectedSubtopic?.id;
+  const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
+  const actions = (
     <>
       <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
       <span className="text-lg font-medium">{subtopics.length} subtopics</span>
@@ -51,21 +65,6 @@ const SubjectPage: React.FC = () => {
           </Button>
     </>
   );
-  const userId = user?.id;
-  const subtopicId = selectedSubtopic?.id;
-  const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
-  useEffect(() => {
-      if (!loading && !user && !isTrial) {
-        navigate("/login"); // or homepage
-      }
-    }, [user, loading, isTrial, navigate]);
-  if (loading) {
-          return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-  }
-  if (!subject) {
-          return <div className="text-center mt-8">Subject not found</div>;
-  }
-  
   const handleToggle = async (subtopic: Subtopic, type: "learnt" | "revised") => {
     const newValue = subtopic[type] === 1 ? 0 : 1;
     try {
