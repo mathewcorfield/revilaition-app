@@ -14,7 +14,6 @@ import { RevilAItionText } from "@/components/RevilAItionText";
 import { useUser } from "@/context/UserContext";
 import useSubjects from "@/hooks/getSubjects";
 import useExamBoards from "@/hooks/getExamBoards";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
 import useLogout from "@/hooks/useLogout";
 
 const Dashboard = () => {
