@@ -27,10 +27,11 @@ const Dashboard = () => {
   
   useEffect(() => {
     if (!userLoading && !user && !isTrial) {
-      navigate("/login"); 
+      navigate("/login");
+      return; 
   }
   const shouldShow = sessionStorage.getItem("showOnboarding");
-  if (shouldShow === "true" || !user.level || !user.country || !user.name) {
+  if (shouldShow === "true" || !user?.level || !user?.country || !user?.name) {
     setShowOnboarding(true);
     sessionStorage.removeItem("showOnboarding");
   }
