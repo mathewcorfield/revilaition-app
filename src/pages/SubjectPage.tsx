@@ -15,15 +15,15 @@ import {useSubjectData } from "@/hooks/useSubjectData";
 import {useLearningTimer } from "@/hooks/useLearningTimer";
 import {parseQuestion } from "@/utils/parseQuestion";
 import { logError } from '@/utils/logError';
-import PageFooter from '@/components/PageFooter';
+import {PageFooter} from '@/components/PageFooter';
 import {PageHeader} from "@/components/PageHeader";
         
 const SubjectPage: React.FC = () => {
   const isTrial = sessionStorage.getItem("isTrial") === "true";
   const navigate = useNavigate();
-  const {id} = useParams();
+  const {subjectID} = useParams();
   const {user, loading, setUser} = useUser();
-  const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, id, loading);
+  const { subject, subtopics, setSubject, setSubtopics } = useSubjectData(user, subjectID, loading);
   const [selectedSubtopic, setSelectedSubtopic] = useState <Subtopic | null >(null);
   const [question, setQuestion] = useState <string | null >(null);
   const [questionId, setQuestionId] = useState<string | null>(null);
@@ -32,7 +32,12 @@ const SubjectPage: React.FC = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
-  
+
+    const actions = (
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+                <ArrowLeft size={18} />
+          </Button>
+  );
   const userId = user?.id;
   const subtopicId = selectedSubtopic?.id;
   const {isLearning,    elapsedTime,    formatTime,   handleStartLearning, handleStopLearning} = useLearningTimer({    userId,    subtopicId,  });
@@ -80,11 +85,6 @@ const SubjectPage: React.FC = () => {
     }
   };
 const handleGenerateQuestion = async (subtopic : Subtopic) => {
-  if (!subtopic) {
-    logError("[SubjectPage] Invalid subtopic.", "Invalid subtopic.");
-    toast({ title: "Error", description: "Invalid subtopic." });
-    return;
-  }
   setIsGenerating(true);
   setSelectedSubtopic(subtopic);
   setAnswer('');
@@ -150,49 +150,40 @@ const handleAnswerSubmit = async () => {
         
 const handleGenerateRandomQuestion = () => {
 if (subtopics.length === 0) {
-    toast({title: "No Subtopics", description: "No subtopics to generate questions from."});
+    toast({title: "No Subtopics", description: "No subtopics to generate questions for."});
     return;
 }
 const random = subtopics[Math.floor(Math.random() * subtopics.length)];
 handleGenerateQuestion(random);
 };
 return (
-        <div className="space-y-6"> 
-        {/* Subject header */}
-    <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft size={18} />
-            </Button>
-            <div className="flex items-center gap-6 flex-wrap">
-                <h3 className="text-lg font-medium">{subject.name}</h3>
-                <Badge variant="outline" className="uppercase">{subject.examBoard}</Badge>
-                <span className="text-sm text-muted-foreground">{subtopics.length} subtopics</span>
-            </div>
-        </div>
-        <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={handleGenerateRandomQuestion} 
-              className="flex items-center gap-2"
-              disabled={isGenerating}
-            >
-              <Shuffle size={16} className="mr-2" />
-              Random Question
-            </Button>
-  </div>
+  <div key={subjectID} className="min-h-screen flex flex-col">
+    <PageHeader isTrial={isTrial} actions={actions} title="Reviewing Subject"/>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <h3 className="text-lg font-medium">{subject.name}</h3>
+      <Badge variant="outline" className="uppercase">{subject.examBoard}</Badge>
+      <span className="text-sm text-muted-foreground">{subtopics.length} subtopics</span>
+      <Button 
+        variant="outline" 
+        onClick={handleGenerateRandomQuestion} 
+        className="flex items-center gap-2"
+        disabled={isGenerating}
+      >
+        <Shuffle size={16} className="mr-2" />
+        Random Question
+      </Button>
     </div>
     <div className="grid gap-4 grid-cols-1">
-  {subtopics.map((subtopic) => (
-    <SubtopicCard
-            key={subtopic.id}
-            subtopic={subtopic}
-            onToggle={handleToggle}
-            onGenerateQuestion={handleGenerateQuestion}
-          />
-  ))}
-</div>
-    <Dialog open={showDialog} onOpenChange={setShowDialog}>
+      {subtopics.map((subtopic) => (
+        <SubtopicCard
+          key={subtopic.id}
+          subtopic={subtopic}
+          onToggle={handleToggle}
+          onGenerateQuestion={handleGenerateQuestion}
+        />
+      ))}
+    </div>
+  <Dialog open={showDialog} onOpenChange={setShowDialog}>
   <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
     <DialogHeader>
       <DialogTitle>AI Revision Chat</DialogTitle>

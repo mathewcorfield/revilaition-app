@@ -7,7 +7,7 @@ import SubjectTab from "@/components/SubjectTab";
 import PersonalityTab from "@/components/PersonalityTab";
 import MotivationTab from "@/components/MotivationTab";
 import {PageHeader} from "@/components/PageHeader";
-import PageFooter from '@/components/PageFooter';
+import {PageFooter} from '@/components/PageFooter';
 import OnboardingModal from "@/components/login/OnboardingModal";
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
