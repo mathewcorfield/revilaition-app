@@ -1,17 +1,18 @@
 import React from 'react';
 import { GraduationCap, Mail, Github, Linkedin, Twitter as TwitterIcon } from 'lucide-react';
+import { RevilAItionText } from "@/components/RevilAItionText";
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
   return (
     <footer className="bg-gray-50 border-t border-gray-200 py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo and Description */}
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <GraduationCap className="h-6 w-6 text-brand-purple" />
-              <span className="font-bold text-lg text-gray-900">Revilaition</span>
+              <span className="font-bold text-lg text-gray-900"><RevilAItionText /></span>
             </div>
             <p className="text-gray-600 text-sm mb-4">
               AI-powered study assistant to help you learn smarter, not harder.
@@ -55,7 +56,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-gray-200 mt-10 pt-6 text-center text-sm text-gray-600">
-          <p>© {year} Revilaition. All rights reserved.</p>
+          <p>© {year} RevilAItion. All rights reserved.</p>
         </div>
       </div>
     </footer>

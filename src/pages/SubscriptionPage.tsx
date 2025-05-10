@@ -3,6 +3,7 @@ import PricingCard from "@/components/PricingCard";
 import pricingData from "@/config/pricingConfig.json";
 import { handleCheckout } from "@/services/payments";
 import { useUser } from "@/context/UserContext";
+import PageFooter from '@/components/PageFooter';
 
 const SubscriptionPage = () => {
   const { user } = useUser();
@@ -37,6 +38,7 @@ const SubscriptionPage = () => {
           </div>
         </section>
       </main>
+      <PageFooter />
     </div>
   );
 };

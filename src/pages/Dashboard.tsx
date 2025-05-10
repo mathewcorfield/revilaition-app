@@ -6,10 +6,11 @@ import CalendarTimeline from "@/components/CalendarTimeline";
 import SubjectTab from "@/components/SubjectTab";
 import PersonalityTab from "@/components/PersonalityTab";
 import MotivationTab from "@/components/MotivationTab";
-import Footer from '@/components/Footer';
+import PageFooter from '@/components/PageFooter';
 import OnboardingModal from "@/components/login/OnboardingModal";
 import { Book, User, Lightbulb, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RevilAItionText } from "@/components/RevilAItionText";
 import { useUser } from "@/context/UserContext";
 import useSubjects from "@/hooks/getSubjects";
 import useExamBoards from "@/hooks/getExamBoards";
@@ -53,7 +54,7 @@ const handleOnboardingComplete = () => {
           <div className="flex items-center space-x-4">
             <Link to="/" className="flex items-center gap-2">
           <GraduationCap className="h-8 w-8 text-brand-purple" />
-          <span className="font-bold text-xl text-gray-900">Revilaition</span>
+          <span className="font-bold text-xl text-gray-900"><RevilAItionText /></span>
               </Link>
             <span className="text-muted-foreground">|</span>
             <span>
@@ -118,7 +119,7 @@ const handleOnboardingComplete = () => {
           </Tabs>
         </div>
       </main>
-      <Footer />
+      <PageFooter />
     </div>
   );
 };

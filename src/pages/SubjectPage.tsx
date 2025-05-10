@@ -15,6 +15,7 @@ import {useSubjectData } from "@/hooks/useSubjectData";
 import {useLearningTimer } from "@/hooks/useLearningTimer";
 import {parseQuestion } from "@/utils/parseQuestion";
 import { logError } from '@/utils/logError';
+import PageFooter from '@/components/PageFooter';
         
 const SubjectPage: React.FC = () => {
   const isTrial = sessionStorage.getItem("isTrial") === "true";
@@ -257,6 +258,7 @@ return (
     </div>
   </DialogContent>
 </Dialog>
+<PageFooter />
 </div>
 );
 };
