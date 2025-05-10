@@ -6,7 +6,7 @@ import { logError } from '@/utils/logError';
 import { getUserData } from "@/hooks/getUserData";
 import { useUser } from "@/context/UserContext";
 
-export const useLoginForm = (isLogin: boolean, email: string, password: string, setShowOnboarding: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const useLoginForm = (isLogin: boolean, email: string, password: string) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -45,13 +45,13 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string, 
 
         if (profileError || !userProfile) {
           logError("[Login] Get User Profile Error", profileError);
-          setShowOnboarding(true);
+          sessionStorage.setItem("showOnboarding", "true");
         } else {
           const fullUserData = await getUserData(userData.user.id);
           setUser(fullUserData);
           toast({ title: "Login Successful", description: "Welcome back to RevilAItion!" });
-          navigate("/dashboard");
         }
+          navigate("/dashboard");
       } else {
         if (email && password) {
           const { data, error } = await supabase.auth.signUp({

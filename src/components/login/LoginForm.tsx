@@ -13,8 +13,7 @@ const LoginForm = ({
   setPassword,
   showPassword,
   setShowPassword,
-  isLogin,
-  setShowOnboarding
+  isLogin
 }: {
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -23,10 +22,9 @@ const LoginForm = ({
   showPassword: boolean;
   setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
   isLogin: boolean;
-  setShowOnboarding: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { passwordStrength, evaluateStrength } = usePasswordStrength();
-  const { handleSubmit, loading } = useLoginForm(isLogin, email, password, setShowOnboarding);
+  const { handleSubmit, loading } = useLoginForm(isLogin, email, password);
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">

@@ -6,7 +6,7 @@ import { logError } from "@/utils/logError";
 import { getUserData } from "@/hooks/getUserData";
 import { useUser } from "@/context/UserContext";
 
-export const useOnboarding = (name: string, level: string, country: string) => {
+export const useOnboarding = (usedId: string, name: string, level: string, country: string) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { setUser } = useUser();
@@ -15,28 +15,13 @@ export const useOnboarding = (name: string, level: string, country: string) => {
   const handleOnboardingSubmit = async () => {
     if (!level || !country || !name) {
       toast({ title: "Error", description: "Please complete the onboarding questions." });
-      return;
+      return false;
     }
 
     try {
-      const user = (await supabase.auth.getUser()).data?.user;
-      if (!user?.id) {
-        logError("[Onboarding] User not authenticated", new Error("User not authenticated"));
-        toast({ title: "Error", description: "User not authenticated. Please log in again." });
-        setLoading(false);
-        return;
-      }
-
-      const { data: existingUserProfile, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !existingUserProfile) {
         const { error: insertError } = await supabase
           .from('users')
-          .insert([{ id: user.id, current_level: level, country_id: country, full_name: name }]);
+          .insert([{ id: usedId, current_level: level, country_id: country, full_name: name }]);
 
         if (insertError) {
           logError("[Onboarding] Insert User Error", insertError);
@@ -44,16 +29,16 @@ export const useOnboarding = (name: string, level: string, country: string) => {
           setLoading(false);
           return;
         }
-
-        const fullUserData = await getUserData(user.id);
+        const fullUserData = await getUserData(usedId);
         setUser(fullUserData);
         setLoading(false);
         toast({ title: "Onboarding Complete", description: "Welcome to RevilAItion! Let's start learning." });
         navigate("/dashboard");
-      }
+        return true;
     } catch (error) {
       logError("[Onboarding] Unexpected Error", error);
       toast({ title: "Error", description: error.message });
+      return false;
     }
   };
 

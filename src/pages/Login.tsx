@@ -15,11 +15,10 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
-  useRedirectIfLoggedIn();
+  //useRedirectIfLoggedIn();
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent to-background p-4">
@@ -50,7 +49,6 @@ const Login = () => {
               showPassword={showPassword}
               setShowPassword={setShowPassword}
               isLogin={isLogin}
-              setShowOnboarding={setShowOnboarding}
             />
             <GoogleSignInButton 
               />
@@ -63,10 +61,6 @@ const Login = () => {
           </CardFooter>
         </Card>
       </div>
-            {/* Show onboarding modal if it's the user's first login */}
-      {showOnboarding && (
-        <OnboardingModal />
-      )}
     </div>
   );
 };

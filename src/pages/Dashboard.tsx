@@ -43,7 +43,9 @@ const Dashboard = () => {
       </div>
     );
   }
-
+const handleOnboardingComplete = () => {
+  setShowOnboarding(false);
+};
   return (
     <div className={"min-h-screen flex flex-col bg-background"}>
       <header className="border-b bg-white shadow-sm">
@@ -78,7 +80,7 @@ const Dashboard = () => {
           </div>
         )}
         {showOnboarding && (
-        <OnboardingModal />
+        <OnboardingModal usedId = {user.id} onComplete={handleOnboardingComplete}/>
       )}
         <div className="mb-8">
           <MilestoneTimeline milestones={user?.milestones || []} isTrial={isTrial} />

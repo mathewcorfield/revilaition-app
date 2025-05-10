@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
-const OnboardingModal = () => {
+const OnboardingModal = ({ usedId, onComplete }) => {
   const [allLevels, setAllLevels] = useState<any[]>([]);
   const [loadingLevels, setLoadingLevels] = useState(true);
   const [allCountries, setAllCountries] = useState<any[]>([]);
@@ -15,7 +15,7 @@ const OnboardingModal = () => {
   const [level, setLevel] = useState("");
   const [country, setCountry] = useState("");
   
-  const { handleOnboardingSubmit } = useOnboarding(name, level, country);
+  const { handleOnboardingSubmit } = useOnboarding(usedId, name, level, country);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,7 +111,13 @@ const OnboardingModal = () => {
           )}
         </div>
 
-        <Button className="mt-4 w-full" onClick={handleOnboardingSubmit}>
+        <Button className="mt-4 w-full" onClick={async () => {
+    const success = await handleOnboardingSubmit();
+    if (success) {
+      sessionStorage.setItem("onboardingCompleted", "true");
+      onComplete(); // ✅ hide the modal
+    }
+  }}>
           Submit
         </Button>
       </div>
