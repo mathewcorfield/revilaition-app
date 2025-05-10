@@ -34,6 +34,17 @@ const SubjectPage: React.FC = () => {
   const [evaluationFeedback, setEvaluationFeedback] = useState < string | null > (null);
 
     const actions = (
+      <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
+      <span className="text-lg font-medium">{subtopics.length} subtopics</span>
+      <Button 
+        variant="outline" 
+        onClick={handleGenerateRandomQuestion} 
+        className="flex items-center gap-2"
+        disabled={isGenerating}
+      >
+        <Shuffle size={16} className="mr-2" />
+        Random Question
+      </Button>
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                 <ArrowLeft size={18} />
           </Button>
@@ -158,21 +169,7 @@ handleGenerateQuestion(random);
 };
 return (
   <div key={id} className="min-h-screen flex flex-col">
-    <PageHeader isTrial={isTrial} actions={actions} title="Reviewing Subject"/>
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-      <h3 className="text-lg font-medium">{subject.name}</h3>
-      <Badge variant="outline" className="uppercase">{subject.examBoard}</Badge>
-      <span className="text-sm text-muted-foreground">{subtopics.length} subtopics</span>
-      <Button 
-        variant="outline" 
-        onClick={handleGenerateRandomQuestion} 
-        className="flex items-center gap-2"
-        disabled={isGenerating}
-      >
-        <Shuffle size={16} className="mr-2" />
-        Random Question
-      </Button>
-    </div>
+    <PageHeader isTrial={isTrial} actions={actions} title={subject.name}/>
     <div className="grid gap-4 grid-cols-1">
       {subtopics.map((subtopic) => (
         <SubtopicCard

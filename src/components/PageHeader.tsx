@@ -20,7 +20,7 @@ export const PageHeader = ({ title, isTrial,actions }: PageHeaderProps) => {
           <span className="font-bold text-xl text-gray-900"><RevilAItionText /></span>
               </Link>
             <span className="text-muted-foreground">|</span>
-            <span>
+            <span className="text-lg font-medium">
               {isTrial 
                 ? <strong>Verify your email and log in to unlock full feature!</strong>
                 : title || `${user?.name ? `${user.name}'s` : "Your"} Dashboard`}

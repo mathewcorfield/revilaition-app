@@ -78,17 +78,17 @@ const actions = isTrial ? (
         <div className="mb-8">
           <CalendarTimeline events={user?.events || []} subjects={user?.subjects || []} userId={user.id} />
         </div>
-        <div className="border rounded-lg shadow-sm bg-white p-4">
+        <div className="border rounded-lg shadow-sm bg-white p-4 w-full max-w-full overflow-x-auto">
           <Tabs defaultValue="subjects" className="w-full">
             <TabsList className="mb-8 border p-1 rounded-md bg-secondary">
-              <TabsTrigger value="subjects" className="flex items-center gap-2">
-                <Book size={18} /> Subjects
+              <TabsTrigger value="subjects" className="flex items-center gap-2 text-sm sm:text-base">
+                <Book size={18} className="sm:w-5 sm:h-5"/> Subjects
               </TabsTrigger>
-              <TabsTrigger value="personality" className="flex items-center gap-2">
-                <User size={18} /> Personality
+              <TabsTrigger value="personality" className="flex items-center gap-2 text-sm sm:text-base">
+                <User size={18} className="sm:w-5 sm:h-5"/> Personality
               </TabsTrigger>
-              <TabsTrigger value="motivation" className="flex items-center gap-2">
-                <Lightbulb size={18} /> Motivation
+              <TabsTrigger value="motivation" className="flex items-center gap-2 text-sm sm:text-base">
+                <Lightbulb size={18} className="sm:w-5 sm:h-5"/> Motivation
               </TabsTrigger>
             </TabsList>
             <TabsContent value="subjects">
