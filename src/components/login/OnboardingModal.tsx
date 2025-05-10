@@ -114,8 +114,7 @@ const OnboardingModal = ({ usedId, onComplete }) => {
         <Button className="mt-4 w-full" onClick={async () => {
     const success = await handleOnboardingSubmit();
     if (success) {
-      sessionStorage.setItem("onboardingCompleted", "true");
-      onComplete(); // ✅ hide the modal
+      onComplete();
     }
   }}>
           Submit

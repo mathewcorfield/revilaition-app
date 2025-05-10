@@ -72,6 +72,7 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string) 
             description: "Welcome to RevilAItion! Check your inbox and click the  to verify your email.",
           });
           sessionStorage.setItem("isTrial", "true");
+          setUser(data.user)
           navigate('/dashboard');
         }
       }
