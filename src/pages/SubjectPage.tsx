@@ -152,22 +152,9 @@ const random = subtopics[Math.floor(Math.random() * subtopics.length)];
 handleGenerateQuestion(random);
 };
 const actions = (
-    <>
-      <Badge variant="outline" className="uppercase text-lg font-medium">{subject.examBoard}</Badge>
-      <span className="text-lg font-medium">{subtopics.length} subtopics</span>
-      <Button 
-        variant="outline" 
-        onClick={handleGenerateRandomQuestion} 
-        className="flex items-center gap-2"
-        disabled={isGenerating}
-      >
-        <Shuffle size={16} className="mr-2" />
-        Random Question
-      </Button>
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+  <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                 <ArrowLeft size={18} />
-          </Button>
-    </>
+  </Button>
   );
 return (
   <div key={id} className="min-h-screen flex flex-col">
