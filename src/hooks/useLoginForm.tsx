@@ -18,20 +18,12 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string) 
 
     try {
       if (isLogin) {
-
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (data.user?.email_confirmed_at) {
-        toast({
-          title: "Email Verification Needed",
-          description: "You're in trial mode until you verify your email.",
-        });
-        navigate("/dashboard");
-        }
         setLoading(false);
 
         if (error) {
           logError("[Login] SignIn Error", error);
-          toast({ title: "Error", description: error.message });
+          toast({ title: "Email Verification Needed", description: error.message });
           setLoading(false);
           return;
         }
