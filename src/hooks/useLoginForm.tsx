@@ -18,8 +18,15 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string) 
 
     try {
       if (isLogin) {
+
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        sessionStorage.removeItem("isTrial");
+        if (data.user?.email_confirmed_at) {
+        toast({
+          title: "Email Verification Needed",
+          description: "You're in trial mode until you verify your email.",
+        });
+        navigate("/dashboard");
+        }
         setLoading(false);
 
         if (error) {
@@ -51,6 +58,7 @@ export const useLoginForm = (isLogin: boolean, email: string, password: string) 
           setUser(fullUserData);
           toast({ title: "Login Successful", description: "Welcome back to RevilAItion!" });
         }
+          sessionStorage.removeItem("isTrial");
           navigate("/dashboard");
       } else {
         if (email && password) {
