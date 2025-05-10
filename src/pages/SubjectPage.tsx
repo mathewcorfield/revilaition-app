@@ -172,7 +172,7 @@ const actions = (
     </>
   );
 return (
-  <div key={id} className="min-h-screen flex flex-col">
+  <div key={id} className="min-h-screen flex flex-col py-4">
     <PageHeader isTrial={isTrial} actions={actions} title={subject.name}/>
     <div className="grid gap-4 grid-cols-1">
       {subtopics.map((subtopic) => (

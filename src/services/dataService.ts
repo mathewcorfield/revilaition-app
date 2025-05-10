@@ -441,3 +441,13 @@ export const getExamDates = async (level: string, examBoard: string, subjectId: 
       date: row.exam_timestamp,
     }));
   };
+
+  export const getSignedURL = async (url: string, linkExpiry: number): Promise<string>  => {
+  const { data, error } = await supabase
+  .storage
+  .from('past-papers')
+  .createSignedUrl(url, linkExpiry);
+
+  handleSupabaseError(error, "Get signed URL");
+    return data ?? "";
+};
